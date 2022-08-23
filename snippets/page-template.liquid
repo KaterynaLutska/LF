@@ -1,0 +1,73 @@
+{% comment %}
+  vars
+    - page
+    - header_image
+    - alt_bg
+    - section_width
+    - font_size
+    - after_content
+    - after_content_section
+    - round_images
+{% endcomment %}
+
+
+
+{%- if section_width == 'x_narrow' -%}
+  {% assign col_class = "col-md-8 col-md-offset-2" %}
+{%- elsif section_width == 'narrow' -%}
+  {% assign col_class = "col-md-10 col-md-offset-1" %}
+{%- else -%}
+  {% assign col_class = "col-md-12" %}
+{%- endif -%}
+
+{%- if alt_bg -%}
+  {% assign alt_bg_class = 'bg-alt' %}
+{%- else -%}
+  {% assign alt_bg_class = null %}
+{%- endif -%}
+
+{%- if round_images -%}
+  {% assign rounded_class = "-img-round" %}
+{%- else -%}
+  {% assign rounded_class = null %}
+{%- endif -%}
+
+<div class="{{ alt_bg_class }}">
+
+
+{% include 'page-header'
+  bg: header_image,
+  title: page.title
+%}
+
+{%- if page.content != blank and after_content -%}
+  {% assign bottom_margin_class = 'mb50' %}
+{%- else -%}
+  {% assign bottom_margin_class = null %}
+{%- endif -%}
+
+<div class="page-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="{{col_class}}">
+        <div class="rte-page {{bottom_margin_class}}">
+          {{ page.content }}
+        </div>
+
+        {%- if after_content_section -%}
+          {{ after_content }}
+        {%- endif -%}
+
+      </div>
+    </div>
+   
+    {%- if after_content_section == false -%}
+      <div class="row">
+      {{ after_content }}
+     </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+</div>

@@ -1,0 +1,22 @@
+{% comment %}
+  @section_id -> string
+  @type -> string
+  @color -> string
+  @mobile_optimize -> boolean
+{% endcomment %}
+
+
+{%- if mobile_optimize -%}
+  {% assign mobile_class = '-mobile-optimize' %}
+{%- endif -%}
+
+{% if type == "bullets" %}
+  <div class="swiper-pagination -{{color}} {{mobile_class}}" id="swiper-pagination-{{section_id}}"></div>
+{% else %}
+  <div class="swiper-button-prev -{{color}} {{mobile_class}}" id="swiper-button-prev-{{section_id}}">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path fill="#fff" d="M0,22L22,0l2.1,2.1L4.2,22l19.9,19.9L22,44L0,22L0,22L0,22z"></svg>
+  </div>
+  <div class="swiper-button-next -{{color}} {{mobile_class}}" id="swiper-button-next-{{section_id}}">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path fill="#fff" d="M27,22L27,22L5,44l-2.1-2.1L22.8,22L2.9,2.1L5,0L27,22L27,22z"></svg>
+  </div>
+{% endif %}

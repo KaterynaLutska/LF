@@ -1,0 +1,16 @@
+<div class="footer-main-newsletter">
+  <div class="footer-main-newsletter-inner">
+    {% form 'customer' %}
+      {{ form.errors | default_errors }}
+      {% if form.posted_successfully? %}
+        <div class="alert alert-success mb0">{{ 'general.newsletter_form.confirmation' | t }}</div>
+        {% else %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+    	<div class="footer-main-newsletter-inputs-wrapper"> 	
+          <input class="footer-main-newsletter-input" type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}" name="contact[email]" id="Email" autocorrect="none" autocapitalize="none"/>
+          <button class="footer-main-newsletter-submit" type="submit" name="commit">{{ 'general.newsletter_form.submit' | t }}</button>
+       </div>
+          {% endif %}
+    {% endform %}
+  </div>
+</div>

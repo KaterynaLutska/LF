@@ -1,0 +1,53 @@
+<div class="col-md-3 col-sm-4 hidden-xs fl">
+  {% if section.settings.show_sidebar_recent_posts or section.settings.show_sidebar_blog_tags %}
+  	<a class="blog-rss" href="{{ blog.url }}.atom"><i class="lin lin-feed"></i> &nbsp;RSS</a>
+  {% endif %}
+  {% if section.settings.show_sidebar_blog_tags and blog.tags.size > 0 %}
+    <section class="blog-sidebar-section">
+      <h5 class="blog-sidebar-section-title">{{ 'blogs.sidebar.widget_tags_title' | t }}</h5>
+      <ul class="blog-sidebar-categories">
+        {% for tag in blog.tags %}
+          {% if current_tags contains tag %}
+         	 <li class="tag-button"><span class="active-tag">{{ tag | link_to_remove_tag: tag }}</span></li>
+          {% else %}
+          	<li class="tag-button">{{ tag | link_to_tag: tag }}</li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+  {% if section.settings.show_sidebar_recent_posts %}
+    <section class="blog-sidebar-section">
+      <h5 class="blog-sidebar-section-title">{{ 'blogs.sidebar.widget_recent_posts_title' | t }}</h5>
+      <ul class="blog-sidebar-categories">
+        {% for article in blog.articles limit:6 %}
+          {% assign article_has_image = false %}
+          {% assign img_tag = '<' | append: 'img' %}
+          {% if article.excerpt_or_content contains img_tag %}
+            {% assign src = article.excerpt_or_content | split: 'src="' %}
+            {% assign src = src[1] | split: '"' | first %}
+            {% if src %}
+              {% assign article_has_image = true %}
+              {% assign image_src = src %}
+            {% endif %}
+          {% endif %}
+          <li>
+            <div class="post_detail">
+              {% if article.image %}
+                <div class="article-thumb"><a href="{{ article.url }}"><img srcset="{{ article | img_url: "50x" }} 1x, {{ article | img_url: "50x", scale: 2 }} 2x, {{ article | img_url: "50x", scale: 3 }}, 3x," alt="{{ article.title | escape }}" /></a></div>
+                {% elsif article_has_image %} 
+                	<div class="article-thumb"><a href="{{ article.url }}"><img src="{{ image_src }}" alt="{{ article.title | escape }}" /></a></div>
+              {% endif %}
+              <div class="article-description">
+                <span class="blog-sidebar-post-date">{{ article.published_at | date: '%b %d, %Y' }}</span><br />
+                <a href="{{ article.url }}">{{ article.title | escape }}</a>
+              </div>
+            </div>
+          </li>
+          {% else %}
+         	 <li>{{ 'blogs.sidebar.no_posts' | t }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}  
+</div>

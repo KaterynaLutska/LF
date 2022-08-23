@@ -1,0 +1,257 @@
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+
+
+{%- if section.settings.background_type == 'primary' and section.settings.btn_style == 'none' -%}
+  {% assign btn_class = 'btn-white' %}
+{%- elsif section.settings.background_type == 'primary' and section.settings.btn_style == 'ghost' -%}
+  {% assign btn_class = "btn-white btn-ghost" %}
+{%- elsif section.settings.background_type == 'img' and section.settings.btn_style == 'ghost' and section.settings.dir == 'none' -%}
+  {% assign btn_class = "btn-white btn-ghost" %}
+{%- elsif section.settings.btn_style == 'ghost' -%}
+  {% assign btn_class = "btn-ghost btn-dark" %}
+{%- else -%}
+  {% assign btn_class = "btn-primary" %}
+{%- endif -%}
+
+{%- if section.settings.dir != 'none' -%}
+  {% assign overlay_inner_shadow_class = '-inner-shadow' %}
+  {% assign aside_class = '-aside' %}
+{%- else -%}
+  {% assign overlay_inner_shadow_class = null %}
+  {% if section.settings.enable_parallax_effect %}
+	{% assign enable_parallax_effect = "parallaxed" %}
+  {% endif %}
+{%- endif -%}
+
+
+{% capture bg_img %}
+  <div class="hero-text__bg-wrapper">
+    {%- include 'bg-img'
+       img_src: section.settings.background_image,
+       class_name: 'hero-text__bg',
+       placeholder_id: 1,
+       placeholder_type: 'lifestyle'
+    -%}
+    <div class="hero-text__bg-overlay {{overlay_inner_shadow_class}}" style="opacity: {{overlay_opacity}}"></div>
+  </div>
+{% endcapture %}
+
+{% capture caption %}
+  {%- include 'rich-text-caption'
+    title: section.settings.text_title,
+    text: section.settings.text,
+    bg_type: section.settings.background_type,
+    btn_style: section.settings.btn_style,
+    btn_text: section.settings.btn_text,
+	btn_link: section.settings.btn_link,
+    size: section.settings.size,
+    dir: section.settings.dir
+  -%}
+{% endcapture %}
+
+<div data-section-id="{{ section.id }}" data-section-type="rich-text-section">
+  <div class="hero-text {{aside_class}} {{enable_parallax_effect}}">
+    {%- if section.settings.dir != 'none' -%}
+
+    {%- if section.settings.dir == 'right' -%}
+      {% assign row_inverse_class = 'row-col-inverse' %}
+    {%- else -%}
+      {% assign row_inverse_class = null %}
+    {%- endif -%}
+
+    {%- if section.settings.img_width == 'large' -%}
+      {% assign img_col = 7 %}
+      {% assign caption_col = 5 %}
+    {%- elsif section.settings.img_width == 'small' -%}
+      {% assign img_col = 5 %}
+      {% assign caption_col = 7 %}
+    {%- else -%}
+      {% assign img_col = 6 %}
+      {% assign caption_col = 6 %}
+    {%- endif -%}
+
+      <div class="row row-eq-height row-no-gutter {{row_inverse_class}}">
+          <div class="col-md-{{img_col}}">
+            {{ bg_img }}
+          </div>
+          <div class="col-md-{{caption_col}}">
+            {{ caption }}
+          </div>
+      </div>
+    {%- else -%}
+      {%- if section.settings.background_type == 'img' -%}
+        {{ bg_img }}
+      {%- endif -%}
+      {{ caption }}
+    {%- endif -%}
+
+
+  </div>
+</div>
+
+{% schema %}
+{
+   "name":"Rich text",
+   "class":"index-section",
+   "settings":[
+      {
+         "type":"text",
+         "id":"text_title",
+         "label":"Heading",
+         "default":"Call to action headline"
+      },
+      {
+         "type":"richtext",
+         "id":"text",
+         "label":"Description",
+         "default":"<p>Use text to give your customers insight into your brand. Select text that relates to your story.</p>"
+      },
+      {
+         "type":"select",
+         "id":"dir",
+         "label":"Layout",
+         "default":"none",
+         "options":[
+            {
+               "label":"Centered",
+               "value":"none"
+            },
+            {
+               "label":"Image right",
+               "value":"right"
+            },
+            {
+               "label":"Image left",
+               "value":"left"
+            }
+         ]
+      },
+      {
+         "type":"select",
+         "id":"img_width",
+         "label":"Image width",
+         "default":"default",
+         "info": "Used only for left or right layouts",
+         "options":[
+            {
+               "label":"Default",
+               "value":"default"
+            },
+            {
+               "label":"Small",
+               "value":"small"
+            },
+            {
+               "label":"Large",
+               "value":"large"
+            }
+         ]
+      },
+      {
+         "type":"select",
+         "id":"size",
+         "label":"Height",
+         "default":"sm",
+         "options":[
+            {
+               "label":"Short",
+               "value":"sm"
+            },
+            {
+               "label":"Medium",
+               "value":"md"
+            },
+            {
+               "label":"Tall",
+               "value":"lg"
+            }
+         ]
+      },
+     {
+        "type":"select",
+        "id":"background_type",
+        "label":"Background",
+        "default":"default",
+        "options":[
+           {
+              "label":"White",
+              "value":"default"
+           },
+           {
+              "label":"Alternate",
+              "value":"alt"
+           },
+           {
+              "label":"Primary",
+              "value":"primary"
+           },
+           {
+              "label":"Dark",
+              "value":"dark"
+           },
+           {
+             "label": "Image (centered layout only)",
+             "value": "img"
+           }
+        ]
+     },
+     {
+        "type":"image_picker",
+        "id":"background_image",
+        "label":"Background image"
+     },
+	  {
+         "type":"checkbox",
+         "id":"enable_parallax_effect",
+         "label":"Enable parallax effect",
+         "info": "Only relevant for full-width image backgrounds"
+      },
+       {
+           "type": "range",
+           "id": "overlay_opacity",
+           "label": "Overlay opacity",
+           "min":       0,
+           "max":        90,
+           "step":       10,
+           "unit":       "%",
+           "default": 40
+       },
+       {
+          "type":"header",
+          "content":"Button"
+       },
+       {
+         "type":"select",
+         "id":"btn_style",
+         "label":"Style",
+         "options":[
+           {
+             "value":"none",
+             "label":"Default"
+           },
+           {
+             "value":"ghost",
+             "label":"Ghost"
+           }
+         ],
+         "default":"none"
+       },
+       {
+          "type":"url",
+          "id":"btn_link",
+          "label":"Link"
+       },
+       {
+          "type":"text",
+          "id":"btn_text",
+          "label":"Button text"
+       }
+   ],
+   "presets":[
+      {
+         "name":"Rich text",
+         "category":"Text"
+      }
+   ]
+}
+{% endschema %}

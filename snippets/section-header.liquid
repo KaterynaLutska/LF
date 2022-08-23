@@ -1,0 +1,39 @@
+{% comment %}
+  Page section header abstraction
+  Recives two arguments section_title and section subtitle from settings
+{% endcomment %}
+
+{%- if settings.section_title_primary and use_def_color != true -%}
+  {% assign primary_class = "text-primary" %}
+{%- else -%}
+  {% assign primary_class = null %}
+{%- endif -%}
+
+
+{%- if settings.section_header_font_weight == 'bold' -%}
+  {% assign weight_class = "-bold" %}
+{%- endif -%}
+
+{%- if settings.section_title_text_transfrom != 'none' -%}
+  {% assign uppercase_class = "text-" | append: settings.section_title_text_transfrom %}
+{%- else -%}
+  {% assign uppercase_class = null %}
+{%- endif -%}
+
+
+{%- if size -%}
+  {% assign size_inst = size %}
+{%- else -%}
+  {% assign size_inst = settings.section_header_size %}
+{%- endif -%}
+
+{% assign size_class = size_inst | prepend: '-' %}
+
+{%if section_title != blank %}
+  <div class="section-header {{size_class}}">
+    <h2 class="section-header-title {{ primary_class }} {{uppercase_class}} {{weight_class}}">{{ section_title | escape }}</h2>
+    {%if section_subtitle != blank %}
+      <h4 class="section-header-subtitle">{{ section_subtitle | escape }}</h4>
+    {% endif %}
+  </div>
+{% endif %}

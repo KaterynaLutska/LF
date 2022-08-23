@@ -1,0 +1,279 @@
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+{%- if section.settings.background_type == 'video_blurred' -%}
+  {% assign blurred_class = '-blurred' %}
+{%- else -%}
+  {% assign blurred_class = null %}
+{%- endif -%}
+
+{%- if section.settings.scroll_indicator -%}
+  {% assign no_scroll_class = null %}
+{%- else -%}
+  {% assign no_scroll_class = '-no-scroll-icon' %}
+{%- endif -%}
+
+{%- if section.settings.background_type == 'img' or section.settings.lightbox_video -%}
+  {% assign play_icon_class = null %}
+{%- else -%}
+  {% assign play_icon_class = 'desktop-hidden' %}
+{%- endif -%}
+
+{% capture play_icon %}
+  <a class="youtube-play-icon {{play_icon_class}}" href="#" id="video-play-{{section.id}}">
+    {%- include 'icon-play' -%}
+  </a>
+{% endcapture %}
+
+
+{%- if section.settings.hero_size == 'auto' -%}
+  {% assign auto_class = '-height-auto' %}
+  {% assign height_style = null %}
+{%- else -%}
+  {% assign auto_class = null %}
+  {% capture height_style %}
+    style="height: {{section.settings.hero_size}}vh"
+  {% endcapture %}
+{%- endif -%}
+
+{%- if section.settings.hero_size == '100' -%}
+  {% assign full_height_class = '-full-height' %}
+{%- else -%}
+  {% assign full_height_class = null %}
+{%- endif -%}
+
+<div class="{{ no_scroll_class }}" data-section-id="{{ section.id }}" data-section-type="video-section"  data-video-link="{{section.settings.video_link}}" data-video-id="{{section.settings.video_link.id}}" data-video-type="{{section.settings.video_link.type}}">
+  <div class="youtube-video-wrapper {{auto_class}} {{full_height_class}}" {{height_style}}>
+    <div class="youtube-video-overlay" style="opacity: {{overlay_opacity}}"></div>
+    {%- include 'bg-img',
+      class_name: 'youtube-video-bg',
+      img_src: section.settings.home_video_bg,
+      placeholder_id: 1,
+      placeholder_type: 'lifestyle'
+    -%}
+    {%- if section.settings.background_type != 'img' -%}
+      {%- if section.settings.video_link.type == "youtube" -%}
+       <div id="video-{{section.id}}" class="youtube-video {{blurred_class}}"></div>
+     {% else %}
+       <div id="video-{{section.id}}" class="vimeo-video {{blurred_class}}">    	
+          <div id="vimeo_iframe_wrapper-{{section.id}}">
+            <iframe id="iframe-{{section.id}}" src="https://player.vimeo.com/video/{{section.settings.video_link.id}}?muted=1&amp;autoplay=1&amp;autopause=0&amp;loop=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen="" ></iframe>
+         </div>
+      </div>
+     {%- endif -%}
+    {%- endif -%}
+    
+    {%- include 'slider-caption'
+      before: play_icon,
+      title: section.settings.title,
+      title_color: section.settings.caption_title_color,
+      subtitle: section.settings.subheading,
+      link: section.settings.link,
+      btn_text: section.settings.button_text,
+      btn_type: section.settings.caption_btn,
+      position: section.settings.caption_position,
+      size: section.settings.caption_text_size,
+      title_transfrom: section.settings.caption_title_transfrom,
+      caption_reveal: false
+    -%}
+
+    {%- include 'scroll-indicator'
+      section_id: section.id,
+      enabled: section.settings.scroll_indicator,
+      section_height: section.settings.hero_size
+    -%}
+
+  </div>
+</div>
+
+
+{% schema %}
+{
+   "name":"Video",
+   "class":"index-section index-section--flush home-slideshow-section overlapped_content",
+   "settings":[
+      {
+        "type": "select",
+        "id": "background_type",
+        "label": "Play options",
+        "info": "[Learn more](https:\/\/support.milehighthemes.com\/article\/119-utilizing-video-options-on-your-home-page-galleria)",
+        "default": "video",
+        "options": [
+          {
+            "label": "Autoplay",
+            "value": "video"
+          },
+          {
+            "label": "Autoplay (blurred)",
+            "value": "video_blurred"
+          },
+          {
+            "label": "Play on click",
+            "value": "img"
+          }
+        ]
+      },
+      {
+         "type":"video_url",
+         "id":"video_link",
+         "label":"Video link",
+         "accept":[
+            "youtube", "vimeo"
+         ],
+         "default":"https://www.youtube.com/watch?v=_9VUPq3SxOc"
+      },
+      {
+         "type":"image_picker",
+         "label":"Cover image",
+         "id":"home_video_bg",
+         "info":"1600 x 1200px jpg recommended. Shows on mobile, as video is loading on desktop, and if \"Play on click\" option is selected above."
+      },
+	  {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Overlay opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 20
+    },
+	{
+        "type": "checkbox",
+        "label": "Show play button on autoplay",
+        "id": "lightbox_video",
+        "default": true,
+        "info":"Opens video in a popup"
+    },
+	{
+       "type":"select",
+       "id":"hero_size",
+       "label":"Height",
+       "options":[
+         {
+           "value":"63",
+           "label":"Short"
+         },
+         {
+           "value":"81",
+           "label":"Tall"
+         },
+         {
+           "value":"100",
+           "label":"Full-screen"
+         }
+       ],
+       "default":"100"
+    },
+    {
+      "type": "checkbox",
+      "label": "Show scroll indicator",
+      "id": "scroll_indicator",
+      "default": true,
+      "info": "Will appear only on full-screen videos when it is the first section."
+    },
+
+      {
+         "type":"header",
+         "content":"Caption"
+      },
+      {
+         "type":"text",
+         "id":"title",
+         "label":"Heading"
+      },
+      {
+         "type":"text",
+         "id":"subheading",
+         "label":"Description",
+         "info":"This description will only show if you select \"Open on click\" above."
+      },
+	  {
+         "type":"text",
+         "id":"button_text",
+         "label":"Button text"
+      },
+	  {
+         "type":"url",
+         "id":"link",
+         "label":"Link"
+      },
+	  {
+        "type":"select",
+        "id":"caption_btn",
+        "label":"Style",
+        "options":[
+          {
+            "value":"primary",
+            "label":"Default"
+          },
+          {
+            "value":"ghost",
+            "label":"Ghost"
+          }
+        ],
+        "default":"primary"
+      },
+      {
+        "type":"select",
+        "id":"caption_title_color",
+        "label":"Heading color",
+        "options":[
+          {
+            "value":"white",
+            "label":"White"
+          },
+          {
+            "value":"primary",
+            "label":"Primary"
+          }
+        ],
+        "default":"white"
+      },
+      {
+          "type":"select",
+          "id":"caption_text_size",
+          "label":"Text size",
+          "options":[
+            {
+              "value":"sm",
+              "label":"Small"
+            },
+            {
+              "value":"md",
+              "label":"Medium"
+            },
+            {
+              "value":"lg",
+              "label":"Large"
+            },
+            {
+              "value":"xl",
+              "label":"Extra large"
+            }
+          ],
+          "default":"md"
+        },
+      {
+        "type":"select",
+        "id":"caption_position",
+        "label":"Position",
+        "options":[
+          {
+            "value":"center",
+            "label":"Middle"
+          },
+          {
+            "value":"bottom",
+            "label":"Bottom"
+          }
+        ],
+        "default":"center"
+      }
+   ],
+   "presets":[
+      {
+         "name":"Video",
+         "category":"Video"
+      }
+   ]
+}
+{% endschema %}

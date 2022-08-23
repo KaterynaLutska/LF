@@ -1,0 +1,375 @@
+{{ canonical_link }}
+
+{%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
+
+{% comment %} Use string splitting to pull the value from content_for_header and apply some string clean up {% endcomment %}
+
+{% comment %}
+NOTE:: keep this code for now. Will use price slider feature in future
+
+
+{%- assign pageUrl = contentForQuerystring | split:'"pageurl":"' | last | split:'"' | first | split:'.myshopify.com' | last |
+   replace:'\/','/' |
+   replace:'%20',' ' |
+   replace:'\u0026','&'
+-%}
+
+
+
+
+{% assign query = pageUrl | split: '?' %}
+{% assign query = query[1] | split: '&' %}
+
+{% assign price_min = null %}
+{% assign price_max = null %}
+
+{%- for queryItem in query -%}
+  {% assign queryParts = queryItem | split: '=' %}
+  {%- if queryParts[0] == 'price' -%}
+    {% assign minMax = queryParts[1] | split: '-' %}
+    {% assign price_min = minMax[0] | plus: 0 %}
+    {% assign price_max = minMax[1] | plus: 0 %}
+  {%- endif -%}
+{%- endfor -%}
+{% endcomment %}
+
+{% assign product_columns = section.settings.grid | plus:0 %}
+{% assign product_rows = section.settings.rows | plus:0 %}
+{% assign products_per_page = product_columns | times: product_rows %}
+{% assign product_img_url_width = "450x"%}
+{% paginate collection.products by products_per_page %}
+  {% if section.settings.grid == 4 %}
+    {% assign grid_item_width = '3' %}
+  {% elsif section.settings.grid == 3 %}
+   {% assign grid_item_width = '4' %}
+  {% else %}
+    {% assign grid_item_width = '6' %}
+    {% assign product_img_url_width = "550x"%}
+  {% endif %}
+
+{% include 'advanced-tag-loop' %}
+
+
+{% assign prices = collection.products | sort: 'price' | map: 'price' | first %}
+
+{%- capture contentForQuerystring -%}{{ content_for_header }}{%- endcapture -%}
+
+{%- assign pageUrl = contentForQuerystring | split:'"pageurl":"' | last | split:'"' | first | split:'.myshopify.com' | last |
+   replace:'\/','/' |
+   replace:'%20',' ' |
+   replace:'\u0026','&'
+-%}
+
+
+
+
+
+  <div data-section-id="{{ section.id }}" data-section-type="collection-template" >
+    {% unless section.settings.collection_layout == "no_sidebar"  %}
+      <a class="category-filters category-filters-side {% if section.settings.collection_layout == "sidebar_fixed_left" %}desktop-hidden{% endif %} {% if section.settings.collection_sidebar_filters == "none" %} mobile-hidden {% endif %}" href="#" id="pushy-filters-btn">
+        <i class="lin lin-equalizer category-filters-icon"></i>{{ 'collections.filters.filter_btn' | t }}
+      </a>
+    {% endunless %}
+
+    <!--  Header  -->
+
+    {%- if collection.image -%}
+      {% assign bg_img = collection.image %}
+    {%- else -%}
+      {% assign bg_img = section.settings.image %}
+    {%- endif -%}
+
+    {% include 'page-header'
+      bg: bg_img,
+      title: collection.title,
+      collection: collection
+    %}
+
+
+    <!-- <style>
+      {% if collection.image  or section.settings.image %}
+        header.page-header:after {
+         background-color: #000;
+         background-image: none;
+
+          {% assign opacityValue = section.settings.background_opacity %}
+          {% if opacityValue == 100 %}
+            opacity: 1;
+          {% else %}
+            opacity: 0.{{opacityValue}};
+          {% endif %}
+        }
+      {% endif %}
+      header.page-header {
+        color: {{section.settings.collection_text_color}};
+      }
+    </style>
+
+   <header class="page-header as-background {% if linklists[collection.handle].links != blank %} special_collection_header {% endif %}  {% if collection.image  or section.settings.image %} lazyload visible_lazy {% endif %}"
+           {% if collection.image  %}
+             data-bgset="{% include 'bgset', image: collection.image %}"
+             data-sizes="auto"
+             data-parent-fit="cover"
+             style="background-image: url('{{collection.image | img_url: '300x300' }});"
+            {% elsif section.settings.image %}
+            data-bgset="{% include 'bgset', image: section.settings.image %}"
+             data-sizes="auto"
+             data-parent-fit="cover"
+             style="background-image: url('{{ section.settings.image | img_url: '300x300' }});"
+             {% endif %}
+           >
+      <div class="page-header-inner-bottom">
+        <h1 class="collection-page-header-title page-header-title-sm ">{{ collection.title | escape }}</h1>
+      </div>
+      {% assign specialCollectionHandle = collection.handle | append: "-menu" %}
+      {% if linklists[specialCollectionHandle].links != blank %}
+        <nav class="page-header-nav">
+          <ul class="page-header-nav-list">
+            {% for link in linklists[specialCollectionHandle].links %}
+              <li>
+                <a href="{{link.url}}">{{link.title}}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
+      {% if section.settings.breadcrumbs_enable %}
+        {% include 'breadcrumb' breadcrumb_class:"page-header-breadcrumb" %}
+      {% endif %}
+    </header> -->
+    <div class="page-wrapper" id="collectionWrapper">
+
+     {% if collection.description != blank %}
+          <div class="container header-collection-description">{{ collection.description }}</div>
+     {% endif %}
+    {% comment %}
+      {% else %}
+        {% if collection.image %}
+          <img  alt="{{collection.title}}" class="collection-pahe-heading-img" src="{{ collection.image | img_url: '1600x' }}" />
+        {% elsif section.settings.image %}
+          <img alt="{{collection.title}}" class="collection-pahe-heading-img" src="{{ section.settings.image | img_url: '1600x' }}"/>
+        {% endif %}
+          <div class="header-collection-description">{{ collection.description }}</div>
+        {% endif %}
+    {% endcomment %}
+    <div class="{% if section.settings.collection_layout == "off_canvas_sidebar" %} row {% else %} container no-side-padding-block {% endif %}row-col-norsp" data-gutter="none" id="category-sticky-parent">
+
+      <!-- Sidebar -->
+
+      {% unless section.settings.collection_layout == "no_sidebar" %}
+        {% include 'sidebar-fixed-left' %}
+      {% endunless %}
+      <div class="container-pushy-main
+        {% if section.settings.collection_layout == "sidebar_fixed_left" %}
+          col-md-9
+          same-height-blocks
+        {% else %}
+          col-md-12
+        {% endif %}"
+      >
+        <div id="category-sticky-products">
+          {% if section.settings.sort_enable %}
+           {% include 'collection-sorting'%}
+          {% endif %}
+          <div class="collection-row {% if settings.align_height %} use_align_height height_{{settings.collection_height}}px {% else %} use_image_height {% endif %} {% if section.settings.collection_layout == "off_canvas_sidebar" %} container {% endif %}">
+            <!-- Product -->
+            {% for product in collection.products %}
+{%- if product.metafields.inventory.ShappifyHidden == 'true' -%}{%- continue -%}{%- endif -%}
+                {% assign pricePoint = product.price | money_without_currency | plus: 0 %}
+                {%- if price_min and pricePoint > price_min and pricePoint < price_max -%}
+
+
+                <div class="col-md-{{ grid_item_width }} col-sm-6 col-xs-6 collection-products-wrapper">
+                  {% include 'product-loop'%}
+                  <div class="triangle-left">
+                    <div class="inner-triangle"></div>
+                  </div>
+                </div><!-- Product -->
+
+                {%- elsif price_min == null -%}
+                <div class="col-md-{{ grid_item_width }} col-sm-6 col-xs-6 collection-products-wrapper">
+                  {% include 'product-loop'%}
+                  <div class="triangle-left">
+                    <div class="inner-triangle"></div>
+                  </div>
+                </div><!-- Product -->
+
+                {%- endif -%}
+              {% else %}
+              <p class="no-products">{{ 'collections.general.no_matches' | t }}</p>
+            {% endfor %}
+          </div><!-- <div class="row" data-gutter="none"> -->
+        </div><!-- <div id="category-sticky-products"> -->
+        <div class="mt20 pagination-buttons">
+      {% if paginate.pages > 1 %}
+        {% include 'pagination-custom' %}
+      {% endif %}
+    </div>
+      </div><!-- <div class="col-md-10"> -->
+    </div><!-- <div class="row row-col-norsp" data-gutter="none" id="category-sticky-parent"> -->
+    <div class="mb50 {% if section.settings.collection_layout == "sidebar_fixed_left" %} desktop-hidden {% endif %}" >
+
+    </div>
+  </div>
+{% endpaginate %}
+</div>
+{% schema %}
+{
+  "name":"Collection pages",
+  "settings":[
+    {
+      "type":"header",
+      "content":"Display options"
+    },
+    {
+        "type": "range",
+        "id": "grid",
+        "label": "Products per row",
+        "min":       2,
+        "max":        4,
+        "step":       1,
+        "default": 4
+    },
+    {
+        "type": "range",
+        "id": "rows",
+        "label": "Rows per page",
+        "min":       3,
+        "max":        12,
+        "step":       1,
+        "default": 3
+    },
+  {
+      "type":"header",
+      "content":"Grid options"
+    },
+  {
+      "type":"checkbox",
+      "id":"sort_enable",
+      "label":"Enable sorting",
+      "default":true
+    },
+    {
+      "type":"checkbox",
+      "id":"show_grid_type",
+      "label":"Show product type"
+    },
+  {
+      "type":"checkbox",
+      "id":"show_sale_label",
+      "label":"Show sale label",
+      "default":true
+    },
+    {
+      "type":"checkbox",
+      "id":"use_quick_view",
+      "label":"Enable quick view",
+      "default":true
+    },
+    {
+      "type":"header",
+      "content":"Sidebar"
+    },
+    {
+      "type":"select",
+      "id":"collection_layout",
+      "label":"Layout",
+      "info": "[Learn more](https:\/\/support.milehighthemes.com\/hc\/en-us\/articles\/360020076294)",
+      "default":"sidebar_fixed_left",
+      "options":[
+        {
+          "value":"sidebar_fixed_left",
+          "label":"Fixed left"
+        },
+        {
+          "value":"off_canvas_sidebar",
+          "label":"Off canvas"
+        },
+        {
+          "value":"no_sidebar",
+          "label":"Disabled"
+        }
+      ]
+    },
+
+
+
+    {
+      "type":"select",
+      "id":"collection_sidebar_filters",
+      "label":"Product filtering method",
+      "options":[
+        {
+          "value":"simple-tags",
+          "label":"Simple tag list"
+        },
+    {
+          "value":"groups",
+          "label":"Group filtering"
+        },
+        {
+          "value":"none",
+          "label":"No filtering"
+        }
+      ],
+      "default":"simple-tags",
+      "info":"[Learn how to setup group filtering](https:\/\/support.milehighthemes.com\/hc\/en-us\/articles\/360020145033-How-do-I-setup-group-filtering-on-my-collection-pages-)"
+    },
+    {
+      "type":"header",
+      "content":"Group ordering",
+      "info":"You only need to adjust these options if you've chosen \"Group filtering\" above"
+    },
+    {
+      "type":"text",
+      "id":"group_array",
+      "label":"Type desired group order in a comma-separated list",
+      "info":"List items must be identical to the tag prefixes used for filtering (no underscore), and have no spaces between commas (e.g. Brand,Product Type,Burn Time,Color)"
+    },
+    {
+      "type":"header",
+      "content":"Other sidebar widgets"
+    },
+    {
+      "type":"link_list",
+      "id":"collection_linklist",
+      "label":"Custom menu"
+    },
+    {
+      "type":"checkbox",
+      "id":"show_sidebar_collections",
+      "label":"Enable collection list"
+    },
+    {
+      "type":"checkbox",
+      "id":"show_sidebar_vendors",
+      "label":"Enable vendors"
+    },
+    {
+      "type":"checkbox",
+      "id":"show_collection_sidebar_sale",
+      "label":"Featured products collection"
+    },
+    {
+      "type":"collection",
+      "id":"sidebar_collection_sale_collection",
+      "label":"Choose collection"
+    },
+  {
+      "type":"text",
+      "id":"collection_sidebar_sale_title",
+      "label":"Featured products heading",
+    "default": "On Sale"
+    },
+    {
+        "type": "range",
+        "id": "sidebar_collection_product_count",
+        "label": "Number of products",
+        "min":       1,
+        "max":        6,
+        "step":       1,
+        "default": 4
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,505 @@
+{%- include 'section-bg-init',
+  section_id: section.id,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+<div class="hero-container">
+{%- assign product = all_products[section.settings.featured_product] -%}
+{% assign descriptionParts = product.description | split: "<!-- split -->" %}
+{% if descriptionParts.size > 1%}
+  {% assign descriptionFirstPart = descriptionParts | first %}
+  {% assign descriptionSecondPart = descriptionParts | last %}
+{% endif %}
+{% include "section-header",
+	section_title: section.settings.title,
+	section_subtitle: section.settings.subtitle
+%}
+<div class="container product-template__container page-width template-product template-featured-product " id="ProductSection-{{ section.id }}" data-hide_price="{% if settings.custom_price0_text != blank %}true{% endif %}" data-show_btn="{{settings.hide_price0_box_and_button}}" data-section-id="{{ section.id }}" data-section-type="product-page" data-enable-history-state="true" style="margin-top: -20px">
+
+  {% comment %}
+    Get first variant, or deep linked one
+  {% endcomment %}
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- assign product_thumb_size = '160x160' -%}
+  {%- assign product_image_zoom_size = '1024x1024' -%}
+  {%- assign enable_zoom = section.settings.enable_zoom -%}
+  {%- assign product_image_width = 'col-sm-7' -%}
+  {%- assign product_description_width = 'col-sm-12' -%}
+  {%- assign product_images_length = product.media | size -%}
+
+      {%- assign product_image_size = '720x' -%}
+      {%- assign product_image_class = 'large-img' -%}
+  
+  
+  {% assign hide_price = false %}
+  {% assign show_cart_button = true %}
+  {% if current_variant.price == 0 and settings.custom_price0_text != blank %}
+  {% assign hide_price = true %}
+  {% endif %}
+  {% if current_variant.price == 0 and settings.hide_price0_box_and_button %}
+  {% assign show_cart_button = false %}
+  {% endif %}
+
+  
+
+  {%- assign featured_img_src = current_variant.featured_image.src | default: product.featured_image.src -%}
+  {%- assign featured_img_alt = current_variant.featured_image.alt | default: product.featured_image.alt -%}
+  <div class="row row-col-norsp" id="parent" data-gutter="none">
+    <div class="product_images_length-{{product_images_length}} product-item-image-{{section.settings.description_background_color}} {{ product_image_width }} product-gallery-{{ section.id }}" id="product-gallery">
+      <div class="zoomer ">
+        <img src="#" alt="Zoom image"/>
+      </div>
+      <div class="product-item-wrap {{ product_image_class }} slider-{{ section.id }} equal-columns-{{section.id}}" id="slider" data-product-single-media-group>
+        {% if section.settings.image_gallery_type == 'thumbnails_gallery_vertical' or section.settings.image_gallery_type == 'thumbnails_gallery_horizontal' %}
+          
+        {% else %}
+         
+        {% endif %}
+        {% if section.settings.show_share_buttons %}
+         {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
+        {% endif %}
+      </div><!-- <div class="product-item-wrap" id="slider"> -->
+    </div><!-- <div class="col-md-7"> -->
+    <div class="desktop-flex-wrapper">
+    
+     
+      <div class="{{ product_description_width }} product-description-{{ section.id }}" id="product-description">
+        <div class="product-item-caption-white sidebar-{{ section.id }} product-item-caption-{{section.settings.description_background_color}} equal-columns-{{section.id}}" id="sidebar">
+          <header class="product-item-caption-header">
+            {%- include 'reviews-badge', product_id: product.id -%}
+            <h2 class="h1 product-item-caption-title">
+              {% unless product == empty %}
+                {{ product.title | escape }}
+                {% else %}
+                  {{ 'homepage.onboarding.product_title' | t }}
+              {% endunless %}
+            </h2>
+            <ul class="product-item-caption-price" {% if hide_price %} style="display:none" {% endif %}>
+              {% if current_variant.compare_at_price > current_variant.price %}
+                <li id="ComparePrice-{{ section.id }}" class="product-item-caption-price-list"><span class="money">{{ current_variant.compare_at_price | money }}</span></li>
+              {% endif %}
+              <li id="ProductPrice-{{ section.id }}" class="product-item-caption-price-current"><span class="money">
+                {% unless product == empty %}
+                  {{ current_variant.price | money }}
+                  {% else %}
+                    {{cart.currency.symbol}} {{ 'homepage.onboarding.product_price' | t }}
+                {% endunless %}
+                </span>
+              </li>
+            </ul>
+               <div class="price0_text" {% unless hide_price %} style="display:none" {% endunless %}>{{settings.custom_price0_text}}</div>
+          </header>
+          {% if descriptionSecondPart != blank%}
+            <div class="product-item-caption-desc description-first-part rte-page">
+              {{ descriptionFirstPart }}
+            </div>
+          {% endif %}
+          <!-- Galleria code -->
+          {% unless product == empty %}
+          {% form 'product', product %}
+            {% if section.settings.show_variants_swatches %}
+            <style>
+                .product-select-block-{{ section.id }} {
+                  display: none;
+                }
+              </style>
+            {% endif %}
+            <div class="product-item-caption-select product-select-block-{{ section.id }}">
+              {% unless product.options.size == 1 and product.variants[0].title contains 'Default' %}
+                {% for option in product.options_with_values %}
+                  <div class="selector-wrapper main-product-select-{{product.id}}">
+                    <label {% if option.name == 'default' %}class="hidden" {% endif %} for="product-select-{{ option.name }}">
+                      {{ option.name }}
+                    </label>
+                    <select class="single-option-selector" id="SingleOptionSelector-{{ forloop.index0 }}">
+                      {% for value in option.values %}
+                        <option {% if option.selected_value == value %}selected{% endif %}>{{value}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                {% endfor %}
+              {% endunless %}
+              <select name="id" id="ProductSelect-{{ product.id }}" data-section="{{ section.id }}" class="product-form__variants hidden">
+                {% for variant in product.variants %}
+                  {% if variant.available %}
+                    <option {% if section.settings.show_product_quantity %}
+                                  data-inventory_management="{{variant.inventory_management}}"
+                                  data-inventory_policy="{{variant.inventory_policy}}"
+                                  data-inventory_quantity="{{variant.inventory_quantity}}"
+                                  {% endif %}
+                            {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title | escape }}</option>
+                   {% else %}
+                    <option disabled="disabled"
+                            {% if section.settings.show_product_quantity %}
+                                  data-inventory_management="{{variant.inventory_management}}"
+                                  data-inventory_policy="{{variant.inventory_policy}}"
+                                  data-inventory_quantity="{{variant.inventory_quantity}}"
+                                value="{{ variant.id }}"
+                                  {% endif %}  >{{ variant.title | escape }} - {{ 'products.product.sold_out' | t }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div><!-- <div class="product-item-caption-select"> -->
+             {% if section.settings.show_variants_swatches %}
+              {% unless product.options.size == 1 and product.variants[0].title contains 'Default' %}
+                {% for option in product.options %}
+                 {% include 'swatch' with option %}
+                {% endfor %}
+              {% endunless %}
+            {% endif %}
+            <div class="row" data-gutter="{% if section.settings.show_quantity_selector %}10{% else %}30{% endif %}">
+              {% if section.settings.show_quantity_selector %}
+                {% include 'quantity-selector' %}
+              {% endif %}
+               {% if section.settings.show_smart_checkout%}
+              <div class="product-form__item product-form__item--submit product_payments_btns" {% unless show_cart_button %} style="display:none" {% endunless %}>
+                <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn featured_product_submit product-form__cart-submit{% if product.options.size == 1 and product.variants[0].title == 'Default Title' %} product-form__cart-submit--small{% endif %} btn-primary btn-block btn-lg btn-shop">
+                  <span id="AddToCartText-{{ section.id }}">{{ 'products.product.add_to_cart' | t }}</span>
+                </button>
+                {{ form | payment_button }}
+              </div>
+              {% else %}
+             <div class="product-form__item product-form__item--submit">
+                <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn featured_product_submit product-form__cart-submit{% if product.options.size == 1 and product.variants[0].title == 'Default Title' %} product-form__cart-submit--small{% endif %} btn-primary btn-shop btn-lg" {% unless show_cart_button %} style="display:none" {% endunless %}>
+                  <span id="AddToCartText-{{ section.id }}">{{ 'products.product.add_to_cart' | t }}</span>
+                </button>
+              </div>
+              {% endif %}
+            </div><!-- <div class="row" data-gutter="10"> -->
+
+          {% endform %}
+          {% else %}
+       <form action="{{routes.cart_add_url}}" method="post" enctype="multipart/form-data" class="product-form product-form-{{ section.id }}{% unless section.settings.show_variant_labels %} product-form--hide-variant-labels{% endunless %}" data-section="{{ section.id }}">
+            {% if section.settings.show_variants_swatches %}
+
+            <style>
+                .product-select-block-{{ section.id }} {
+                  display: none;
+                }
+              </style>
+
+            {% endif %}
+            <div class="product-item-caption-select product-select-block-{{ section.id }}">
+              {% unless product.options.size == 1 and product.variants[0].title contains 'Default' %}
+                {% for option in product.options_with_values %}
+                  <div class="selector-wrapper main-product-select-{{product.id}}">
+                    <label {% if option.name == 'default' %}class="hidden" {% endif %} for="product-select-{{ option.name }}">
+                      {{ option.name }}
+                    </label>
+                    <select class="single-option-selector" id="SingleOptionSelector-{{ forloop.index0 }}">
+                      {% for value in option.values %}
+                        <option {% if option.selected_value == value %}selected{% endif %}>{{value}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                {% endfor %}
+              {% endunless %}
+              <select name="id" id="ProductSelect-{{ product.id }}" data-section="{{ section.id }}" class="product-form__variants hidden">
+                {% for variant in product.variants %}
+                  {% if variant.available %}
+                    <option {% if section.settings.show_product_quantity %}
+                                  data-inventory_management="{{variant.inventory_management}}"
+                                  data-inventory_policy="{{variant.inventory_policy}}"
+                                  data-inventory_quantity="{{variant.inventory_quantity}}"
+                                  {% endif %}
+                            {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title | escape }}</option>
+                   {% else %}
+                    <option disabled="disabled"
+                            {% if section.settings.show_product_quantity %}
+                                  data-inventory_management="{{variant.inventory_management}}"
+                                  data-inventory_policy="{{variant.inventory_policy}}"
+                                  data-inventory_quantity="{{variant.inventory_quantity}}"
+                                value="{{ variant.id }}"
+                                  {% endif %}  >{{ variant.title | escape }} - {{ 'products.product.sold_out' | t }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div><!-- <div class="product-item-caption-select"> -->
+             {% if section.settings.show_variants_swatches %}
+              {% unless product.options.size == 1 and product.variants[0].title contains 'Default' %}
+                {% for option in product.options %}
+                 {% include 'swatch' with option %}
+                {% endfor %}
+              {% endunless %}
+            {% endif %}
+            <div class="row" data-gutter="{% if section.settings.show_quantity_selector %}10{% else %}30{% endif %}">
+              {% if section.settings.show_quantity_selector %}
+                {% include 'quantity-selector' %}
+              {% endif %}
+              <div class="product-form__item product-form__item--submit">
+                <button type="submit" name="add" {% if product == empty %} disabled{% endif %} id="AddToCart-{{ section.id }}" class="btn featured_product_submit product-form__cart-submit{% if product.options.size == 1 and product.variants[0].title == 'Default Title' %} product-form__cart-submit--small{% endif %} btn-primary btn-lg">
+                  <span id="AddToCartText-{{ section.id }}">
+                    {% unless product == empty %}
+                      {{ 'products.product.add_to_cart' | t }}
+                      {% else %}
+                      {{ 'products.product.sold_out' | t }}
+                    {% endunless %}
+                  </span>
+                </button>
+              </div>
+            </div><!-- <div class="row" data-gutter="10"> -->
+          </form>
+          {% endunless %}
+
+          <!-- Galleria code -->
+          <div class="product-item-caption-desc">
+              {% if section.settings.show_description %}
+              {% unless product == empty %}
+              {% if descriptionSecondPart != blank%}
+              <hr class="description-line"/>
+              <div class="product-rte-description main-product-description-{{ section.id }}" >
+                {{ descriptionSecondPart }}
+              </div>
+              {% else %}
+              <div class="product-rte-description main-product-description-{{ section.id }}" >
+                {{ product.description }}
+              </div>
+              {% endif %}
+              {% else %}
+              <hr class="description-line"/>
+              <div class="product-rte-description">
+                <p>{{ 'homepage.onboarding.product_description' | t }}</p>
+              </div>
+              {% endunless %}
+
+              {% if product.description contains '<!-- TABS -->' %}
+              <div class="product-description-tabs-{{section.id}} product-description-tabs">
+
+              </div>
+              {% endif %}
+            {% endif %}
+
+            {% if section.settings.show_product_sku or
+                  section.settings.show_product_vendor or
+                  section.settings.show_product_quantity or
+                  section.settings.show_product_tags %}
+            <ul class="product-extra-info">
+              {% if section.settings.show_product_quantity %}
+                <li id="inventory-product-row" class="inventory-product-row-{{section.id }}" style="display:none;">
+                  <span id="variant-inventory" class="variant-inventory-{{section.id }}"></span>
+                </li>
+              {% endif %}
+              {% if section.settings.show_product_vendor  and product != empty %}
+                <li>
+                  Vendor: {{ product.vendor | link_to_vendor }}
+                </li>
+              {% endif %}
+              {% if section.settings.show_product_sku  and product != empty%}
+                <li id="sku-table-row" class="sku-table-row-{{section.id }}" style="display:none;">
+                  SKU:
+                  <span id="variant-sku" class="variant-sku-{{section.id }}"></span>
+                </li>
+              {% endif %}
+               {% assign tagsLength = 0 %}
+                {% for tag in product.tags %}
+                      {% unless tag contains "_" %}
+                      {% assign tagsLength = 1 %}
+                    {% break %}
+                    {% endunless %}
+                {% endfor %}
+              {% if section.settings.show_product_tags  and product != empty and tagsLength > 0%}
+                <li class="tags">
+                  Tags:
+                  {% for tag in product.tags %}
+                  {% unless tag contains "_" %}
+                    <a class = "tag" href="{{routes.collections_url}}/{{ tag | handleize }}">{{ tag }}</a>
+                  {% endunless %}
+                  {% endfor %}
+                </li>
+              {% endif %}
+            </ul>
+            {% endif %}
+          </div>
+
+        </div><!-- <div class="product-item-caption-white" id="sidebar"> -->
+      </div><!-- <div class="col-md-5"> -->
+    </div><!-- <div> -->
+  </div><!-- <div class="row row-col-norsp" id="parent" data-gutter="none"> -->
+</div><!-- <div class="product-template__container page-width"> -->
+{% unless product.empty? %}
+
+<script type="application/json" id="ProductJson-{{ section.id }}">
+    {{ product | json }}
+</script>
+<script type="application/json" id="ModelJson-{{ section.id }}">
+    {{ product.media | where: 'media_type', 'model' | json }}
+</script>
+ <script type="application/json" id="FeaturedProductTemplate">
+  {
+   "template": "featured-product-index-page"
+  }
+  </script>
+{% endunless %}
+{% comment%}
+  {% if section.settings.image_gallery_color or section.settings.product_description_color %}
+
+  <style>
+      .sidebar-{{ section.id }}, .product-description-{{ section.id }} .nav-tabs > li > a {
+        background-color: {{ section.settings.product_description_color }} !important;
+      }
+    </style>
+
+  {% endif %}
+{% endcomment %}
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "url": {{ shop.url | append: product.url | json }},
+  {%- if product.featured_media -%}
+    {%- assign media_size = product.featured_media.preview_image.width | append: 'x' -%}
+    "image": [
+      {{ product.featured_media | img_url: media_size | prepend: "https:" | json }}
+    ],
+  {%- endif -%}
+  "description": {{ product.description | strip_html | json }},
+  {%- if current_variant.sku != blank -%}
+    "sku": {{ current_variant.sku | json }},
+  {%- endif -%}
+  "brand": {
+    "@type": "Thing",
+    "name": {{ product.vendor | json }}
+  },
+  "offers": [
+    {%- for variant in product.variants -%}
+      {
+        "@type" : "Offer",
+        {%- if variant.sku != blank -%}
+          "sku": {{ variant.sku | json }},
+        {%- endif -%}
+        "availability" : "http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+        "price" : {{ variant.price | divided_by: 100.00 | json }},
+        "priceCurrency" : {{ cart.currency.iso_code | json }},
+        "url" : {{ shop.url | append: variant.url | json }}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+
+{% schema %}
+{
+   "name":"Featured product",
+   "settings":[
+      {
+         "type":"text",
+         "id":"title",
+         "label":"Heading",
+         "default":"Featured product"
+      },
+      {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Description"
+      },
+      {
+         "type":"product",
+         "id":"featured_product",
+         "label":"Product"
+      },
+     {
+        "type": "checkbox",
+        "id": "show_smart_checkout",
+        "label": "Show dynamic checkout button",
+        "info": "Lets customers check out directly using a familiar payment method. [Learn more](https:\/\/help.shopify.com\/manual\/using-themes\/change-the-layout\/dynamic-checkout)",
+        "default":false
+      },
+      {
+         "type":"checkbox",
+         "id":"show_variants_swatches",
+         "label":"Enable swatches"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_description",
+         "label":"Show description",
+         "default":true
+      },
+      {
+         "type":"checkbox",
+         "id":"show_quantity_selector",
+         "label":"Show quantity selector",
+         "default":false
+      },
+      {
+         "type":"checkbox",
+         "id":"show_product_vendor",
+         "label":"Show vendor",
+         "default":false
+      },
+      {
+         "type":"checkbox",
+         "id":"show_product_sku",
+         "label":"Show product \/ variant SKU"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_product_quantity",
+         "label":"Show stock status"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_product_tags",
+         "label":"Show product tags"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_share_buttons",
+         "label":"Show social sharing buttons",
+         "default":true
+      },
+	 {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "paragraph",
+      "content": "Learn more about [media types](https://help.shopify.com/manual/products/product-media)"       
+    },
+      {
+         "type":"select",
+         "id":"image_gallery_type",
+         "label":"Gallery type",
+         "options":[
+            {
+               "value":"thumbnails_gallery_vertical",
+               "label":"Thumbnails vertical"
+            },
+            {
+               "value":"thumbnails_gallery_horizontal",
+               "label":"Thumbnails horizontal"
+            },
+            {
+               "value":"slider_gallery",
+               "label":"Slider"
+            }
+         ],
+         "default":"thumbnails_gallery_horizontal"
+      },
+      {
+         "type":"checkbox",
+         "id":"enable_zoom",
+         "label":"Enable image zoom",
+         "default":true
+      },
+    {
+	"type": "checkbox",
+      "id": "enable_video_looping",
+      "label":"Enable video looping",
+      "default": false
+    }
+   ],
+   "presets":[
+      {
+         "name":"Featured product",
+         "category":"Product",
+         "settings":{
+            "image_gallery_type":"thumbnails_gallery_horizontal"
+         }
+      }
+   ]
+}
+{% endschema %}

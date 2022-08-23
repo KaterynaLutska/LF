@@ -1,0 +1,93 @@
+{%- if settings.cart_background_style == "dark" -%}
+  {% assign dark_class = "cart-dialog-dark" %}
+{%- endif -%}
+
+<div class="mfp-with-anim mfp-hide mfp-dialog mfp-dialog-big clearfix {{dark_class}}" id="nav-shopping-cart-dialog">
+  <div class="cart-content nav-dialog-inner-cart">
+    <h2 class="nav-cart-dialog-title">{{ 'cart.general.title' | t }}</h2>
+    {% if cart.item_count > 0 %}
+      <form action="{{routes.cart_url}}" method="post" novalidate class="modal-cart-form">
+        {%- include 'modal-cart-table' -%}
+
+
+      <div class="cart-total-wrapper">
+
+
+        <div class="row">
+
+        <div class="col-sm-6">
+          {%- if settings.cart_notes_enable -%}
+            {% assign notes_class = '-with-notes' %}
+          {%- endif -%}
+
+          {%- if cart.cart_level_discount_applications != blank -%}
+          <p class="order-discount-cart-wrapper">
+            {%- for discount_application in cart.cart_level_discount_applications -%}
+            <span class="order-discount--cart total_val">
+              {%- include 'icon-saletag' -%} {{- discount_application.title | strip -}}:
+            </span>
+            <span class="order-discount--cart-total">(-<span class="money">{{ discount_application.total_allocated_amount | money }}</span>)</span>
+            {%- endfor -%}
+          </p>
+          {%- endif -%}
+          
+          <p class="cart-total {{notes_class}}"> <span class="sign">{{ 'cart.general.subtotal' | t }}</span>  <span class="money nav-cart-dialog-total-amount">{{ cart.total_price | money }}</span></p>
+          {% if settings.cart_notes_enable %}
+            <a role="button" data-toggle="collapse" href="#cartNotesCollapseModal" aria-expanded="false" aria-controls="cartNotesCollapseModal" class="cart-notes-title">Add order notes</a>
+            <div class="collapse" id="cartNotesCollapseModal">
+              <textarea name="note" id="CartSpecialInstructions" class="cart-notes" rows="6" placeholder="{{ 'cart.general.note' | t }}">{% if cart.note != null %}{{cart.note}}{% endif %}</textarea>
+            </div>
+          {% endif %}
+        </div>
+          <div class="col-sm-6">
+          <div class="cart-checkout-bts">
+            <div class="clearfix">
+              <button type="submit" name="checkout" class="cart-checkout-btn checkout-btn btn btn-primary btn-lg">{{ 'cart.general.checkout' | t }}</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+       
+    </div>
+        
+                </div>
+    <script id="pb_prequalify" src="https://app.paybright.com/dist/sdk.js?public_key=63zRC1dZtcy9WLxH1LyhDOfyDvKsNIzFFu6fpTROFKD4Q1kBn2&financedamount=${{ cart.total_price | divided_by: 100.00 | round: 2 }}"></script>
+            <script>
+        pb_prequalify_init({
+      });
+            </script>
+                        <style>
+          .paybright_custom {
+              font-size: 12px;
+                }
+                </style>
+            <div id="paybright-widget-container" class= "paybright_custom"></div>
+
+      <div id="additional-checkout-block"></div>
+      </form>
+    {% else %}
+    <div class="text-center">
+      <div class="cart__empty-icon">
+        {% include 'svg' with 'cart' %}
+      </div>
+      <p class="cart__empty-title">{{ 'cart.general.empty' | t }}</p>
+      <a href="javascript:void(0)" class="continue_shopping_btn btn_close btn btn-primary btn-lg">{{ 'cart.general.continue_browsing' | t }}</a>
+    </div>
+    {% endif %}
+  </div><!-- <div class="nav-dialog-inner-cart"> -->
+</div><!-- <div class="mfp-with-anim mfp-hide mfp-dialog clearfix" id="nav-shopping-cart-dialog"> -->
+{% if settings.cart_background_style == "light" %}
+<style>
+  #nav-shopping-cart-dialog{
+    background: #fff;
+    color: {{ settings.body_text_color }};
+  }
+  #nav-shopping-cart-dialog .nav-cart-dialog-title:after{
+    background: {{ settings.body_text_color }};
+  }
+  #nav-shopping-cart-dialog .mfp-close{
+    color: {{ settings.body_text_color }} !important;
+  }
+</style>
+{% endif %}

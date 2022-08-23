@@ -1,0 +1,32 @@
+{% comment %}
+
+  varibles
+    @img -> object
+    @class_name -> string
+    @spinner -> boolean
+
+{% endcomment %}
+
+
+
+{%- assign img_url = img | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+{% assign max_img_width = img.width | append: "px" %}
+
+<img class="lazyload blur-up {{ class_name }}"
+     src="{{ img | img_url: '300x' }}"
+     data-src="{{ img_url }}"
+     data-widths="[260, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+     data-aspectratio="{{ img.aspect_ratio }}"
+     alt="{{ img.alt | escape }}"
+     data-sizes="auto"
+     style="max-width: {{max_img_width}}" >
+
+{%- if spinner -%}
+  <div class="spinner-cube">
+    <div class="loadFacebookG">
+     <div class="blockG_1 facebook_blockG"></div>
+     <div class="blockG_2 facebook_blockG"></div>
+     <div class="blockG_3 facebook_blockG"></div>
+   </div>
+  </div>
+{%- endif -%}

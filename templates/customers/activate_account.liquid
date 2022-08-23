@@ -1,0 +1,36 @@
+{% comment %}
+<header class="page-header as-background page-header as-background hero--l-small mb30 vertical-centered" >
+  <div class="page-header-inner-bottom">
+    <h1 class="collection-page-header-title page-header-title-sm ">{{ 'customer.activate_account.title' | t }}</h1>
+  </div>
+</header>
+  {% include 'breadcrumb' breadcrumb_class:"page-header-breadcrumb" %}
+{% endcomment %}
+
+{% assign page_title = 'customer.activate_account.title' | t  %}
+
+{% include 'page-header'
+  bg: settings.page_account_bg_img,
+  title: page_title
+%}
+
+<div class="main-content-inner account-page container">
+  <p class="text-center" >{{ 'customer.activate_account.subtext' | t }}</p>
+  <div class="row">
+    <div class="col-md-4 centered-content">
+      {% form 'activate_customer_password' %}
+        {% include 'form-errors-custom' %}
+         <label class="fields_label" for="CreatePassword">{{ 'customer.activate_account.password' | t }}</label>
+        <input name="customer[password]" id="CreatePassword" class="login-input" type="password" autofocus>
+         <label class="fields_label" for="CustomerPasswordConfirmation">{{ 'customer.activate_account.password_confirm' | t }}</label>
+        <input name="customer[password_confirmation]" id="CustomerPasswordConfirmation" class="login-input" type="password">
+        <div class="text-center">
+          <p>
+            <input class="btn btn-primary" type="submit" value="{{ 'customer.activate_account.submit' | t }}" >
+          </p>
+          <input type="submit" name="decline" class="btn btn-primary" value="{{ 'customer.activate_account.cancel' | t }}">
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,171 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9" lang="{{ shop.locale }}"> <![endif]-->{{ 'bold.css' | asset_url | stylesheet_tag }}
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="{{ shop.locale }}"> <!--<![endif]-->
+  <head>{% render 'pagefly-head' %}
+
+  <style>
+    .cozy-crd__modal {
+      display: none;
+    }
+    </style>
+   <!-- Facebook verification code ================================================== -->
+    <meta name="facebook-domain-verification" content="vdbs6m09270nmehste76mtw7s2c8zr" />
+    <!-- Basic page needs ================================================== -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    
+    <!-- Title and description ================================================== -->
+    <title>
+      {{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+    </title>
+	
+    {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    <!-- Helpers ================================================== -->
+    {% include 'social-meta-tags' %}
+    <link rel="canonical" href="{{ canonical_url }}">
+    <meta name="theme-color" content="{{ settings.primary_color }}">
+    {% if settings.favicon != blank %}
+    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+  	{% endif %}
+    {{ 'apps.css' | asset_url | stylesheet_tag }}
+    {{ 'styles.scss.css' | asset_url | stylesheet_tag }}
+
+    <!-- Header hook for plugins ================================================== -->
+    {{ content_for_header }}
+{%- render 'bold-options-hybrid' -%}
+{%- render 'bold-common' -%}
+{% if template == 'product' and product.metafields.inventory.ShappifyHidden or product.type contains '_HIDDEN_' %}<meta name='robots' content='noindex'>{% endif %}
+{{ 'bold.css' | asset_url | stylesheet_tag }}
+    <!--[if lt IE 9]>
+		{{ '//html5shiv.googlecode.com/svn/trunk/html5.js' | script_tag }}
+	<![endif]-->
+
+     <!--[if (lte IE 9) ]>{{ 'match-media.min.js' | asset_url | script_tag }}<![endif]-->
+
+  	{% if template.directory == 'customers' %}
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'shopify_common.js' | shopify_asset_url }}"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{ 'shopify_common.js' | shopify_asset_url }}"></script><![endif]-->
+     {{ 'customer_area.js'  | shopify_asset_url | script_tag }}
+    {% endif %}
+
+
+    <!-- Theme Global App JS ================================================== -->
+    <script>
+      window.themeInfo = {name: "Galleria"} 
+      var theme = {
+        strings: {
+          addToCart: {{ 'products.product.add_to_cart' | t | json }},
+          soldOut: {{ 'products.product.sold_out' | t | json }},
+          unavailable: {{ 'products.product.unavailable' | t | json }},
+          showMore: {{ 'general.filters.show_more' | t | json }},
+          showLess: {{ 'general.filters.show_less' | t | json }}
+        },
+        moneyFormat: {{ shop.money_format | json }}
+      }
+      function initScroll(sectionId) {
+
+        document.addEventListener('shopify:section:select', fireOnSectionSelect);
+        document.addEventListener('shopify:section:reorder', fireOnSectionSelect);
+
+        window.addEventListener("load", fireOnLoad);
+
+
+        function fireOnSectionSelect(e) {
+          if(e.detail.sectionId === sectionId) {
+            setScoll(e.detail.sectionId);
+          }
+        }
+
+        function fireOnLoad() {
+          setScoll(sectionId);
+        }
+
+
+        function setScoll(sectionId) {
+
+          var current = document.getElementById("shopify-section-" + sectionId),
+              scroller = document.getElementById("scroll-indicator-" + sectionId);
+
+
+          if(current.previousElementSibling === null) {
+            scroller.style.display = "block";
+            scroller.onclick = function(e) {
+              e.preventDefault();
+              current.nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+          }
+        }
+      }
+    </script>
+
+      <noscript>
+        <style>
+          .product-thumb-img-wrap img:nth-child(2),
+          .swiper-slide img:nth-child(2),
+          .blog_image_overlay img:nth-child(2),
+          .blog-post img:nth-child(2){
+            display:none !important;
+          }
+        </style>
+      </noscript>
+
+ 
+{% render 'pagefly-header' %}
+ {{ 'jquery.js' | asset_url | script_tag }} 
+    <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/5ffe215ec31c9117cb6dfee3/1ersb4mf1';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+    
+<!-- Global site tag (gtag.js) - Google Ads -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-677620653"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-677620653');
+</script>    
+
+ </head> 
+
+  <body id="{{ page_title | handle }}" class="{% if customer %}customer-logged-in {% endif %}template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}" >
+    <div class="global-wrapper clearfix" id="global-wrapper">
+      {% section 'header' %}
+      {% section 'entry-popup' %}
+      <div class="main-content" id="container">
+        {{ content_for_layout }}
+        {% section 'newsletter-bar' %}
+        {% section 'footer' %}
+        <div class="site-overlay"></div>
+      </div>
+    </div>
+
+
+
+    {{ 'apps.js' | asset_url | script_tag }}
+
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'theme.js' | asset_url }}"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{ 'theme.js' | asset_url }}"></script><![endif]-->
+    
+
+    {% if template contains "index"%}
+    <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+    {% endif %}
+
+  </body>
+</html>

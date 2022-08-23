@@ -1,0 +1,322 @@
+{%- if section.settings.scroll_indicator and section.settings.slide_height_val == '100' -%}
+  {% assign no_scroll_class = '-scroll-icon' %}
+{%- else -%}
+  {% assign no_scroll_class = '-no-scroll-icon' %}
+{%- endif -%}
+
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+{% assign section_height = 'height: ' | append: section.settings.slide_height_val | append: 'vh' %}
+
+{% assign brightness = section.settings.caption_color | color_brightness %}
+
+{%- if brightness < 127.5 -%}
+  {% assign btn_color = '#fff' %}
+  {% assign hover_color = section.settings.caption_color | color_lighten: 15 %}
+{%- else -%}
+  {% assign btn_color = '#000' %}
+  {% assign hover_color = section.settings.caption_color | color_darken: 15 %}
+{%- endif -%}
+
+ {% if section.settings.enable_parallax_effect %}
+	{% assign enable_parallax_effect = "parallaxed" %}
+ {% endif %}
+
+
+<style>
+  .hero-{{section.id}} .hero-item-caption {
+    color: {{section.settings.caption_color}};
+  }
+  {%- if section.settings.caption_btn != 'primary' -%}
+    .hero-{{section.id}} .hero-item__btn {
+      color: {{btn_color}};
+      background: {{section.settings.caption_color}};
+    }
+    .hero-{{section.id}} .hero-item__btn:hover {
+      background: {{hover_color}};
+    }
+
+    .hero-{{section.id}} .hero-item__btn.btn-ghost {
+      background: none;
+      border: 1px solid {{section.settings.caption_color}};
+      color: {{section.settings.caption_color}};
+    }
+
+    .hero-{{section.id}} .hero-item__btn.btn-ghost:hover {
+      background: {{section.settings.caption_color}};
+      color: {{btn_color}};
+    }
+  {%- endif -%}
+</style>
+
+
+<div class="{{ no_scroll_class }} {{enable_parallax_effect}} flush-section" data-section-id="{{ section.id }}">
+  <div class="hero-img-wrapper hero-{{section.id}}" style="{{section_height}}">
+
+    {% if section.settings.link != blank %}
+      {%- if section.settings.button_text != blank -%}
+          {% assign btn_link_class = "-btn-link" %}
+      {%- endif -%}
+      {%- if section.settings.disable_mobile_btns -%}
+        {% assign btn_link_mob_class = "-use-mobile" %}
+      {%- endif -%}
+      <a class="hero-item-link {{btn_link_class}} {{btn_link_mob_class}}" href="{{ section.settings.link }}"></a>
+    {% endif %}
+
+    {%- if section.settings.use_mobile_redability -%}
+      {% assign hide_overlay = "mobile-hidden-sm" %}
+    {%- endif -%}
+
+    <div class="hero-img-overlay {{hide_overlay}}" style="opacity: {{ overlay_opacity }}"></div>
+
+    {%- include 'bg-img',
+      class_name: 'hero-img',
+      img_src: section.settings.image,
+      placeholder_id: 1,
+      placeholder_type: 'lifestyle'
+    -%}
+    {%- include 'slider-caption'
+      title: section.settings.title,
+      title_color: section.settings.caption_title_color,
+      subtitle: section.settings.subheading,
+      link: section.settings.link,
+      btn_text: section.settings.button_text,
+      btn_type: section.settings.caption_btn,
+      position: section.settings.caption_position,
+      size: section.settings.caption_text_size,
+      title_transfrom: section.settings.caption_title_transfrom,
+      caption_reveal: false,
+      align: section.settings.caption_align,
+      type: 'text',
+      is_container: true,
+      hide_mob_btns: section.settings.disable_mobile_btns,
+      mobile_optimize: section.settings.use_mobile_redability
+    -%}
+
+    {%- include 'scroll-indicator'
+      section_id: section.id,
+      enabled: section.settings.scroll_indicator,
+      section_height: section.settings.slide_height_val
+    -%}
+
+  </div>
+</div>
+
+
+{% schema %}
+{
+   "name":"Hero image",
+   "class":"index-section index-section--flush overlapped_content home-slideshow-section",
+   "settings":[
+       {
+          "type":"header",
+          "content":"Image"
+       },
+       {
+         "type": "image_picker",
+         "label": "Image",
+         "id": "image"
+       },
+	    {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Overlay opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 40
+      },
+      {
+        "type":"select",
+        "id":"slide_height_val",
+        "label":"Height",
+        "options":[
+          {
+            "value":"45",
+            "label":"Short"
+          },
+          {
+            "value":"63",
+            "label":"Medium"
+          },
+          {
+            "value":"81",
+            "label":"Tall"
+          },
+          {
+            "value":"100",
+            "label":"Full-screen"
+          }
+        ],
+        "default":"100"
+      },
+      {
+         "type":"url",
+         "id":"link",
+         "label":"Link"
+      },
+	  {
+         "type":"checkbox",
+         "id":"enable_parallax_effect",
+         "label":"Enable parallax effect"
+      },
+      {
+        "type": "checkbox",
+        "label": "Show scroll indicator",
+        "id": "scroll_indicator",
+        "default": true,
+        "info": "Will appear only when on full-screen hero image when it is the first section."
+      },
+	  {
+         "type":"checkbox",
+         "id":"use_mobile_redability",
+         "label":"Improve mobile readability",
+         "info": "Darkens images and uses white text on mobile devices"
+      },
+      {
+        "type":"checkbox",
+        "id":"disable_mobile_btns",
+        "label":"Hide buttons on mobile",
+        "default": false
+      },
+      {
+         "type":"header",
+         "content":"Caption"
+      },
+      {
+         "type":"text",
+         "id":"title",
+         "label":"Heading",
+         "default":"Title"
+      },
+	  {
+         "type":"richtext",
+         "id":"subheading",
+         "label":"Description",
+         "default":"<p>Tell your brand's story through with a large hero image</p>"
+      },
+	  {
+        "type":"select",
+        "id":"caption_text_size",
+        "label":"Text size",
+        "options":[
+          {
+            "value":"sm",
+            "label":"Small"
+          },
+          {
+            "value":"md",
+            "label":"Medium"
+          },
+          {
+            "value":"lg",
+            "label":"Large"
+          },
+          {
+            "value":"xl",
+            "label":"Extra Large"
+          }
+        ],
+        "default":"md"
+      },
+      {
+        "type":"select",
+        "id":"caption_title_transfrom",
+        "label":"Heading style",
+        "options":[
+          {
+            "value":"normal",
+            "label":"Normal"
+          },
+          {
+            "value":"uppercase",
+            "label":"Uppercase"
+          },
+          {
+            "value":"lowercase",
+            "label":"Lowercase"
+          }
+        ],
+        "default":"normal"
+      },
+      {
+        "type": "color",
+        "id": "caption_color",
+        "label": "Color",
+        "default": "#ffffff"
+      },
+
+      {
+        "type":"select",
+        "id":"caption_position",
+        "label":"Position",
+        "options":[
+          {
+            "value":"center",
+            "label":"Middle"
+          },
+          {
+            "value":"bottom",
+            "label":"Bottom"
+          }
+        ],
+        "default":"center"
+      },
+      {
+        "type": "select",
+        "id": "caption_align",
+        "label": "Aligment",
+        "default": "center",
+        "options" : [
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+         "type":"header",
+         "content":"Button"
+      },
+      {
+        "type":"select",
+        "id":"caption_btn",
+        "label":"Button style",
+        "options":[
+          {
+            "value":"default",
+            "label":"Default"
+          },
+          {
+            "value":"ghost",
+            "label":"Ghost"
+          },
+          {
+            "value": "primary",
+            "label": "Primary"
+          }
+        ],
+        "default":"default"
+      },
+      {
+         "type":"text",
+         "id":"button_text",
+         "label":"Button text"
+      }
+   ],
+   "presets":[
+      {
+         "name":"Hero image",
+         "category":"Image"
+      }
+   ]
+}
+{% endschema %}

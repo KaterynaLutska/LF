@@ -1,0 +1,90 @@
+{%- if section.settings.use_rounded_images -%}
+  {% assign rounded_class = "-img-round" %}
+{%- else -%}
+  {% assign rounded_class = null %}
+{%- endif -%}
+
+{%- if section.settings.use_section_bg_color -%}
+  {% assign alt_bg_class = 'bg-alt' %}
+{%- else -%}
+  {% assign alt_bg_class = null %}
+{%- endif -%}
+
+<div class="{{ alt_bg_class }}">
+
+
+
+{% include 'page-header'
+  bg: section.settings.image,
+  title: page.title
+%}
+
+{%- if section.settings.section_width == 'x_narrow' -%}
+  {% assign col_class = "col-md-8 col-md-offset-2" %}
+{%- elsif section.settings.section_width == 'narrow' -%}
+  {% assign col_class = "col-md-10 col-md-offset-1" %}
+{%- else -%}
+  {% assign col_class = "col-md-12" %}
+{%- endif -%}
+
+<div class="page-wrapper ">
+
+
+  <div class="container">
+    <div class="row">
+      <div class="{{col_class}}">
+        <div class="rte-page {{rounded_class}}">
+          {{ page.content }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+{% schema %}
+{
+   "name":"Page",
+   "settings":[
+   {
+         "type": "header",
+         "content": "Header"
+   },
+   {
+       "type":"image_picker",
+       "id":"image",
+       "label":"Background image"
+   },
+   {
+     "type":      "header",
+     "content":   "Layout"
+   },
+   {
+        "type":"checkbox",
+        "id":"use_section_bg_color",
+        "label":"Use alternate background"
+    },
+    {
+     "type":"select",
+     "id":"section_width",
+     "label":"Section width",
+     "default":"narrow",
+     "options":[
+        {
+           "label":"Wide",
+           "value":"normal"
+        },
+        {
+           "label":"Medium",
+           "value":"narrow"
+        },
+        {
+           "label":"Narrow",
+           "value":"x_narrow"
+        }
+       ]
+     }
+   ]
+}
+{% endschema %}

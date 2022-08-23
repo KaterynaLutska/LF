@@ -1,0 +1,20 @@
+<div class="sort-border-bottom">
+<div class="category-product-sorting container">
+  <p class="category-product-sorting-total">{{ collection.products_count }} {{collection.products_count | pluralize: 'product', 'products'}} found in <b>{{ collection.title}}</b></p>
+  <ul class="category-product-sorting-section">
+    <li>
+      <label class="category-product-sorting-item-title">{{ 'collections.sorting.title' | t }}</label>
+      <select name="sortBy" id="sortBy" class="category-product-sorting-item" data-sort="{{ collection.sort_by | default: collection.default_sort_by }}">
+        <option value="manual">{{ 'collections.sorting.featured' | t }}</option>
+        <option value="best-selling">{{ 'collections.sorting.best_selling' | t }}</option>
+        <option value="title-ascending">{{ 'collections.sorting.az' | t }}</option>
+        <option value="title-descending">{{ 'collections.sorting.za' | t }}</option>
+        <option value="price-ascending">{{ 'collections.sorting.price_ascending' | t }}</option>
+        <option value="price-descending">{{ 'collections.sorting.price_descending' | t }}</option>
+        <option value="created-descending">{{ 'collections.sorting.date_descending' | t }}</option>
+        <option value="created-ascending">{{ 'collections.sorting.date_ascending' | t }}</option>
+      </select>
+    </li>
+  </ul>
+</div>
+</div>

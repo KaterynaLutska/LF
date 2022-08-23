@@ -1,0 +1,72 @@
+<div class="swiper-container" id="swiper-main-{{ section.id }}">
+  <div class="swiper-wrapper">
+      {% for block in section.blocks %}
+
+      <div {{ block.shopify_attributes }} class="swiper-slide" id="slide-{{ block.id }}" data-index="{{ forloop.index }}">
+        {% capture imgCount %}{% cycle 1, 2 %}{% endcapture %}
+        {% capture svg_name %}lifestyle-{{ imgCount }}{% endcapture %}
+        <div class="hero-item-slide hero-item-slide-{{block.id}} hero-item-slide-{{section.id}} full_height_{{section.settings.slide_height_val}}  {% if block.settings.image != blank %}lazyload visible_lazy  {% endif %}"
+             {% if block.settings.image != blank %}
+             data-bgset="{% include 'bgset', image: block.settings.image %}"
+             data-sizes="auto"
+             data-parent-fit="cover"
+             style="background-image: url('{{ block.settings.image | img_url: '300x300' }});"
+             {% endif %}
+             >
+          	{% if section.settings.slide_height_val == "auto"%}
+              {% if block.settings.image != blank %}
+         	<img class="home_slide_auto_img" src="{{block.settings.image | img_url: "300x"}}" {% if block.settings.image.alt != blank %} alt="{{block.settings.image.alt}}" {% endif %} />
+              {% else %}
+            {{ svg_name | placeholder_svg_tag: "home_slide_auto_img" }}
+              {%  endif %}
+
+            {%endif %}
+
+           {% unless block.settings.image != blank %}
+          <style>
+            .hero-item-slide-{{block.id}}{
+              background:url('data:image/svg+xml;utf8,{{ svg_name | placeholder_svg_tag }}');
+            }
+          </style>
+          {% endunless %}
+
+          {% if block.settings.link != blank %}
+        	  <a class="hero-item-link" href="{{ block.settings.link }}"></a>
+          {% endif %}
+          {% if block.settings.title != blank %}
+            <div class="hero-item-caption __slide">
+              {% if block.settings.title != blank %}
+                <h5 class="hero-item-title hero-item-title-{{section.id}}">{{ block.settings.title | escape }}</h5>
+              {% endif %}
+              {% if block.settings.subheading != blank %}
+              	<p class="hero-item-desc hero-item-desc-{{section.id}}">{{ block.settings.subheading | escape }}</p>
+              {% endif %}
+               {% if block.settings.link != blank and block.settings.button_text != blank%}
+              <br>
+              <a class="btn btn-primary" href="{{ block.settings.link }}">{{block.settings.button_text}}</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if section.settings.navigation_type == "bullets" %}
+ <div class="swiper-pagination swiper-pagination-{{section.id}}"></div>
+  {% else %}
+  <div class="swiper-button-prev swiper-button-prev-{{section.id}}">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path fill="#fff" d="M0,22L22,0l2.1,2.1L4.2,22l19.9,19.9L22,44L0,22L0,22L0,22z"></svg>
+  </div>
+  <div class="swiper-button-next swiper-button-next-{{section.id}}">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path fill="#fff" d="M27,22L27,22L5,44l-2.1-2.1L22.8,22L2.9,2.1L5,0L27,22L27,22z"></svg>
+  </div>
+  {% endif %}
+  <div class="scroll_icon_wrap">
+    <a href="#scroll-{{ section.id }}" class="scroll_link bloop smoothScroll" tabindex="-1">
+      <span class="scroll_icon">
+        <i class="lin lin-arrow-down scroll-arrow-down"></i>
+      </span>
+    </a>
+  </div>
+  <div class="scroll__link" id="scroll-{{ section.id }}"></div>
+</div>

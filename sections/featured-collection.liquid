@@ -1,0 +1,139 @@
+{%- include 'section-bg-init',
+  section_id: section.id,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+{% assign collection = collections[section.settings.collection] %}
+{%- assign product_limit = section.settings.grid | times: section.settings.rows -%}
+{% assign featured_grid_layout = 0 %}
+{% assign product_img_url_width = "450x"%}
+{% case section.settings.grid %}
+  {% when 2 %}
+    {% assign featured_grid_layout = 6 %}
+    {% assign product_img_url_width = "550x"%}
+  {% when 3 %}
+    {% assign featured_grid_layout = 4 %}
+  {% when 4 %}
+    {% assign featured_grid_layout = 3 %}
+{% endcase %}
+{% if section.settings.use_section_bg_color %}
+<style>
+  .section-wrapper-bg-{{section.id}}, .section-wrapper-bg-{{section.id}} .block-title {
+  background: {{settings.alternate_bg_color}};
+}
+</style>
+{% endif %}
+{%- if section.settings.show_view_all -%}
+  {% assign hero_class = null %}
+{%- else -%}
+  {% assign hero_class = '-grid' %}
+{%- endif -%}
+<div class="section-wrapper-bg-{{section.id}}">
+<div class="container hero-container {{hero_class}}" data-section-id="{{ section.id }}" data-section-type="fetured-collection-section">
+  {% include "section-header", section_title: section.settings.title, section_subtitle: section.settings.subtitle %}
+
+  <div class="row collection-row {% if settings.align_height %} use_align_height height_{{settings.collection_height}}px {% else %} use_image_height {% endif %}" data-gutter="" id="filter-row">
+    {% if collection != blank and collection.products.size > 0 %}
+      {% for product in collection.products limit: product_limit %}
+{%- if product.metafields.inventory.ShappifyHidden == 'true' -%}{%- continue -%}{%- endif -%}
+        <div class="col-md-{{ featured_grid_layout }} col-sm-6 col-xs-6 collection-products-wrapper">
+          {% include 'product-loop' %}
+           <div class="triangle-left">
+                  <div class="inner-triangle"></div>
+                </div>
+        </div>
+      {% endfor %}
+    {% else %}
+     {% include "onboarding-collection" %}
+    {% endif %}
+  </div>
+  {% if section.settings.show_view_all %}
+    <div class="text-center">
+      <a href="{{ collection.url }}" class="btn btn-primary btn-wide">
+        {{ 'collections.general.view_all' | t }}
+      </a>
+    </div>
+  {% endif %}
+</div>
+</div>
+{% schema %}
+{
+  "name": "Featured collection",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading ",
+      "default": "Featured collection"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Description"
+    },
+    {
+      "id": "collection",
+      "type": "collection",
+      "label": "Collection"
+    },
+	{
+         "type":"checkbox",
+         "id":"use_section_bg_color",
+         "label":"Use alternate background"
+     },
+	{
+         "type": "header",
+         "content": "Layout"
+      },
+    {
+        "type": "range",
+        "id": "grid",
+        "label": "Products per row",
+        "min":       2,
+        "max":        4,
+        "step":       1,
+        "default": 4
+    },
+	{
+        "type": "range",
+        "id": "rows",
+        "label": "Number of rows",
+        "min":       1,
+        "max":        5,
+        "step":       1,
+        "default": 1
+    },
+
+	{
+      "type": "checkbox",
+      "id": "show_grid_type",
+      "label": "Show product type"
+    },
+	{
+      "type":"checkbox",
+      "id":"show_sale_label",
+      "label":"Show sale badges",
+      "default":true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' button",
+      "default": false
+    },
+	 {
+      "type": "checkbox",
+      "id": "use_quick_view",
+      "label": "Enable quick view",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}

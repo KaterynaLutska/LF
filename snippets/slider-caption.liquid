@@ -1,0 +1,87 @@
+{% comment %}
+
+  varibles
+    @before          -> string // content before title
+    @title           -> string
+    @title_color     -> string (white/primary)
+    @title_transfrom -> string // text transform style: normal, uppercase, lowercase
+    @subtitle        -> string
+    @link            -> string
+    @btn_text        -> string
+    @btn_type        -> string
+    @position        -> string
+    @size            -> string
+    @use_arrow       -> boolean // check if scroll arrow in use, to calc bottom margin of caption
+    @caption_reveal  -> boolean // flag for caption animation on reveal
+    @is_column       -> boolean // check if it's called from column slider instance
+    @align           -> string // aligment (center/left/right)
+
+{% endcomment %}
+
+{%- if link == blank -%}
+  {% assign use_link = '#' %}
+{%- else -%}
+  {% assign use_link = link %}
+{%- endif -%}
+
+{%- if title_color == 'primary' -%}
+  {% assign title_primary_class = '-primary' %}
+{%- else -%}
+  {% assign title_primary_class = null %}
+{%- endif -%}
+
+{%- if btn_type == 'primary' -%}
+  {% assign btn_type_class = 'btn-primary' %}
+{%- elsif btn_type == 'ghost' -%}
+  {% assign btn_type_class = 'btn-ghost' %}
+{%- else -%}
+  {% assign btn_type_class = '' %}
+{%- endif -%}
+
+{%- if caption_reveal -%}
+  {% assign reveal_class = '-reveal' %}
+{%- else -%}
+  {% assign reveal_class = null %}
+{%- endif -%}
+
+{%- if is_column -%}
+  {% assign column_class = '-column' %}
+{%- else -%}
+  {% assign column_class = null %}
+{%- endif -%}
+
+{%- if type == blank -%}
+    {% assign type = 'slide' %}
+{%- endif -%}
+
+{%- if mobile_optimize -%}
+  {% assign mobile_optimize_class = "-mobile-optimize" %}
+{%- endif -%}
+
+
+{%- if title -%}
+
+  <div class="hero-item-caption {{ size | prepend: '-' }} {{ position | prepend: '-' }} {{ column_class }} -{{type}} {{mobile_optimize_class}}">
+    {%- if is_container -%}
+      <div class="container">
+    {%- endif -%}
+
+      <div class="hero-item-caption-inner {{reveal_class}} text-{{align}}">
+        {{ before }}
+        <h5 class="hero-item-title {{title_primary_class}} text-{{title_transfrom}}">{{ title }}</h5>
+        {%- if subtitle -%}
+          <div class="hero-item-desc">{{ subtitle }}</div>
+        {%- endif -%}
+        {%- if btn_text != blank -%}
+          {%- if hide_mob_btns -%}
+            {% assign mob_hide = 'mobile-hidden-sm' %}
+          {%- endif -%}
+          <a class="btn {{btn_type_class}} {{mob_hide}} btn-wide-sm hero-item__btn" href="{{ use_link }}">{{ btn_text }}</a>
+        {%- endif -%}
+      </div>
+    {%- if is_container -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+{%- endif -%}

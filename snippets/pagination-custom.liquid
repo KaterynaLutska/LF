@@ -1,0 +1,38 @@
+<nav class="mobile-hidden">
+  <ul class="pagination category-pagination pagination-lg paginate_parts_sum_{{paginate.parts.size}}">
+    {% if paginate.previous %}
+      <li><a href="{{ paginate.previous.url }}">&larr;</a>
+      </li>
+    {% endif%}
+    {% for part in paginate.parts %}
+      {% if part.is_link %}
+    <li><a href="{{ part.url }}"><span class="pagination-circle">{{ part.title }}</span></a>
+        </li>
+        {% else %}
+          {% if part.title == paginate.current_page %}
+    <li class="active"><a href="{{ part.url }}"><span class="pagination-circle">{{ part.title }}</span></a>
+          </li>
+        {% else %}
+    <li class="dots"><span>&ctdot;</span></li>
+        {% endif%}
+      {% endif%}
+    {% endfor %}
+    {% if paginate.next %}
+      <li class="last"><a href="{{ paginate.next.url }}">&rarr;</a>
+      </li>
+    {% endif%}
+  </ul>
+</nav>
+
+<nav class="desktop-hidden">
+  <ul class="pagination category-pagination -mobile pagination-lg paginate_parts_sum_{{paginate.parts.size}}">
+    {% if paginate.previous %}
+      <li><a href="{{ paginate.previous.url }}">&larr; Prev</a>
+      </li>
+    {% endif%}
+    {% if paginate.next %}
+      <li class="last"><a href="{{ paginate.next.url }}">Next &rarr;</a>
+      </li>
+    {% endif%}
+  </ul>
+</nav>

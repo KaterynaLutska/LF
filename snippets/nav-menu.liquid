@@ -1,0 +1,59 @@
+<nav class="pushy{% if section.settings.navigation_type == 'top' or section.settings.navigation_type == 'mega'%} pushy-container{% endif %} pushy-left header-nav-pushy" id="pushy-menu">
+  <div class="pushy-inner pb100">
+    <div class="panel-group panel-group-nav mb40" id="accordion" role="tablist" area_multiselectable="true">
+       {% assign firstLevelMenu = linklists[section.settings.main_linklist]%}
+      {% for link in firstLevelMenu.links %}
+
+        {%- assign child_id = forloop.index -%}
+        {% if link.links.size > 0 %}
+          <div class="panel-heading" role="tab">
+            <a href="#{{link.title | escape | handle }}_{{child_id}}" data-link-url="{{link.url}}" role="button" data-toggle="collapse" data-parent="#accordion" data-toggle="collapse" class="second_level_drop_link collapsed" aria-haspopup="true" area_expended="true"  area_controls="collapse-category" aria-expanded="false">
+              <span class="visuallyhidden">Hit space bar to expand submenu</span>{{link.title | escape }} <i class="lin lin-arrow-right"></i></a>
+          </div>
+          <div class="panel-collapse collapse" role="tabpanel" area_labelledby="collapse-category" id="{{link.title | escape | handle}}_{{child_id}}">
+            <ul class="panel-group-nav-list second-level-nav-list">
+              {% for child_link in link.links %}
+                {% if child_link.links.size > 0 %}
+                   <li><a href="#{{child_link.handle | escape  | handle}}_{{child_id}}" data-link-url="{{child_link.url}}" class="dropdown-menu-links third_level_drop_link collapsed" data-toggle="collapse" aria-haspopup="true" data-parent="#{{link.handle | escape | handle}}_{{child_id}}">
+                    <span class="visuallyhidden">Hit space bar to expand submenu</span>{{child_link.title | escape }} <i class="lin lin-arrow-right"></i></a></li>
+                  <div class="panel-collapse collapse" role="tabpanel" area_labelledby="collapse-category" id="{{child_link.handle | escape | handle}}_{{child_id}}"  aria-expanded="false">
+                    <ul class="panel-group-nav-list third-level-nav-list ">
+                      {% for grand_child_link in child_link.links %}
+                    	  <li><a href="{{grand_child_link.url}}" data-parent="#{{child_link.handle | escape | handle}}">{{grand_child_link.title | escape }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  {% else %}
+              <li>
+                <a href="{{child_link.url}}" class="dropdown-menu-links">{{child_link.title | escape }}</a>
+              </li>
+            {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+          {% else %}
+         	 <div class="panel-heading"><a href="{{ link.url }}">{{ link.title | escape }}</a></div>
+        {% endif %}
+      {% endfor %}
+    {% if settings.show_multiple_currencies %}
+      <!-- <div class="panel-heading mobile-currency-wrapper desktop-hidden-sm" role="tab">
+
+        <i class="lin lin-arrow-right"></i>
+      </div> -->
+      <div class="desktop-hidden-sm">
+        {% include "currency-switcher" mob_nav: true %}
+      </div>
+
+    {% endif %}
+    </div>
+    <div class="nav-bottom-area">
+      {%- if section.settings.header_social_icons -%}
+        <ul class="nav-main-social">
+          {% include 'social-profiles' %}
+        </ul>
+      {%- endif -%}
+      <p class="nav-main-copy">&copy; {{ 'now' | date: "%Y" }} {{ shop.name | link_to: routes.root_url }}</p>
+      <button class="close-pushy-menu visuallyhidden">Menu is closed</button>
+    </div>
+  </div>
+</nav>

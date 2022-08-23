@@ -1,0 +1,82 @@
+{%- if section.settings.btn_style == 'default' -%}
+  {% assign btn_class = "btn-primary" %}
+{%- else -%}
+  {% assign btn_class = "btn-ghost btn-white" %}
+{%- endif -%}
+
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+
+<div class="page-404__container">
+  {%- include 'bg-img'
+     img_src: section.settings.background_image,
+     class_name: 'page-404__bg',
+     placeholder_id: 1,
+     placeholder_type: 'lifestyle'
+  -%}
+  <div class="page-404__overlay" style="opacity: {{overlay_opacity}}"></div>
+  <div class="page-404__caption">
+    <h1 class="page-404__title">{{ 'general.404.title' | t }}</h1>
+    <p class="page-404__subtitle">{{ section.settings.subheading | escape }}</p>
+    <a href="{{ section.settings.btn_link }}"class="btn {{btn_class}}">{{ section.settings.btn_text | escape }}</a>
+  </div>
+</div>
+{% schema %}
+{
+   "name":"404 page",
+   "settings":[
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Sorry, the page you requested does not exist."
+    },
+    {
+       "type":"image_picker",
+       "id":"background_image",
+       "label":"Background image"
+    },
+    {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Overlay opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 40
+    },
+    {
+       "type":"header",
+       "content":"Button"
+    },
+    {
+      "type":"select",
+      "id":"btn_style",
+      "label":"Style",
+      "options":[
+        {
+          "value":"default",
+          "label":"Default"
+        },
+        {
+          "value":"ghost",
+          "label":"Ghost"
+        }
+      ],
+      "default":"ghost"
+    },
+    {
+       "type":"url",
+       "id":"btn_link",
+       "label":"Link",
+       "default": "/"
+    },
+    {
+       "type":"text",
+       "id":"btn_text",
+       "label":"Button text",
+       "default": "Return Home"
+    }
+   ]
+}
+{% endschema %}

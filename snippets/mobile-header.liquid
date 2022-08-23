@@ -1,0 +1,64 @@
+<nav class="nav-container nav-container-float desktop-hidden-sm nav-to-sticky" id="navbarStickyMobile">
+  <div class="nav-container-inner new_mobile_header">
+    <div class="nav-container-control-left">
+      <button class="tconStyleLines nav-container-action pushy-menu-btn" type="button" aria-label="toggle menu" id="pushy-menu-btn" tabindex="-1"><span class="tcon-menu__lines" aria-hidden="true"></span>
+      </button>
+    </div>
+     {% if shop.customer_accounts_enabled %}
+    <a class="lin lin-magnifier popup-text search-modal-popup nav-container-action" href="#nav-search-dialog" data-effect="mfp-move-from-top">
+      <span class="visuallyhidden">Search</span>
+    </a>
+    {% else %}
+     <a class="nav-container-action no-events" href="#"></a>
+    {% endif %}
+    {% comment %}
+   	 	Site name gets precedence with H1 tag on homepage, div on other pages.
+    {% endcomment %}
+    {% if section.settings.logo %}
+
+    {% if template.name == 'index' %}
+   		 <h1 class="logo-h1-wrapper">
+    {%endif %}
+
+     <a class="nav-container-logo" href="{{routes.root_url}}">
+      {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+      <img src="{{ section.settings.logo | img_url: image_size, scale: 2 }}" alt="{% if section.settings.logo.alt != blank %}{{section.settings.logo.alt}}{% else %}{{ shop.name }}{% endif %}" style="max-width:{{section.settings.logo_max_width | append: "px"}};"/>
+    </a>
+
+    {% if template.name == 'index' %}
+    </h1>
+    {%endif %}
+
+
+
+    {% else %}
+      {% if template.name == 'index' %}
+     <h1 class="logo-text">
+      {% else %}
+    <div class="logo-text">
+      {%endif %}
+      <a class="text-logo" href="{{routes.root_url}}">{{ shop.name }}</a>
+     {% if template.name == 'index' %}
+      </h1>
+      {% else %}
+	</div>
+      {%endif %}
+    {% endif %}
+
+    {% if shop.customer_accounts_enabled %}
+    {% if customer %}
+    <a class="lin lin-user nav-container-action" href="{{routes.account_url}}"></a>
+    {%else %}
+    <a class="lin lin-user nav-container-action" href="{{routes.account_login_url}}"></a>
+    {%endif %}
+    {% else %}
+    <a class="lin lin-magnifier popup-text search-modal-popup nav-container-action" href="#nav-search-dialog" data-effect="mfp-move-from-top"></a>
+    {% endif %}
+
+    <a class="lin lin-basket popup-text cart-modal-popup nav-container-action top-mobile-nav" href="javascript:void(0);" data-effect="mfp-move-from-top">
+      <span class="mega-nav-count nav-main-cart-amount count-items {% if cart.item_count < 1 %} hidden{% endif %}">
+        {%- include 'bold-options-hybrid-cart-item-count' with cart -%}
+      </span>
+    </a>
+  </div>
+</nav>

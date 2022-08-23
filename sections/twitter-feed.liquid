@@ -1,0 +1,165 @@
+{% assign col_count_class = '-col-count--' | append: section.settings.items_per_view %}
+
+{%- if section.settings.show_full_tweets -%}
+  {% assign full_class = '-full-tweets' %}
+{%- else -%}
+  {% assign full_class = null %}
+{%- endif -%}
+
+{%- if section.settings.show_actions -%}
+  {% assign actions_class = '-actions' %}
+{%- else -%}
+  {% assign actions_class = null %}
+{%- endif -%}
+
+{%- if section.settings.show_username -%}
+  {% assign hide_username_class = null %}
+{%- else -%}
+  {% assign hide_username_class = '-hide-username' %}
+{%- endif -%}
+
+{%- include 'section-bg-init',
+  section_id: section.id,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+<style>
+  {% if section.settings.use_section_bg_color %}
+    .section-wrapper-bg-{{section.id}}, .section-wrapper-bg-{{section.id}} .block-title {
+      background: {{settings.alternate_bg_color}};
+    }
+  {% endif %}
+</style>
+
+{%- if section.settings.items_per_view < section.settings.items_limit or section.settings.follow_us_btn -%}
+  {% assign hero_class = '-slider-desktop-active' %}
+{%- else -%}
+  {% assign hero_class = null %}
+{%- endif -%}
+
+<div data-section-id="{{ section.id }}" data-section-type="twitter-section" class="section-wrapper-bg-{{section.id}}" data-username="{{ settings.twitter_link | remove:"https://twitter.com/" }}" data-blocks-per-view="{{section.settings.items_per_view}}" data-blocks-limit="{{section.settings.items_limit}}" data-blocks-count="{{section.settings.items_limit}}" data-autoplay="{{section.settings.slider_autoplay}}">
+  <div class="container hero-container -inline-slider {{hero_class}}">
+    {%
+      include "section-header",
+    	section_title: section.settings.title,
+    	section_subtitle: section.settings.subtitle
+    %}
+
+
+    <div id="inline-swiper-{{section.id}}" class="swiper-container tweeter-container -{{section.settings.appearance}} {{col_count_class}} {{full_class}} {{hide_username_class}} {{actions_class}}">
+      <div class="swiper-wrapper">
+
+      </div>
+    </div>
+    <div class="logo-swiper-pagination" id="swiper-pagination-{{ section.id }}"></div>
+
+    {%- if section.settings.follow_us_btn -%}
+      <div class="text-center">
+        <a class="btn btn-primary btn-wide mt30" target="_blank" href="{{ settings.twitter_link }}">{{ section.settings.follow_us_btn_text }}</a>
+      </div>
+    {%- endif -%}
+
+  </div><!-- container -->
+</div><!-- section -->
+
+
+
+{% schema %}
+{
+   "name":"Social media Twitter",
+   "settings":[
+      {
+         "type":    "text",
+         "id":      "title",
+         "label":   "Heading",
+         "default": "Twitter"
+      },
+      {
+        "type":  "text",
+        "id":    "subtitle",
+        "label": "Description"
+      },
+      {
+         "type":"checkbox",
+         "id":"use_section_bg_color",
+         "label":"Use alternate background"
+      },
+      {
+          "type": "range",
+          "id": "items_limit",
+          "label": "Max tweets",
+          "min":       2,
+          "max":        10,
+          "step":       1,
+          "default": 3
+      },
+      {
+          "type": "range",
+          "id": "items_per_view",
+          "label": "Visible tweet count",
+          "min":       2,
+          "max":        5,
+          "step":       1,
+          "default": 3
+      },
+      {
+        "type":      "range",
+        "id":        "slider_autoplay",
+        "min":        0,
+        "max":        7,
+        "step":       1,
+        "label":      "Rotate tweets every",
+        "default":   0,
+        "unit": "sec",
+        "info": "Tweets will not auto-rotate at 0"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_username",
+         "label":"Show user name",
+         "default": true
+      },
+	  {
+         "type":"checkbox",
+         "id":"show_full_tweets",
+         "label":"Show entire tweet"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_actions",
+         "label":"Show Twitter actions"
+      }, 
+      {
+          "type": "select",
+          "id": "appearance",
+          "options": [
+             { "value": "white_bg", "label": "Shadow box"},
+             { "value": "border", "label": "Border"},
+             { "value": "alt_bg", "label": "Alternate background"},
+             { "value": "primary_bg", "label": "Primary background"},
+             { "value": "dark_bg", "label": "Dark background"},
+             { "value": "twitter_bg", "label": "Twitter background"}
+          ],
+          "default": "white_bg",
+          "label": "Style"
+       },
+      {
+         "type":"checkbox",
+         "id":"follow_us_btn",
+         "label":"Show 'Follow Us' button"
+      },
+      {
+         "type":    "text",
+         "id":      "follow_us_btn_text",
+         "label":   "Button text",
+         "default": "Follow Us"
+      }
+  ],
+   "presets":[
+      {
+         "name":"Twitter Feed",
+         "category":"Social media"
+      }
+   ]
+}
+{% endschema %}

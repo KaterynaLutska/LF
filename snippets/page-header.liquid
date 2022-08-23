@@ -1,0 +1,139 @@
+{% comment %}
+
+vars
+  bg
+  title
+  opacity
+  article_meta
+  collection
+
+TODO
+- impelemnt breadcrumbs from global state
+{% include 'breadcrumb' breadcrumb_class:"page-header-breadcrumb" %}
+{% endcomment %}
+
+{% assign title = title | escape %}
+
+{% assign bg_url = bg | img_url: '300x300' %}
+
+{% assign title_transform = settings.title_bar_text_transform | prepend : 'text-' %}
+
+{%- if settings.title_bar_font_weight == 'bold' -%}
+  {% assign title_weight_class = '-bold' %}
+{%- endif -%}
+
+{% comment %}
+{%- if opacity == blank -%}
+  {% assign opacityValue = "0.3" %}
+{%- elsif opacity == 100 -%}
+  {% assign opacityValue = "1" %}
+{%- else -%}
+  {% assign opacityValue = "0." | append: opacity %}
+{%- endif -%}
+{% endcomment %}
+
+
+{%- if settings.page_header_overlay == 100 -%}
+  {% assign opacityValue = "1" %}
+{%- else -%}
+  {% assign opacityValue = "0." | append: settings.page_header_overlay %}
+{%- endif -%}
+
+{%- if article_meta != blank and article_meta != false -%}
+  {% assign use_article_meta = true %}
+{%- else -%}
+  {% assign use_article_meta = false %}
+{%- endif -%}
+
+
+{%- if settings.page_header_overlay_color -%}
+  {% assign overlay_color = settings.primary_color %}
+{%- else -%}
+  {% assign overlay_color = "#000" %}
+{%- endif -%}
+
+{%- if settings.header_overlap -%}
+	{% assign overlapped = "-overlapped" %}
+{%- endif -%}
+
+{%- if settings.page_header_title_color -%}
+  <style>
+    .page-header-title {
+      color: {{settings.primary_color}} !important;
+    }
+  </style>
+{%- endif -%}
+
+{%- if bg -%}
+  <style>
+     header.page-header:after {
+       background-color: {{overlay_color}};
+       background-image: none;
+       opacity: {{ opacityValue }}
+     }
+  </style>
+
+  <header
+    id="page-header"
+    class="
+      page-header
+      {{class}}
+      {{overlapped}}
+      as-background
+      lazyload
+      visible_lazy"
+    data-bgset="{% include 'bgset', image: bg %}"
+    data-sizes="auto"
+    data-parent-fit="cover"
+    style="background-image: url({{ bg_url }});">
+    {%- if use_article_meta -%}
+      {%- include 'article-meta'
+        author: section.settings.article_meta_author,
+        date: section.settings.article_meta_date,
+        comments: section.settings.article_meta_comments
+      -%}
+    {%- endif -%}
+     <div class="page-header-inner-bottom">
+       <h1 class="collection-page-header-title page-header-title-sm page-header-title {{title_transform}} {{title_weight_class}}">{{ title }}</h1>
+     </div>
+     {% include 'breadcrumb' breadcrumb_class:"page-header-breadcrumb" %}
+     {%- if collection -%}
+      {%- include 'collection-subnav' collection: collection -%}
+     {%- endif -%}
+   </header>
+
+
+
+ {%- else -%}
+    <style>
+      .nav-main-logo, .nav-container, .nav-standard-float {
+        position: relative;
+        background: {{ settings.header_bg_color }};
+        width: 100% !important;
+      }
+      .nav-standard-logo {
+        padding-top: 10px;
+      }
+      .nav-main-logo img {
+        width: {{section.settings.logo_max_width | plus: 24}}px !important;
+      }
+      .nav-container-float.container-push {
+        z-index:0;
+        opacity: 1 !important;
+      }
+    </style>
+
+    <header class="page-header-nb {{class}}">
+      {%- if use_article_meta -%}
+        {%- include 'article-meta'
+          author: true,
+          date: true
+        -%}
+      {%- endif -%}
+      <h1 class="page-header-title-nb page-header-title {{title_transform}} {{title_weight_class}}">{{title}}</h1>
+      {% include 'breadcrumb' breadcrumb_class:"page-header-breadcrumb" %}
+      {%- if collection -%}
+       {%- include 'collection-subnav' collection: collection -%}
+      {%- endif -%}
+    </header>
+ {%- endif -%}

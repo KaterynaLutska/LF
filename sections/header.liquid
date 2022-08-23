@@ -1,0 +1,478 @@
+{% assign template_type = template | replace: '.', ' ' | truncatewords: 1, '' | handle %}
+{% if settings.header_overlap != true or template_type == "product" or template == blank%}
+  {% assign rel_nav = '-rel' %}
+{%- else -%}
+  {% assign rel_nav = null %}
+{%- endif -%}
+
+
+{% assign white_nav = '' %}
+
+{% if settings.nav_type == 'light' %}
+  {% assign white_nav = 'top-header-white' %}
+{% endif %}
+
+<style>
+  {% if section.settings.image %}
+    {% include "media_query_bg"%}
+  {% endif %}
+  header.page-header:after {
+    {% if section.settings.image %}
+      {% assign opacityValue = 100 | minus: section.settings.background_opacity %}
+      {% if opacityValue == 100 %}
+      opacity: 1;
+      {% else %}
+      opacity: 0.{{opacityValue}};
+      {% endif %}
+      {% else %}
+      background-color: {{ section.settings.banner_color}};
+      {% endif %}
+      }
+
+  header.page-header{
+    color: {{section.settings.collection_text_color}};
+  }
+</style>
+
+{% if section.settings.logo_max_width != blank %}
+  {% assign logoMaxWidth = section.settings.logo_max_width %}
+{% else %}
+  {% assign logoMaxWidth = 100 %}
+{% endif %}
+<div class="{{ white_nav }}" id="top-header-section" role="navigation" data-section-id="{{ section.id }}" data-section-type="header-section" data-menu-type="{{ section.settings.navigation_type }}" data-hero-size="hero--custom-height" data-show-breadcrumbs="{{ settings.use_breadcrumbs }}"
+     data-logo-width="{{logoMaxWidth}}" data-bg-color="{{ settings.header_bg_color }}" data-notificationbar="{% if section.settings.message_text != blank and section.settings.show_announcement_bar%}true{%else%}false{% endif %}" data-index-overlap="{% if settings.header_overlap == true %}true{% else %}false{% endif %}">
+  <a class="visuallyhidden focusable skip-to-main" href="#container">Skip to Content</a>
+  <style>
+    .notification-bar {
+      background-color: {{ section.settings.color_bg }};
+    }
+    .notification-bar__message {
+      color: {{ section.settings.color_text }};
+      font-size: {{section.settings.head_promobar}}px;
+    }
+    @media (max-width:767px) {
+      .notification-bar__message  p{
+        font-size: calc({{section.settings.head_promobar}}px - 2px);
+      }
+    }
+
+    {% if settings.header_overlap != true or template_type == "product" or template == blank%}
+      .nav-main-logo, .nav-container, .nav-standard-float{
+        position: relative;
+        background: {{ settings.header_bg_color }};
+        width: 100% !important;
+      }
+    .nav-standard-logo{
+      padding-top: 10px;
+    }
+      .nav-main-logo img {
+        width: {{section.settings.logo_max_width | plus: 24}}px !important;
+      }
+      .nav-container-float.container-push{
+        z-index:0;
+        opacity: 1 !important;
+      }
+    {% elsif settings.header_overlap %}
+
+    .nav-main-logo.nav-sticky, .nav-container.nav-sticky, .nav-standard-float.nav-sticky{
+        background: {{ settings.header_bg_color }} !important;
+      }
+
+
+
+    {% if section.settings.navigation_type != 'left' %}
+      @media (min-width: 768px){
+           .nav-main-logo, .text-logo, .nav-container-logo, .nav-standard-logo{
+             {% unless section.settings.logo %}
+              background: {{ section.settings.header_img_bg_color }};
+             {% endunless %}
+           }
+      }
+         .text-logo{
+             display: inline-block;
+            }
+       {% endif %}
+
+     @media (min-width: 768px){
+       {% if section.settings.navigation_type != 'left' %}
+           .nav-main-logo, .text-logo, .nav-container-logo, .nav-standard-logo{
+            margin: 0 auto;
+            padding: 10px;
+          }
+       {% endif %}
+        }
+     @media (min-width: 992px){
+       {% if section.settings.navigation_type != 'left' %}
+           .nav-main-logo, .text-logo, .nav-container-logo, .nav-standard-logo{
+            display: table;
+            padding: 10px;
+          }
+       {% endif %}
+        }
+     @media (max-width: 767px){
+           .nav-main-logo, .text-logo, .nav-standard-logo{
+            display: inline-block;
+            margin: 0 auto;
+            padding: 2px 10px;
+          }
+        }
+
+    {% if template != "index" and template_type != "product"  %}
+    @media (min-width: 768px){
+      nav:not(.nav-sticky) .nav-container-action,
+      nav:not(.nav-sticky) .nav-currency-select,
+      nav:not(.nav-sticky) .navbar-standard > li > a,
+      nav:not(.nav-sticky) .nav-standard-top-area-actions > li > a,
+      nav:not(.nav-sticky) .nav-standard-top-area-search-sumbit,
+      nav:not(.nav-sticky) .nav-standard-top-area-search-input,
+      nav:not(.nav-sticky).logo-text a{
+        color: #fff;
+      }
+      nav:not(.nav-sticky) .tconStyleLines .tcon-menu__lines,
+      nav:not(.nav-sticky) .tconStyleLines .tcon-menu__lines:before,
+      nav:not(.nav-sticky) .tconStyleLines .tcon-menu__lines:after{
+        background: #fff !important;
+      }
+      nav:not(.nav-sticky) .tconStyleLines:hover .tcon-menu__lines,
+      nav:not(.nav-sticky) .tconStyleLines:hover .tcon-menu__lines:before,
+      nav:not(.nav-sticky) .tconStyleLines:hover .tcon-menu__lines:after{
+        background: #d9d9d9 !important;
+      }
+      nav:not(.nav-sticky) .nav-container-action:hover,
+      nav:not(.nav-sticky) .nav-currency-select:hover,
+      nav:not(.nav-sticky) .nav-standard-top-area-actions > li > a:hover,
+      nav:not(.nav-sticky) .nav-standard-top-area-search-sumbit,
+      nav:not(.nav-sticky).logo-text a:hover{
+        color: #d9d9d9;
+      }
+      nav:not(.nav-sticky) .nav-currency-select{
+      border: 1px solid #fff;
+      }
+
+
+    }
+
+    {% if section.settings.navigation_type == 'mega'%}
+    @media (min-width: 768px){
+      header.page-header:not(.special_collection_header) {
+        justify-content: flex-end !important;
+        padding-bottom: 40px !important;
+      }
+    }
+      {%endif %}
+          @media (max-width: 992px){
+            .page-header-inner-bottom{
+              margin-top: 120px;
+            }
+          }
+      {% endif %}
+
+    @media (max-width:767px) {
+        .nav-container-float, .nav-main-logo {
+          background: {{ settings.header_bg_color }} !important;
+        }
+        .nav-container-float:not(.nav-sticky), .nav-main-logo:not(.nav-sticky) {
+          position: static !important;
+        }
+      }
+
+  {% endif %}
+
+    {% if template_type == "product" %}
+      @media (max-width:992px) {
+        .nav-container-float, .nav-main-logo {
+          background: {{ settings.header_bg_color }} !important;
+        }
+        .nav-container-float:not(.nav-sticky), .nav-main-logo:not(.nav-sticky) {
+          position: static !important;
+        }
+      }
+    .logo-text a {
+        display: inline-block;
+        padding: 10px;
+      }
+    {% endif %}
+      {% if template == "index" %}
+      @media (max-width:992px) {
+        .nav-container-float, .nav-main-logo {
+          background: {{ settings.header_bg_color }};
+        }
+        .nav-container-float:not(.nav-sticky), .nav-main-logo:not(.nav-sticky) {
+          position: static;
+        }
+      }
+    {% endif %}
+    {% if section.settings.navigation_type == 'top' %}
+      .logo-text a {
+        display: inline-block;
+        padding: 10px;
+      }
+    .nav-sticky .logo-text a{
+        padding: 12px;
+    }
+
+    {% endif %}
+
+    {% if template == "index" or template_type == "product" %}
+    {% if section.settings.navigation_type == 'top' %}
+    @media (min-width: 768px){
+      .nav-container-logo{
+        padding: 12px;
+      }
+    }
+    {% endif %}
+    {%endif %}
+
+    {% if section.settings.overlap_content != true or template_type == "product"%}
+      @media only screen and (min-width: 768px){
+/*       nav:not(.nav-sticky) .nav-standard-top-area-search, nav:not(.nav-sticky) .nav-standard-top-area-actions  or section.settings.image == blank*/
+        .nav-container-control-left, .nav-container-control-right{
+          top: 50%;
+          -webkit-transform: translateY(-50%);
+          -moz-transform: translateY(-50%);
+          -o-transform: translateY(-50%);
+          -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+        }
+      }
+    {%endif %}
+  </style>
+
+  {% if section.settings.message_text != blank and section.settings.show_announcement_bar%}
+    <div class="notification-bar">
+      {% if section.settings.message_link != blank %}
+        <a href="{{ section.settings.message_link }}" class="notification-bar__message">
+          <p>{{ section.settings.message_text }}</p>
+        </a>
+      {% else %}
+      <span class="notification-bar__message"><p>{{ section.settings.message_text }}</p></span>
+      {% endif %}
+    </div>
+  {% endif %}
+  {% if section.settings.navigation_type == 'top' %}
+    {% include 'navbar-top' %}
+  {% elsif section.settings.navigation_type == 'mega' and section.settings.show_mega_simple == true %}
+    {% include 'navbar-mega' %}
+  {% elsif section.settings.show_mega_simple == false and section.settings.navigation_type == 'mega'%}
+   {% include 'navbar-mega-simple' %}
+  {% endif %}
+  {% include 'modal-search' %}
+  {% include 'modal-cart' %}
+   {% if section.settings.navigation_type == 'left' %}
+    {% if section.settings.logo %}
+      <a class="mobile-hidden-sm nav-main-logo {% if template != "index"%} full-logo-size{% endif %}" href="/">
+        {% capture image_size %}{{logoMaxWidth}}x{% endcapture %}
+        <img src="{{ section.settings.logo | img_url: image_size, scale:2 }}" alt="{% if section.settings.logo.alt != blank %}{{section.settings.logo.alt}}{% else %}{{ shop.name }}{% endif %}" class="img-responsive" style="max-width:{{section.settings.logo_max_width | plus: 24 | append: "px"}}; min-height:{{section.settings.logo_max_width | plus: 24 | divided_by: section.settings.logo.aspect_ratio | floor}}px;"/>
+      </a>
+    {% else %}
+      <a class="mobile-hidden-sm nav-main-logo logo-text" href="/"><span>{{ shop.name }}</span></a>
+    {% endif %}
+    {% include 'navbar-left' %}
+
+    <style>
+
+      .nav-main-logo img {
+        width: {{logoMaxWidth | plus: 24}}px !important;
+      }
+
+      @media (max-width:992px) {
+        .nav-main-logo{
+        width: 100% !important;
+      }
+      }
+      {% if section.settings.overlap_content == true %}
+
+          .nav-main-logo img, .logo-text span{
+            {% unless section.settings.logo %}
+              background: {{ section.settings.header_img_bg_color }};
+            {% endunless %}
+            padding: 10px;
+          }
+         .nav-main-logo img{
+            padding: 12px;
+         }
+
+        @media (max-width: 992px){
+          .nav-main-logo {
+            {% if template_type == "product" %}
+              position: relative !important;
+              background: {{ settings.header_bg_color }} !important;
+            {% endif %}
+              width: 100% !important;
+            }
+              .nav-main-logo img {
+                width: {{logoMaxWidth | plus: 24}}px !important;
+              }
+            {% if  template_type == "product" %}
+              .nav-main-logo img, .logo-text span{
+                background: {{ settings.header_bg_color }} !important;
+              }
+          {% endif %}
+
+            {% if template == "index" %}
+         .logo-text span{
+                background: {{ settings.header_img_bg_color }} !important;
+              }
+          {% endif %}
+
+      }
+     {% endif %}
+
+
+
+    </style>
+
+  {% endif %}
+  {% include 'nav-menu' %}
+</div> 
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": {{ shop.name | json }},
+  {% if section.settings.logo %}
+    {% assign image_size = section.settings.logo.width | append:'x' %}
+    "logo": {{ section.settings.logo | img_url: image_size | prepend: "https:" | json }},
+  {% endif %}
+  "sameAs": [
+    {{ settings.twitter_link | json }},
+    {{ settings.facebook_link | json }},
+    {{ settings.pinterest_link | json }},
+    {{ settings.instagram_link | json }},
+    {{ settings.tumblr_link | json }},
+    {{ settings.youtube_link | json }},
+    {{ settings.vimeo_link | json }}
+  ],
+  "url": {{ shop.url | append: page.url | json }}
+}
+</script>
+{% if template.name == 'index' %}
+  {% assign potential_action_target = shop.url | append: "/search?q={search_term_string}" %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {{ potential_action_target | json }},
+        "query-input": "required name=search_term_string"
+      },
+      "url": {{ shop.url | append: page.url | json }}
+    }
+  </script>
+{% endif %}
+
+
+
+{% schema %}
+{
+   "name":"Header",
+   "settings":[
+     {
+         "type":"image_picker",
+         "id":"logo",
+         "label":"Logo image"
+      },
+    {
+      "type":      "range",
+      "id":        "logo_max_width",
+      "min":       50,
+      "max":        320,
+      "step":       10,
+      "unit":       "px",
+      "label":     "Custom logo width (in pixels)",
+      "default":   100
+      },
+      {
+         "type":"header",
+         "content":"Navigation"
+      },
+      {
+         "type":"select",
+         "id":"navigation_type",
+         "label":"Choose type",
+         "info": "[Learn more](https:\/\/support.milehighthemes.com\/hc\/en-us\/articles\/360020271713)",
+         "options":[
+            {
+               "value":"top",
+               "label":"Minimal top"
+            },
+            {
+               "value":"mega",
+               "label":"Horizontal menu"
+            }
+         ]
+      },
+	  {
+         "type":"checkbox",
+         "id":"show_mega_simple",
+         "label":"Enable mega menus",
+		 "info": "Only applies if Horizontal menu is selected above",
+         "default":false
+      },
+      {
+        "type": "color",
+        "id": "header_img_bg_color",
+        "label": "Logo text background color",
+        "info": "Optional. Only applies if Overlap header content setting in Title bar settings is enabled"
+      },
+      {
+         "type":"link_list",
+         "id":"main_linklist",
+         "label":"Menu",
+         "default":"main-menu"
+      },
+	  {
+        "type": "checkbox",
+        "id": "header_social_icons",
+        "label": "Show social icons in slide-out menu"
+      },
+
+
+    {
+         "type":"header",
+         "content":"Announcement bar"
+      },
+	  {
+         "type":"checkbox",
+         "id":"show_announcement_bar",
+         "label":"Show announcement"
+      },
+      {
+         "type":"textarea",
+         "id":"message_text",
+         "label":"Text",
+         "default":"Announce a sale or promotion here"
+      },
+      {
+         "type":"url",
+         "id":"message_link",
+         "label":"Link"
+      },
+    {
+        "type": "color",
+        "id": "color_bg",
+        "label": "Background",
+        "default": "#B2221A"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text",
+        "default": "#fff"
+      },
+   {
+      "type":      "range",
+      "id":        "head_promobar",
+      "min":       12,
+      "max":        24,
+      "step":       1,
+      "unit":       "px",
+      "label":     "Text size",
+      "default":   14
+      }
+   ]
+}
+{% endschema %}

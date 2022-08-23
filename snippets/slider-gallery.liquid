@@ -1,0 +1,42 @@
+{%- assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+{% assign max_img_height = 700 %}{% comment %} This is value for slider max-height {% endcomment %}
+{% capture image_size %}{{ max_img_height }}x{{ max_img_height }}{% endcapture %}
+
+
+<script type="text/javascript">
+  console.log('this is test page')
+</script>
+<div class="swiper-container main-swiper-container swiper-main-{{ section.id }}" id="swiper-main">
+   <div class="swiper-wrapper">
+    {% for media in product.media %}
+    
+    
+    {% capture media_id %}FeaturedMedia-{{ section.id }}-{{ media.id }}{% endcapture %}
+    {% capture media_class %}product-featured-media{% endcapture %}
+    {% capture media_wrapper_id %}{{ media_id }}-wrapper{% endcapture %}
+    
+    <div class="swiper-slide {% if media.media_type == "image"%} zoom-img-wrap {% endif %}" id="{{ media.id }}">
+      
+    
+    </div>
+    {% else %}
+     {{ "product-5" | placeholder_svg_tag: 'product-item-img thumbnail_slider_svg' }}
+    {% endfor %}  
+  </div><!-- <div class="swiper-wrapper"> -->
+  
+  
+  {% assign first_3d_model = product.media | where: "media_type", "model" | first %}
+{%- if first_3d_model -%}
+<button
+        aria-label="{{ 'products.product.view_in_space_label' | t }}"
+        class="product-single__view-in-space mt20"
+        data-shopify-xr
+        data-shopify-model3d-id="{{ first_3d_model.id }}"
+        data-shopify-title="{{ product.title }}"
+        data-shopify-xr-hidden
+        >
+  {% include 'icon-3d-badge-full-color' %}<span class='product-single__view-in-space-text'>{{ 'products.product.view_in_space' | t }}</span>
+</button>
+{%- endif -%} 
+  <div class="swiper-pagination swiper-pagination-{{ section.id }}"></div>
+</div>

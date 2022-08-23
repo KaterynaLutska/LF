@@ -1,0 +1,12 @@
+{% assign specialCollectionHandle = collection.handle %}
+{% if linklists[specialCollectionHandle].links != blank %}
+  <nav class="page-header-nav">
+    <ul class="page-header-nav-list">
+      {% for link in linklists[specialCollectionHandle].links %}
+        <li>
+          <a href="{{link.url}}">{{link.title}}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}

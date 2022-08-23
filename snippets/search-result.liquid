@@ -1,0 +1,157 @@
+{%if settings.search_result_type == "products_only" %}
+{% if item.object_type == 'product' %}
+  {% assign on_sale = false %}
+  {% if item.available and item.compare_at_price > item.price %}
+  {% assign on_sale = true %}
+  {% endif %}
+  {% assign sold_out = true %}
+  {% if item.available  %}
+  {% assign sold_out = false %}
+  {% endif %}
+  <div class="col-md-3 col-sm-6 col-xs-6 collection-products-wrapper">
+
+
+
+    <div class="product-thumb">
+      <a class="product-thumb-href" href="{{ item.url | within: collection }}"></a>
+      {% if on_sale %}
+      <p class="product-thumb-label">{{ 'products.product.on_sale' | t }}</p>
+      {% endif %}
+      {% if sold_out %}
+      <p class="product-thumb-label-sold -limit">{{ 'products.product.sold_out' | t }}</p>
+      {% endif %}
+      <div class="product-thumb-inner">
+        <div class="product-thumb-img-wrap">
+          <div class="spinner-cube">
+            <div class="loadFacebookG">
+              <div class="blockG_1 facebook_blockG"></div>
+              <div class="blockG_2 facebook_blockG"></div>
+              <div class="blockG_3 facebook_blockG"></div>
+            </div>
+          </div>
+          <img src="{{ item.featured_media.preview_image.src | product_img_url: '300x' }}" alt="{{item.title | escape}}" class="lazyload product-thumb-img blur-up" data-srcset="{{ item.featured_media.preview_image.src | product_img_url: '400x' }} 1x, {{ item.featured_media.preview_image.src | product_img_url: '400x', scale: 2 }} 2x, {{ item.featured_media.preview_image.src | product_img_url: '400x', scale: 3 }} 3x" />
+          <noscript>
+            <img srcset="{{ item.featured_media.preview_image.src | product_img_url: '400x' }} 1x, {{ item.featured_media.preview_image.src | product_img_url: '400x', scale: 2 }} 2x, {{ item.featured_media.preview_image.src | product_img_url: '400x', scale: 3 }} 3x" alt="{{item.title | escape}}" class="product-thumb-img" />
+          </noscript>
+        </div>
+        <div class="product-thumb-caption">
+          {% if settings.product_reviews %}
+					<div class="show-reviews -{{settings.thumbnail_rating}}">
+            <div class="pt10"></div>
+            <span class="shopify-product-reviews-badge min_height_22" data-id="{{ item.id }}"></span>
+				 </div>
+          {% endif %}
+          <h5 class="product-thumb-caption-title">{{ item.title | escape }}</h5>
+         {% unless item.price_max == 0 and settings.custom_price0_text != blank %}	
+          <ul class="product-thumb-caption-price">
+            {% if on_sale %}<li class="product-thumb-caption-price-list"><span class="compare-price money">{{ item.compare_at_price | money }}</span></li>{% endif %}
+            <li class="product-thumb-caption-price-current">{% if item.price_varies %}{{ 'products.product.price_from' | t }} {% endif %}<span class="money">{{ item.price | money }}</span></li>
+          </ul>
+          {% else %}     
+          <span>{{settings.custom_price0_text }}</span> 
+        {% endunless %}	
+          <p class="product-thumb-caption-desc">{{ item.type | escape }}</p>
+          {% if section.settings.show_vendor %}
+          <p class="product-thumb-vendor">{{ item.vendor }}</p>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+{%endif %}
+{%else %}
+      <a href="{{ item.url }}" class="list-view-item">
+        {% if item.object_type == 'product' %}
+          {% unless item.price_max == 0 and settings.custom_price0_text != blank %}	
+          <div class="list-view-item__image-column">
+            <div class="list-view-item__image-wrapper">
+              <div class="list-view-item__image-overlay">
+               <img class="list-view-item__image" src="{{ item.featured_media.preview_image.src | img_url: '95x95', scale: 2 }}" alt="{{ item.featured_media.preview_image.alt | escape }}">
+              </div>
+            </div>
+         </div>
+          <div class="list-view-item__title-column">
+            <div class="list-view-item__title">{{ item.title }}</div>
+            {% if item.compare_at_price > item.price %}
+            <div class="list-view-item__on-sale">{{ 'products.product.on_sale' | t }}</div>
+            {% endif %}
+            {% if section.settings.show_vendor %}
+            <div class="list-view-item__vendor medium-up--hide">{{ item.vendor }}</div>
+            {% endif %}
+            {% unless item.available %}
+            <div class="list-view-item__sold-out">{{ 'products.product.sold_out' | t }}</div>
+            {% endunless %}
+          </div>
+
+          {% if section.settings.show_vendor %}
+          <div class="list-view-item__vendor-column small--hide">
+            <div class="list-view-item__vendor">{{ product.vendor }}</div>
+          </div>
+          {% endif %}
+
+          <div class="list-view-item__price-column">
+            {%- assign compare_at_price = item.compare_at_price -%}
+            {%- assign price = item.price -%}
+            {%- assign price_varies = item.price_varies -%}
+            {%- assign available = item.available -%}
+
+
+            {%- assign money_price = price | money -%}
+
+            {% if compare_at_price > price %}
+            {% if price_varies %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            <s class="product-price__price">{{ compare_at_price | money }}</s>
+            <span class="product-price__price product-price__sale">
+              {{ money_price }}
+              <span class="product-price__sale-label">{{ 'products.product.on_sale' | t }}</span>
+            </span>
+            {% else %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            <s class="product-price__price">{{ compare_at_price | money }}</s>
+            <span class="product-price__price product-price__sale">
+              {{ money_price }}
+              <span class="product-price__sale-label">{{ 'products.product.on_sale' | t }}</span>
+            </span>
+            {% endif %}
+            {% else %}
+
+            {% if price_varies %}
+            <span class="product-price__price">{{ money_price }}</span>
+            {% else %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            <span class="product-price__price">{{ money_price }}</span>
+            {% endif %}
+            {% endif %}
+
+            {% unless available %}
+            <span class="product-price__sold-out">{{ 'products.product.sold_out' | t }}</span>
+            {% endunless %}
+            
+            {% else %}     
+              <span>{{settings.custom_price0_text }}</span> 
+            {% endunless %}	
+            
+          </div>
+        {% else %}
+          {% if item.image %}
+            <div class="list-view-item__image-column">
+              <div class="list-view-item__image-wrapper">
+                <div class="list-view-item__image-overlay">
+                <img class="list-view-item__image" src="{{ item.image.src | img_url: '600x600' }}" alt="{{ item.image.alt | escape }}">
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="list-view-item__title-column">
+            <div class="list-view-item__title">{{ item.title }}</div>
+            <div class="article_search_text">
+              {% if item.published_at %}{{ item.published_at | date: "%b %d, %Y" }} &#8212; {% endif %}
+              {{ item.content | strip_html | truncate: 200 }}
+            </div>
+          </div>
+        {% endif %}
+      </a>
+{% endif %}

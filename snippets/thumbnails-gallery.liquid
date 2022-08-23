@@ -1,0 +1,93 @@
+{%- assign featured_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+{% assign max_img_height = 700 %}{% comment %} This is value for slider max-height {% endcomment %}
+{% capture image_size %}{{ max_img_height }}x{{ max_img_height }}{% endcapture %}
+<div class="swiper-container main-swiper-container {% if section.settings.image_gallery_type == 'thumbnails_gallery_vertical' %}swiper-gallery-vert-slider{% elsif section.settings.image_gallery_type == 'thumbnails_gallery_horizontal'%}swiper-gallery-horiz-slider{%endif%}" 
+     id="{% if section.settings.image_gallery_type == 'thumbnails_gallery_vertical' %}swiper-gallery-vert-{{ section.id }}{% elsif section.settings.image_gallery_type == 'thumbnails_gallery_horizontal'%}swiper-gallery-{{ section.id }}{%endif%}">
+
+  <div class="swiper-wrapper">
+
+    <style>
+         .player-3d {
+            height: 300px;
+         }
+       </style>
+  
+
+      <div id="threekit-player" class="player-3d"></div>
+
+     <script src="https://preview.threekit.com/app/js/threekit-player.js"></script>
+    
+    <script>
+        console.log('here here')
+           window
+            .threekitPlayer({
+              authToken: "b15d589b-ade3-436d-a145-943db3e49c7a",
+              el: document.getElementById("threekit-player"),
+              assetId: "92f8f259-5030-4e52-a1ac-9a1543fd5387",
+              showConfigurator: true,
+              showAR: true,
+            })
+            .then(async function(player) {
+              window.player = player;
+
+              return player.getConfigurator();
+            })
+            .then((configurator) => {
+              window.configurator = configurator;
+              configurator.setConfiguration({
+                "Asset": {
+                  "assetId": "9da864f7-3f7f-4d1e-831b-83cfb701b69b"
+                }
+              })
+              
+            })
+      </script>
+
+    
+  </div><!-- <div class="swiper-wrapper"> -->
+  <div class="swiper-pagination"></div>
+</div><!-- <div class="swiper-container" id=""> -->
+{% assign first_3d_model = product.media | where: "media_type", "model" | first %}
+{%- if first_3d_model -%}
+<button
+        aria-label="{{ 'products.product.view_in_space_label' | t }}"
+        class="product-single__view-in-space"
+        data-shopify-xr
+        data-shopify-model3d-id="{{ first_3d_model.id }}"
+        data-shopify-title="{{ product.title }}"
+        data-shopify-xr-hidden
+        >
+  {% include 'icon-3d-badge-full-color' %}<span class='product-single__view-in-space-text'>{{ 'products.product.view_in_space' | t }}</span>
+</button>
+{%- endif -%}
+  {% if section.settings.image_gallery_type == 'thumbnails_gallery_vertical' %}
+    <div class="swiper-vert-thumbnails-main-container swiper-thumbnails-main-container">
+	<div class="swiper-container swiper-thumbnails-vert" id="swiper-gallery-thumbs-vert-{{ section.id }}">  
+  {% elsif section.settings.image_gallery_type == 'thumbnails_gallery_horizontal'%}
+   <div class="swiper-horiz-thumbnails-main-container swiper-thumbnails-main-container">
+   <div class="swiper-container swiper-thumbnails-horiz" id="swiper-gallery-thumbs-{{ section.id }}">
+  {% endif %}    
+     <div class="swiper-wrapper">
+          {% for media in product.media %}
+          <div class="swiper-slide" tabindex="0">
+            <img class="swiper-thumb-item" src="{{ media | img_url: product_thumb_size }}" alt="{{ media.alt | escape }}" title="{{ product.title | escape }}" />
+          {% if media.media_type == "video" or media.media_type == "external_video"%}
+          <span class="icon-wrapper">{% include "icon-video-badge-full-color" %}</span>
+          {% elsif media.media_type == "model"%}
+          <span class="icon-wrapper">{% include "icon-3d-badge-full-color" %}</span>
+          {% endif %}
+          </div>
+        {% endfor %}
+      </div>     
+   </div>
+{% comment %}
+    {% if product.media.size > 4 %}    
+     <div class="swiper-button-prev swiper-button-prev-{{section.id}}">
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path d="M0,22L22,0l2.1,2.1L4.2,22l19.9,19.9L22,44L0,22L0,22L0,22z"></svg>
+         </div>
+       <div class="swiper-button-next swiper-button-next-{{section.id}}">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path d="M27,22L27,22L5,44l-2.1-2.1L22.8,22L2.9,2.1L5,0L27,22L27,22z"></svg>
+        </div>  
+    {% endif %}
+ {% endcomment %}        
+     </div> 

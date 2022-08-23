@@ -1,0 +1,298 @@
+{% layout none %}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+{% assign hide_price = false %}
+{% assign show_cart_button = true %}
+{% if current_variant.price == 0 and settings.custom_price0_text != blank %}
+{% assign hide_price = true %}
+{% endif %}
+{% if current_variant.price == 0 and settings.hide_price0_box_and_button %}
+{% assign show_cart_button = false %}
+{% endif %}
+
+<div class="mfp-with-anim mfp-dialog mfp-dialog-big">
+  <div class="new_qv_wrapper">
+    <div class="qv_scripts">
+      <div class="quick-view-panel swatch-product-id-{{product.id}}" data-hide_price="{% if settings.custom_price0_text != blank %}true{% endif %}" data-show_btn="{{settings.hide_price0_box_and_button}}" id="product-quickview-{{ product.id }}" data-id="{{ product.id }}">
+        <div class="quick-view-panel-inner">
+          <div id="quick-view-panel-inner-{{product.id}}">
+            <div class="row row-col-norsp" data-gutter="none" id="quick_view_template_content-{{product.id}}">
+              {% if settings.show_smart_checkout%}
+              <script   src="//cdn.shopify.com/s/assets/storefront/features-35fa919124302b0d097cdba90a4cba671b688a3c3c61403c926ff7818bbb918f.js" crossorigin="anonymous"></script>
+              {% endif %}
+              <div class="col-sm-7 col-xs-12">
+                <div class="product-item-wrap slider_gallery">
+  {% assign max_img_height = 700 %} {% comment %} This is value for slider max-height {% endcomment %}
+  {% capture image_size %}{{ max_img_height }}x{{ max_img_height }}{% endcapture %}               
+                  <div class="swiper-container main-swiper-container  swiper-main-{{ product.id }}" id="swiper-main-{{ product.id }}">
+                       <div class="swiper-wrapper">
+    {% for media in product.media %}
+    
+    
+    {% capture media_id %}FeaturedMedia-{{ section.id }}-{{ media.id }}{% endcapture %}
+    {% capture media_class %}product-featured-media{% endcapture %}
+    {% capture media_wrapper_id %}{{ media_id }}-wrapper{% endcapture %}
+    
+    <div class="swiper-slide {% if media.media_type == "image"%} zoom-img-wrap {% endif %}" id="{{media.id}}">
+      
+     <div id="{{ media_wrapper_id }}"
+    class="product-single__media-wrapper {% if media.media_type == "image"%} zoom-img-wrap {% endif %}"
+    {% if media.media_type == 'video' or media.media_type == 'external_video' %} data-product-media-type-video data-enable-video-looping="{{ section.settings.enable_video_looping }}"{% endif %}
+    {% if media.media_type == 'model' %} data-product-media-type-model{% endif %}
+    {% if media.media_type == 'external_video' %} data-video-id="{{ media.external_id }}"{% endif %}
+    data-product-single-media-wrapper
+    data-media-id="{{ section.id }}-{{ media.id }}"
+    tabindex="-1">
+           
+        
+    {% case media.media_type %}     
+      {% when 'external_video' %}
+          <div class="product-item-img product-single__media" style="padding-top: {{ 1 | divided_by: media.aspect_ratio | times: 100 }}%;">
+            {{ media | external_video_tag }}
+          </div>
+	 {% when 'video' %}
+      
+        {%- comment -%}
+            Load different image sizes depending on the breakpoint for background image overlay
+            {%- endcomment -%}
+            {% style %}
+            @media screen and (max-width: 320px) {
+            .product-single__media--{{ media.id }} .plyr__poster {
+            background-image: url({{ media.preview_image | img_url: '360x'}}) !important;
+            }
+            }
+
+            @media screen and (min-width: 320px) and (max-width: 780px) {
+            .product-single__media--{{ media.id }} .plyr__poster {
+            background-image: url({{ media.preview_image | img_url: '900x'}}) !important;
+            }
+            }
+
+            @media screen and (min-width: 780px) and (max-width: 1080px) {
+            .product-single__media--{{ media.id }} .plyr__poster {
+            background-image: url({{ media.preview_image | img_url: '1080x'}}) !important;
+            }
+            }
+
+            @media screen and (min-width: 1080px) {
+            .product-single__media--{{ media.id }} .plyr__poster {
+            background-image: url({{ media.preview_image | img_url: '2048x'}}) !important;
+            }
+            }
+            {% endstyle %}
+      
+        <div class="product-item-img product-single__media product-single__media--video product-single__media--{{ media.id }}" style="padding-top: {{ 1 | divided_by: media.aspect_ratio | times: 100 }}%;">
+          {{ media | video_tag: class: 'media-video', image_size: image_size }}
+        </div>      
+      {% when 'model' %}
+      <div class="product-single__media product-single__media--model" style="padding-top: 100%">
+        {{ media | model_viewer_tag: image_size: image_size, reveal: 'interaction', toggleable: true, data-model-id: media.id }}
+      </div>
+    {% else %}
+      
+    
+      {% assign product_img_width = media.preview_image.width %}
+      {% assign product_img_height = media.preview_image.height %}
+      {% assign product_img_ratio = media.preview_image.aspect_ratio %}
+      {% if max_img_height < product_img_height %}
+      {% assign max_img_width = max_img_height | times: product_img_ratio | append:"px"%}
+      {% else %}
+      {% assign max_img_width = product_img_height | times: product_img_ratio | append:"px"%}
+      {% endif %}
+      {%- assign img_url = media | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        <noscript>
+          <img class="product-item-img zoom-img" srcset="{{ media.preview_image.src | img_url: product_image_size }} 1x, {{ media.preview_image.src | img_url: product_image_size, scale: 2 }} 2x, {{ media.preview_image.src | img_url: product_image_size, scale: 3 }}, 3x," alt="{{ media.alt | escape }}" title="{{ product.title | escape }}"/>
+        </noscript> 
+        <img class="product-item-img zoom-img lazyload blur-up {% if forloop.index == 1 %} lazypreload {% endif %}"  data-srczoom="{{ media.preview_image.src | img_url: "2000x" }}" 
+             tabindex="-1"
+             src="{{ media |img_url: '100x' }}" 
+             data-src="{{ img_url }}"
+             data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+             data-aspectratio="{{ media.preview_image.aspect_ratio }}"
+             data-sizes="auto"
+             alt="{{ media.alt | escape }}" title="{{product.title}}"
+             style="max-width: {{max_img_width}}"/>              
+        {% if section.settings.enable_zoom %}
+        <a tabindex="-1" class="zoom-img-container zoom-img-position" href="javascript:void(0);">           
+        </a>
+        {% endif %}
+     {% endcase %}  
+      
+    </div>
+    </div>
+    {% else %}
+     {{ "product-5" | placeholder_svg_tag: 'product-item-img thumbnail_slider_svg' }}
+    {% endfor %}  
+  </div>
+                    <div class="swiper-pagination swiper-pagination-{{ product.id }}"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-5 col-xs-12">
+                <div class="product-item-caption">
+                  <header class="product-item-caption-header">
+                    {%- include 'reviews-badge', product_id: product.id -%}
+                    <h2 class="product-item-caption-title">{{ product.title | escape }}</h2>
+                    <p class="product-item-caption-subtitle">{{ product.type }}</p>
+                    <ul class="product-item-caption-price" {% if hide_price %} style="display:none" {% endif %}>
+                      <li class="product-item-caption-price-list">
+                        <span class="money" data-money="{{ current_variant.compare_at_price }}">
+                          {% if current_variant.compare_at_price > current_variant.price %}
+                          {{ current_variant.compare_at_price | money }}
+                          {% endif %}
+                        </span>
+                      </li>
+                      <li class="product-item-caption-price-current"><span class="money" data-money="{{ current_variant.price }}">{{ current_variant.price | money }}</span></li>
+                    </ul>    
+                    <div class="price0_text" {% unless hide_price %} style="display:none" {% endunless %}>{{settings.custom_price0_text}}</div>
+                  </header>
+                  <script id="pb_prequalify" src="https://app.paybright.com/dist/sdk.js?public_key=63zRC1dZtcy9WLxH1LyhDOfyDvKsNIzFFu6fpTROFKD4Q1kBn2&financedamount=${{ product.price | divided_by: 100.00 | round: 2 }}"></script>
+            <script>
+        pb_prequalify_init({
+      });
+            </script>
+                        <style>
+          .paybright_custom {
+              font-size: 12px;
+                }
+                </style>
+            <div id="paybright-widget-container" class= "paybright_custom"></div>
+                  {% form 'product', product %}
+                  <div class="product-item-caption-select quick-view-select quick-view-select-{{product.id}}">
+                    {% for option in product.options_with_values %}
+                    <div class="selector-wrapper">
+                      <label for="product-select-{{ option.name }}-{{product.handle}}">
+                        {{ option.name }}
+                      </label>
+                      <select class="single-option-selector quick-view-selector-{{ product.id }} SingleOptionSelector-{{ forloop.index0 }}" id="product-select-{{ option.name }}-{{product.handle}}">
+                        {% for value in option.values %}
+                        <option {% if option.selected_value == value %}selected{% endif %}>
+                          {{ value }}
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    {% endfor %}
+                    <select name="id" id="VQProductSelect-{{ product.id }}" class="product-variants hidden">
+                      {% for variant in product.variants %}
+                      {% if variant.available %}
+                      <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}">{{ variant.title | escape }} - {{ variant.price | money_with_currency }}</option>
+                      {% else %}
+                      <option disabled="disabled" value="{{ variant.id }}">{{ variant.title | escape }} - {{ 'products.product.sold_out' | t }}</option>
+                      {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                  {% if settings.show_product_swatches %}
+
+                  <style>
+                    .quick-view-select-{{product.id}} {
+                      display: none;
+                    }
+                  </style>
+
+                  {% unless product.options.size == 1 and product.variants[0].title contains 'Default' and product.variants.size == 1%}
+                  {% for option in product.options %}
+                  {% include 'swatch' with option %}
+                  {% endfor %}
+                  {% endunless %}
+                  {% endif %}
+                  <div class="row" data-gutter="10">
+                    <div class="col-xs-4 col-sm-3">
+                      <div class="product-form__item product-form__item--quantity product-item-caption-qty">
+                        <button class="btn-number btn-number-{{ product.id }}" type="button"  data-type="minus" data-field="quant[1]">-</button>
+                        <input type="text" id="Quantity-{{ product.id }}" name="quantity" value="1" class="form-control input-number product-form__input input-number-{{ product.id }}" pattern="[0-9]*">
+                        <button class="btn-number btn-number-{{ product.id }}" type="button"  data-type="plus" data-field="quant[1]">+</button>
+                      </div>
+                    </div>
+
+
+                    {% if settings.show_smart_checkout%}
+                    <div class="product-form__item product-form__item--submit product_payments_btns" {% unless show_cart_button %} style="display:none" {% endunless %}>
+                      {% if product.selected_or_first_available_variant.available %}
+                      <button type="submit" name="add" id="AddToCart-{{product.id}}" class="AddToCartQV btn product-form__cart-submit btn-primary btn-block btn-lg">
+                        <span id="AddToCartText-{{ product.id }}">{{ 'products.product.add_to_cart' | t }}</span>
+                      </button>
+                      {% else %}
+                      <button type="submit" name="add" id="AddToCart-{{product.id}}" disabled class="AddToCartQV btn product-form__cart-submit btn-primary btn-block btn-lg">
+                        <span id="AddToCartText-{{ product.id }}">{{ 'products.product.sold_out' | t }}</span>
+                      </button>
+                      {% endif %}
+                      {% if product.selected_or_first_available_variant.available %}
+                      {{ form | payment_button }}
+                      {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="product-form__item product-form__item--submit">
+                      {% if product.selected_or_first_available_variant.available %}
+                      <button type="submit" name="add" id="AddToCart-{{product.id}}" class="AddToCartQV btn product-form__cart-submit btn-primary btn-lg" {% unless show_cart_button %} style="display:none" {% endunless %}>
+                        <span id="AddToCartText-{{ product.id }}">{{ 'products.product.add_to_cart' | t }}</span>
+                      </button>
+                      {% else %}
+                      <button type="submit" name="add" id="AddToCart-{{product.id}}" disabled class="AddToCartQV btn product-form__cart-submit btn-primary btn-lg" {% unless show_cart_button %} style="display:none" {% endunless %}>
+                        <span id="AddToCartText-{{ product.id }}">{{ 'products.product.sold_out' | t }}</span>
+                      </button>
+                      {% endif %}
+                    </div>
+
+                    {% endif %}
+
+                  </div>
+                  {% endform %}
+                  <div class="product-item-caption-desc product-rte-description">
+                    {% if settings.show_description_qv %}
+                    {% assign descriptionParts = product.description | split: "<!-- split -->" %}
+                    {% if descriptionParts.size > 1%}
+                    <p>{{descriptionParts | first }}</p>
+                    {% else %}
+                     <p>{{ product.description | strip_html | remove: "<!-- TABS -->" | remove: "<!-- /TABS -->" | truncate: 300 }}</p>
+                    {% endif %}
+                    {% endif %}
+                    <p class="mb0 mt20"><b><a class="list-icon" href="{{ product.url | within: collection }}">{{ 'products.product.quick_view_details' | t }}</a></b>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {% unless product.empty? %}
+
+              <script type="application/json" id="ProductQuickViewJson-{{ product.id }}">
+      {{ product | json }}
+              </script>
+              <script type="application/json" id="ModelJson-{{ product.id }}">
+      {{ qvp.media | where: 'media_type', 'model' | json }}
+              </script>
+
+              {% endunless %}
+            </div>   
+          </div>
+        </div>
+      </div>
+<script>
+  $(document).ready(function() {
+  Shopify.optionsMapQV[{{ product.id }}] = {};  
+  {% if product.available and product.options.size > 1 %}
+    Shopify.linkOptionSelectorsQV("swatch-product-id-{{product.id}}",{{ product | json }});
+  {% endif %}
+  
+  var selector = jQuery('.swatch-product-id-{{product.id}} .single-option-selector:eq(0)');
+  selector.trigger('change'); 
+  {% if product.options.size == 1 %}
+    {% for variant in product.variants %}
+      {% unless variant.available %}
+        jQuery('.swatch-product-id-{{product.id}} .single-option-selector option').filter(function() { 
+               if(jQuery(this).text().trim() == {{ variant.title | json }}){
+          jQuery(this).remove();
+          var title = {{variant.title | json}};
+          $("[data-value='"+title+"']").remove();
+        }
+      });
+      {% endunless %}
+    {% endfor %}
+    jQuery('.swatch-product-id-{{product.id}} .single-option-selector').trigger('change');
+  {% endif %}
+});      
+</script>
+    </div>
+  </div>
+</div>

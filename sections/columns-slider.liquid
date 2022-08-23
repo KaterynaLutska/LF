@@ -1,0 +1,379 @@
+{%- if section.settings.scroll_indicator and section.settings.slide_height_val == '100' -%}
+  {% assign no_scroll_class = '-scroll-icon' %}
+{%- else -%}
+  {% assign no_scroll_class = '-no-scroll-icon' %}
+{%- endif -%}
+
+{% if section.blocks.size == 4 %}
+  {% assign grid_item_width = '3' %}
+  {% elsif section.blocks.size == 3 %}
+    {% assign grid_item_width = '4' %}
+  {% elsif section.blocks.size == 2 %}
+    {% assign grid_item_width = '6' %}
+  {% else %}
+    {% assign grid_item_width = '12' %}
+{% endif %}
+
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+{% assign img_height_style = 'height: ' | append: section.settings.slide_height_val | append: 'vh' %}
+
+{%- if section.settings.columns_separator -%}
+  {% assign columns_separator_class = null %}
+{%- else -%}
+  {% assign columns_separator_class = '-no-separator' %}
+{%- endif -%}
+
+<div class="{{ no_scroll_class }} flush-section"  data-section-id="{{ section.id }}" data-section-type="columns-slider-section" class="{{no_scroll_class}}"  data-height="{{section.settings.slide_height_val | append: 'vh'}}" data-slidesSpeed="{{section.settings.slider_autoplay}}">
+
+
+  <div class="hero-area mobile-hidden">
+    <div style="{{img_height_style}}" class="hero-background-wrapper hero-background-wrapper-{{section.id}} full_height_{{section.settings.slide_height_val}}">
+      <div class="hero-area-overlay" style="opacity: {{ overlay_opacity }}"></div>
+
+      {%- for block in section.blocks -%}
+
+        {% capture img_count %}{% cycle 1, 2 %}{% endcapture %}
+
+        {%- if forloop.first == true -%}
+          {% assign active = ' active' %}
+        {%- else -%}
+          {% assign active = null %}
+        {%- endif -%}
+
+        {% assign item_class = 'hero-item-bg hero-item-bg-' | append: section.id | append: active %}
+        {% assign item_id = 'hero-bg-' | append: section.id | append: '-' | append: forloop.index %}
+
+        {%- include 'bg-img',
+          class_name: item_class,
+          img_src: block.settings.image,
+          id: item_id,
+          placeholder_id: img_count,
+          placeholder_type: 'lifestyle'
+        -%}
+      {%- endfor -%}
+    </div>
+    <div class="row" data-gutter="none">
+      {% for block in section.blocks %}
+      {%- if forloop.first == true -%}
+        {% assign active = ' active' %}
+      {%- else -%}
+        {% assign active = null %}
+      {%- endif -%}
+        <div {{ block.shopify_attributes }} class="col-md-{{ grid_item_width }} column-slides-{{ grid_item_width }}" data-index="{{ forloop.index }}">
+          <div style="{{img_height_style}}" class="hero-item {{columns_separator_class}} hero-item-{{ section.id }} full_height_{{section.settings.slide_height_val}} hero-item-{{ section.id }}-{{ forloop.index }} {{active}}" data-hero-item="#hero-bg-{{ section.id }}-{{ forloop.index }}">
+            <div class="hero-item-overlay -{{ section.settings.caption_hover_overlay }}"></div>
+            {% if block.settings.link != blank %}
+            	<a class="hero-item-link" href="{{ block.settings.link }}"></a>
+            {% endif %}
+
+            {%- include 'slider-caption'
+              title: block.settings.title,
+              title_color: section.settings.caption_title_color,
+              subtitle: block.settings.subheading,
+              link: block.settings.link,
+              position: section.settings.caption_position,
+              size: section.settings.caption_text_size,
+              title_transfrom: section.settings.caption_title_transfrom,
+              is_column: true
+            -%}
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {%- include 'scroll-indicator'
+      section_id: section.id,
+      enabled: section.settings.scroll_indicator,
+      section_height: section.settings.slide_height_val
+    -%}
+
+  </div>
+
+  <div class="desktop-hidden">
+    <div class="swiper-container {% if section.settings.correct_mobile_image_ratio %} image_autoheight {% endif %}" id="swiper-{{ section.id }}">
+      <div class="swiper-wrapper">
+          {% for block in section.blocks %}
+          {% capture img_count %}{% cycle 1, 2 %}{% endcapture %}
+          <div {{ block.shopify_attributes }} class="swiper-slide -hero-slider" id="slide-{{ block.id }}" data-index="{{ forloop.index }}" style="{{img_height_style}}">
+
+              <div class="hero-item-overlay" style="background: #000; opacity: {{overlay_opacity}}"></div>
+
+              {%- include 'bg-img'
+                img_src: block.settings.image,
+                class_name: 'hero-item-slide',
+                placeholder_id: img_count,
+                placeholder_type: 'lifestyle'
+              -%}
+            
+              {% if section.settings.correct_mobile_image_ratio %}
+                {% if block.settings.image != blank %}
+               	  <img class="home_slide_auto_img" src="{{block.settings.image | img_url: "300x"}}" {% if block.settings.image.alt != blank %} alt="{{block.settings.image.alt}}" {% endif %} />
+                {% else %}
+                  {% assign svg_name = "lifestyle" | append: '-' | append: img_count %}
+                  {{ svg_name | placeholder_svg_tag: "home_slide_auto_img" }}
+                {%  endif %}        
+              {%  endif %}  
+            
+
+              {% if block.settings.link != blank %}
+            	  <a class="hero-item-link" href="{{ block.settings.link }}"></a>
+              {% endif %}
+
+              {%- include 'slider-caption'
+                title: block.settings.title,
+                subtitle: block.settings.subheading,
+                title_color: section.settings.caption_title_color,
+                link: block.settings.link,
+                position: section.settings.caption_position,
+                size: section.settings.caption_text_size,
+                title_transfrom: section.settings.caption_title_transfrom,
+                caption_reveal: false,
+                mobile_optimize: true
+              -%}
+          </div>
+        {% endfor %}
+      </div>
+
+      {%- include 'slider-navigation',
+        section_id: section.id,
+        type: "bullets"
+      -%}
+    </div>
+
+  </div>
+
+</div>
+
+{% comment %}
+{% assign section_id_mobile = section.id %}
+{% endcomment %}
+{% assign section_id_mobile = section.id | append: '-m' %}
+
+
+{% schema %}
+{
+   "name":"Column slideshow",
+   "class":"index-section index-section--flush home-slideshow-section overlapped_content",
+   "max_blocks":4,
+   "settings":[
+	    {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Overlay opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 40
+      },
+      {
+        "type":"select",
+        "id":"slide_height_val",
+        "label":"Slideshow height",
+        "options":[
+          {
+            "value":"45",
+            "label":"Short"
+          },
+          {
+            "value":"63",
+            "label":"Medium"
+          },
+          {
+            "value":"81",
+            "label":"Tall"
+          },
+          {
+            "value":"100",
+            "label":"Full-screen"
+          }
+        ],
+        "default":"100"
+      },
+	  {
+        "type": "checkbox",
+        "label": "Maintain image aspect ratio on mobile",
+        "id": "correct_mobile_image_ratio"
+      },
+      {
+        "type": "checkbox",
+        "label": "Show scroll indicator",
+        "id": "scroll_indicator",
+        "default": true,
+        "info": "Will appear only when on full-screen column slideshow when it is the first section."
+      },
+      {
+        "type": "checkbox",
+        "label": "Show columns separator",
+        "id": "columns_separator",
+        "default": true
+      },
+      {
+         "type":"header",
+         "content":"Caption"
+      },
+      {
+        "type":"select",
+        "id":"caption_text_size",
+        "label":"Text size",
+        "options":[
+          {
+            "value":"sm",
+            "label":"Small"
+          },
+          {
+            "value":"md",
+            "label":"Medium"
+          },
+          {
+            "value":"lg",
+            "label":"Large"
+          },
+          {
+            "value":"xl",
+            "label":"Extra Large"
+          }
+        ],
+        "default":"md"
+      },
+      {
+        "type":"select",
+        "id":"caption_position",
+        "label":"Position",
+        "options":[
+          {
+            "value":"center",
+            "label":"Middle"
+          },
+          {
+            "value":"bottom",
+            "label":"Bottom"
+          }
+        ],
+        "default":"center"
+      },
+	  {
+        "type":"select",
+        "id":"caption_title_transfrom",
+        "label":"Heading style",
+        "options":[
+          {
+            "value":"normal",
+            "label":"Normal"
+          },
+          {
+            "value":"uppercase",
+            "label":"Uppercase"
+          },
+          {
+            "value":"lowercase",
+            "label":"Lowercase"
+          }
+        ],
+        "default":"normal"
+      },
+      {
+        "type":"select",
+        "id":"caption_title_color",
+        "label":"Heading color",
+        "options":[
+          {
+            "value":"white",
+            "label":"White"
+          },
+          {
+            "value":"primary",
+            "label":"Primary"
+          }
+        ],
+        "default":"white"
+      },
+      {
+        "type":"select",
+        "id":"caption_hover_overlay",
+        "label":"Hover overlay",
+        "options":[
+          {
+            "value":"primary",
+            "label":"Primary"
+          },
+          {
+            "value":"dark",
+            "label":"Dark"
+          },
+          {
+            "value":"none",
+            "label":"None"
+          }
+        ],
+        "default":"none"
+      },
+      {
+        "type":      "range",
+        "id":        "slider_autoplay",
+        "min":        0,
+        "max":        7,
+        "step":       1,
+        "label":      "Rotate mobile images every",
+        "default":   0,
+        "unit": "sec",
+        "info": "Images will not auto-rotate at 0"
+      }
+   ],
+   "blocks":[
+      {
+         "type":"image",
+         "name":"Slide",
+         "settings":[
+            {
+               "type":"image_picker",
+               "id":"image",
+               "label":"Image"
+            },
+            {
+               "type":"text",
+               "id":"title",
+               "label":"Heading",
+               "default":"Slide"
+            },
+            {
+               "type":"text",
+               "id":"subheading",
+               "label":"Description",
+               "default":"Tell your brand's story through images"
+            },
+            {
+               "type":"url",
+               "id":"link",
+               "label":"Link"
+            }
+         ]
+      }
+   ],
+   "presets":[
+      {
+         "name":"Columns slider",
+         "category":"Image",
+         "blocks":[
+            {
+               "type":"image",
+               "settings":{}
+            },
+            {
+               "type":"image",
+              "settings":{}
+            },
+            {
+               "type":"image",
+              "settings":{}
+            },
+            {
+               "type":"image",
+               "settings":{}
+            }
+         ]
+      }
+   ]
+}
+{% endschema %}

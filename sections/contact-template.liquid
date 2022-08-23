@@ -1,0 +1,149 @@
+{% include 'page-header'
+  bg: section.settings.image,
+  title: page.title
+%}
+
+
+  <div class="page-wrapper">
+
+
+<div class="main-content-inner contact-content container general-page" data-section-id="{{ section.id }}" data-section-type="map">
+
+{% if section.settings.show_google_map %}
+  {%- include 'map'
+    layout: 'center',
+    bg_img: section.settings.background_image,
+    section: section,
+    api_key: section.settings.api_key,
+    map_address: section.settings.map_address,
+    heading: section.settings.heading,
+    text: section.settings.address,
+    button_text: section.settings.button_text,
+    center_block: true,
+    caption_style: section.settings.caption_style
+  -%}
+{% endif %}
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+
+
+  <div class="row pt-50 mobile_m0" data-gutter="60">
+    <div class="col-md-6 rte-page">
+      {{ page.content }}
+    </div>
+    <div class="col-md-6">
+      {% form 'contact' %}
+        {% if form.posted_successfully? %}
+          <div class="alert alert-success m15">
+            {{ 'contact.form.post_success' | t }}
+          </div>
+        {% endif %}
+        <div class="m15">
+          {% include 'form-errors-custom' %}
+        </div>
+        <label class="fields_label" for="contactFormName">{{ 'contact.form.name' | t }}</label>
+        <input type="text" id="contactFormName" class="contact-input" name="contact[name]" autocapitalize="words" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}">
+
+      	<label class="fields_label" for="contactFormEmail">{{ 'contact.form.email' | t }}</label>
+        <input type="email" name="contact[email]" id="contactFormEmail" class="contact-input" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">
+
+      	<label class="fields_label" for="contactFormPhone">{{ 'contact.form.phone' | t }}</label>
+      	<input type="tel" name="contact[phone]" id="contactFormPhone" class="contact-input" pattern="[0-9]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+
+      	<label class="fields_label" for="contactFormMessage">{{ 'contact.form.message' | t }}</label>
+      	<textarea name="contact[body]" id="contactFormMessage" class="contact-textarea" rows="4">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+        <button type="submit" class="btn btn-primary">{{ 'contact.form.submit' | t }}</button>
+      {% endform %}
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+{% schema %}
+{
+   "name":"Contact page",
+   "settings":[
+      {
+         "type": "header",
+         "content": "Header"
+      },
+	  {
+         "type":"image_picker",
+         "id":"image",
+         "label":"Background image"
+      },
+	  {
+         "type": "header",
+         "content": "Content"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_google_map",
+         "label":"Show Google map"
+      },
+	  {
+        "id": "api_key",
+        "type": "text",
+        "label": "Google Maps API key",
+        "info": "You’ll need to [register a Google Maps API Key](https://help.shopify.com/manual/using-themes/troubleshooting/map-section-api-key) to display the map"
+      },
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading",
+        "default": "Store name"
+      },
+      {
+        "id": "address",
+        "type": "richtext",
+        "label": "Address and hours",
+        "default": "<p>123 Fake St.<br>Toronto, Canada</p><p>Mon - Fri, 10am - 9pm<br>Saturday, 11am - 9pm<br>Sunday, 11am - 5pm</p>"
+      },
+      {
+         "type":"select",
+         "id":"caption_style",
+         "label":"Caption style",
+         "default":"white",
+         "options":[
+            {
+               "label":"White",
+               "value":"white"
+            },
+            {
+               "label":"Alternate",
+               "value":"alt"
+            },
+            {
+               "label":"Primary",
+               "value":"primary"
+            },
+            {
+               "label":"Dark",
+               "value":"dark"
+            }
+         ]
+      },
+      {
+        "id": "map_address",
+        "type": "text",
+        "label": "Map address",
+        "info": "Google Maps will find the exact location",
+        "default": "80 Spadina Ave, Toronto"
+      },
+      {
+        "id": "button_text",
+        "type": "text",
+        "label": "Map link label",
+        "default": "Get directions"
+      },
+	  {
+        "type": "image_picker",
+        "id": "background_image",
+        "label": "Image",
+        "info": "Displayed if the map isn’t loaded"
+      }
+   ]
+}
+{% endschema %}

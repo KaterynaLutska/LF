@@ -1,0 +1,42 @@
+{%- assign page = pages[section.settings.page] -%}
+{%if section.settings.title != blank %}
+	<h2 class="block-title">{{ section.settings.title | escape }}</h2>
+{% endif %}
+<div class="featured-page-content">
+  {% if page.empty? %}
+  	<p>Select a page.</p>
+  {% else %}
+ 	 {{ page.content }}
+  {% endif %}  
+</div>
+
+{% schema %}
+{  
+   "name":"Featured page",
+   "class":"index-section",
+   "settings":[  
+      {  
+         "type":"text",
+         "id":"title",
+         "label":"Heading ",
+         "default":"Featured page"
+      },
+      {  
+         "id":"page",
+         "type":"page",
+         "label":"Page"
+      }
+   ]
+}
+{% endschema %}
+{% comment %}
+"presets":[  
+      {  
+         "name":"Featured page",
+         "category":"Page",
+         "settings":{  
+
+         }
+      }
+   ]
+{% endcomment %}

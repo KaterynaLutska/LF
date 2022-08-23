@@ -1,0 +1,98 @@
+{% assign on_sale_chars = 'products.product.on_sale' | t | size %}
+{% assign sold_out_chars = 'products.product.sold_out' | t | size %}
+
+{%- if on_sale_chars > 6 -%}
+	{% assign sale_limit = '-limited' %}
+{%- endif -%}
+
+{%- if sold_out_chars > 6 -%}
+	{% assign sold_limit = '-limited' %}
+{%- endif -%}
+
+{% assign on_sale = false %}
+{% if product.available and product.compare_at_price > product.price %}
+	{% assign on_sale = true %}
+{% endif %}
+{% assign sold_out = true %}
+{% if product.available  %}
+	{% assign sold_out = false %}
+{% endif %} 
+
+{% assign max_img_width = product.featured_media.preview_image.width | append: "px" %}
+{% if settings.align_height %}
+{% assign max_img_height = settings.collection_height | minus:10%}
+{% assign product_img_width = product.featured_media.preview_image.width %}
+{% assign product_img_height = product.featured_media.preview_image.height | minus:10%}
+{% assign product_img_ratio = product.featured_media.preview_image.aspect_ratio %}
+		{% if max_img_height < product_img_height %}
+		{% assign max_img_width = max_img_height | times: product_img_ratio | append:"px"%}
+        {% else %}
+		{% assign max_img_width = product_img_height | times: product_img_ratio | append:"px"%}
+		{% endif %}
+{% endif %}
+
+{%- if settings.product_thumbnails_box_shadow -%}
+	{% assign bs_class = "-box-shadow" %}
+{%- endif -%}
+
+  <div class="product-thumb">
+    <a class="product-thumb-href" href="{{ product.url | within: collection }}"></a>
+    {% if on_sale and section.settings.show_sale_label %}
+  	  <p class="product-thumb-label {{sale_limit}}">{{ 'products.product.on_sale' | t }}</p>
+    {% endif %}
+    {% if sold_out %}
+    	<p class="product-thumb-label-sold {{sold_limit}}">{{ 'products.product.sold_out' | t }}</p>
+    {% endif %}
+    <div class="product-thumb-inner">
+      <div class="product-thumb-img-wrap {{bs_class}}">
+
+				{% if section.settings.use_quick_view %}
+					{% include 'product-quick-view-btn', buttonType: "red" %}
+				{% endif %}
+
+        <noscript>
+        	<img class="product-thumb-img z_index_1" alt="{{product.title | escape }}" srcset="{{ product.featured_media.preview_image.src | product_img_url: product_img_url_width }} 1x, {{ product.featured_media.preview_image.src | product_img_url: product_img_url_width, scale: 2 }} 2x, {{ product.featured_media.preview_image.src | product_img_url: product_img_url_width, scale: 3 }} 3x"/>
+        </noscript>
+
+				{%- include 'product-image',
+					img: product.featured_media.preview_image,
+					class_name: 'product-thumb-img',
+					spinner: true
+				-%}
+
+        </div>
+      </div>
+      <div class="product-thumb-caption">
+
+
+
+          {% if settings.product_reviews %}
+					<div class="show-reviews -{{settings.thumbnail_rating}}">
+            <div class="pt10"></div>
+            <span class="shopify-product-reviews-badge min_height_22" data-id="{{ product.id }}"></span>
+				 </div>
+          {% endif %}
+
+
+        <h5 class="product-thumb-caption-title">{{ product.title | escape }}</h5>
+
+         {% unless product.price_max == 0 and settings.custom_price0_text != blank %}	
+          <ul class="product-thumb-caption-price">
+            {% if on_sale %}<li class="product-thumb-caption-price-list"><span class="compare-price money">{{ product.compare_at_price | money }}</span></li>{% endif %}
+            <li class="product-thumb-caption-price-current">{% if product.price_varies %}{{ 'products.product.price_from' | t }} {% endif %}<span class="money">{{ product.price | money }}</span></li>
+          </ul>
+		{% else %}     
+          <span>{{settings.custom_price0_text }}</span> 
+        {% endunless %}	
+        
+	    {% if section.settings.show_grid_type %}
+        	<p class="product-thumb-caption-desc">{{ product.type }}</p>
+        {% endif %}
+        {% if section.settings.show_vendor %}
+       	 <p class="product-thumb-vendor">{{ product.vendor }}</p>
+        {% endif %}
+
+        </div>
+
+    </div>
+

@@ -1,0 +1,60 @@
+{% comment %}
+  vars
+    - class_name
+    - img_src
+    - img_size
+    - style
+    - id
+    - spinner
+    - placeholder_id
+    - placeholder_type
+{% endcomment %}
+
+{%- if style -%}
+  {% assign add_style = style %}
+{%- else -%}
+  {% assign add_style = null %}
+{%- endif -%}
+
+{%- if img_size == blank or img_size == false or img_size == null -%}
+  {% assign img_size = '300x300' %}
+{%- endif -%}
+
+{%- if placeholder_id and placeholder_type -%}
+  {% assign placeholder_name = placeholder_type | append: '-' | append: placeholder_id %}
+{%- else -%}
+  {% assign placeholder_name = 'image' %}
+{%- endif -%}
+
+
+{% assign img_url = img_src | img_url: img_size %}
+
+{%- if img_src != blank -%}
+  <div
+    class="lazyload visible_lazy {{class_name}}"
+    data-bgset="{%- include 'bgset' image: img_src -%}"
+    data-sizes="auto"
+    data-parent-fit="cover"
+    style="background-image: url('{{img_url}}'); {{add_style}}"
+    id="{{id}}"
+  ></div>
+{%- else -%}
+  <div
+    class="bg-svg-holder {{class_name}}"
+    style="{{add_style}}"
+    id="{{id}}"
+  >
+    {{placeholder_name | placeholder_svg_tag: 'bg-svg'}}
+  </div>
+{%- endif -%}
+
+
+{%- if spinner and img_src != blank  -%}
+<div class="spinner-cube">
+  <div class="loadFacebookG">
+   <div class="blockG_1 facebook_blockG"></div>
+   <div class="blockG_2 facebook_blockG"></div>
+   <div class="blockG_3 facebook_blockG"></div>
+  </div>
+</div>
+{%- endif -%}

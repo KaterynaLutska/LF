@@ -1,0 +1,57 @@
+{% include "mobile-header" %}
+
+<nav class="nav-container minimal-top-nav nav-container-float mobile-hidden-sm nav-to-sticky" id="navbarStickyDesktop">
+  <div class="nav-container-inner">
+    {% if section.settings.logo %}
+      <a class="nav-container-logo" href="{{routes.root_url}}">
+        {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+        <img src="{{ section.settings.logo | img_url: image_size, scale:2 }}" alt="{% if section.settings.logo.alt != blank %}{{section.settings.logo.alt}}{% else %}{{ shop.name }}{% endif %}" style="max-width:{{section.settings.logo_max_width | append: "px"}}; min-height:{{section.settings.logo_max_width | divided_by: section.settings.logo.aspect_ratio | floor}}px" />
+      </a>
+      {% else %}
+        <div class="logo-text">
+          <a class="text-logo" href="{{routes.root_url}}">{{ shop.name }}</a>
+        </div>
+    {% endif %}
+    <div class="nav-container-controls" id="nav-controls">
+      <div class="nav-container-control-left">
+        <button class="tconStyleLines nav-container-action pushy-menu-btn" type="button" id="pushy-menu-btn"><span class="tcon-menu__lines" aria-hidden="true"></span><span class="tcon-visuallyhidden">Press space bar to toggle menu</span>
+        </button>
+      </div>
+      <div class="nav-container-control-right">
+        <ul class="nav-container-actions">
+          {% if settings.show_multiple_currencies %}
+            <li>
+              {% include "currency-switcher" %}
+            </li>
+          {% endif %}
+          <li>
+            <a class="lin lin-magnifier popup-text search-modal-popup nav-container-action" href="#nav-search-dialog" data-effect="mfp-move-from-top">
+              <span class="visuallyhidden">Search</span>
+            </a>
+          </li>
+          {% if shop.customer_accounts_enabled %}
+            <li>
+              {% if customer %}
+              <a class="lin lin-user nav-container-action" href="{{routes.account_url}}">
+                <span class="visuallyhidden">My account</span>
+              </a>
+              {%else %}
+              <a class="lin lin-user nav-container-action" href="{{routes.account_login_url}}">
+                <span class="visuallyhidden">My account</span>
+              </a>
+              {%endif %}
+            </li>
+          {% endif %}
+          <li>
+            <a class="lin lin-basket popup-text cart-modal-popup nav-container-action top-mobile-nav" href="javascript:void(0);" data-effect="mfp-move-from-top">
+              <span class="mega-nav-count nav-main-cart-amount count-items {% if cart.item_count < 1 %} hidden{% endif %}" aria-hidden="true">
+                {%- include 'bold-options-hybrid-cart-item-count' with cart -%}
+              </span>
+              <span class="visuallyhidden">You have {{ cart.item_count }} items in your cart</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

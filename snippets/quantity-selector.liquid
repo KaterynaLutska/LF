@@ -1,0 +1,7 @@
+<div class="col-xs-4 col-md-3  {% if section.settings.show_smart_checkout%}centered_on_mobile_btns {% endif %}">
+  <div class="product-form__item product-form__item--quantity product-item-caption-qty">
+    <button class="btn-number btn-number-{{ section.id }}" type="button"  data-type="minus" data-field="quant[1]">-</button>
+    <input type="text" id="Quantity-{{ section.id }}" name="quantity" value="1" class="form-control input-number input-number-{{ section.id }} product-form__input" pattern="[0-9]*">
+    <button class="btn-number btn-number-{{ section.id }}" type="button"  data-type="plus" data-field="quant[1]">+</button>
+  </div>
+</div><!-- <div class="col-xs-4 col-md-3"> -->

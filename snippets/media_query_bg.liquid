@@ -1,0 +1,82 @@
+@media only screen and (min-width:320px) {
+ header.page-header:after{
+  background-image: url('{{ section.settings.image | img_url: '768x'}}');
+}
+}
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2)      and (min-width: 320px),
+only screen and (   min--moz-device-pixel-ratio: 2)      and (min-width: 320px),
+only screen and (     -o-min-device-pixel-ratio: 2/1)    and (min-width: 320px),
+only screen and (        min-device-pixel-ratio: 2)      and (min-width: 320px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 320px) { 
+header.page-header:after{
+   background-image: url('{{ section.settings.image | img_url: '768x', scale: 2}}');
+}
+}
+@media
+only screen and (-webkit-min-device-pixel-ratio: 3)      and (min-width: 320px),
+only screen and (   min--moz-device-pixel-ratio: 3)      and (min-width: 320px),
+only screen and (     -o-min-device-pixel-ratio: 3/1)    and (min-width: 320px),
+only screen and (        min-device-pixel-ratio: 3)      and (min-width: 320px),
+only screen and (                min-resolution: 3dppx)  and (min-width: 320px) { 
+header.page-header:after{
+   background-image: url('{{ section.settings.image | img_url: '768x', scale: 3}}');
+}
+}
+
+@media only screen and (min-width: 768px) {
+header.page-header:after{
+   background-image: url('{{ section.settings.image | img_url: '1300x' }}');
+}
+}
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2)      and (min-width: 768px),
+only screen and (   min--moz-device-pixel-ratio: 2)      and (min-width: 768px),
+only screen and (     -o-min-device-pixel-ratio: 2/1)    and (min-width: 768px),
+only screen and (        min-device-pixel-ratio: 2)      and (min-width: 768px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 768px) { 
+header.page-header:after{
+  background-image: url('{{ section.settings.image | img_url: '1300x', scale: 2}}');
+}
+}
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 3)      and (min-width: 768px),
+only screen and (   min--moz-device-pixel-ratio: 3)      and (min-width: 768px),
+only screen and (     -o-min-device-pixel-ratio: 3/1)    and (min-width: 768px),
+only screen and (        min-device-pixel-ratio: 3)      and (min-width: 768px),
+only screen and (                min-resolution: 3dppx)  and (min-width: 768px) { 
+header.page-header:after{
+   background-image: url('{{ section.settings.image | img_url: '1300x', scale: 3}}');
+}
+}
+
+@media only screen and (min-width: 1300px) {
+header.page-header:after{
+  background-image: url('{{ section.settings.image | img_url: '2000x'}}');
+}
+}
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 2)      and (min-width: 1300px),
+only screen and (   min--moz-device-pixel-ratio: 2)      and (min-width: 1300px),
+only screen and (     -o-min-device-pixel-ratio: 2/1)    and (min-width: 1300px),
+only screen and (        min-device-pixel-ratio: 2)      and (min-width: 1300px),
+only screen and (                min-resolution: 2dppx)  and (min-width: 1300px) { 
+header.page-header:after{
+ background-image: url('{{ section.settings.image | img_url: '2000x', scale: 2}}');
+}
+}
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 3)      and (min-width: 1300px),
+only screen and (   min--moz-device-pixel-ratio: 3)      and (min-width: 1300px),
+only screen and (     -o-min-device-pixel-ratio: 3/1)    and (min-width: 1300px),
+only screen and (        min-device-pixel-ratio: 3)      and (min-width: 1300px),
+only screen and (                min-resolution: 3dppx)  and (min-width: 1300px) { 
+header.page-header:after{
+  background-image: url('{{ section.settings.image | img_url: '2000x', scale: 3}}');
+}
+}

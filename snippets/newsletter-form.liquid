@@ -1,0 +1,10 @@
+{% form 'customer',class:"footer-main-standard-newsletter" %}
+  {{ form.errors | default_errors }}
+   <label class="fields_label" for="Email_{{section.id}}">{{ 'general.newsletter_form.newsletter_email' | t }}</label>
+	<div class="newsletter--wrapper">
+      <input type="hidden" name="contact[tags]" value="newsletter">       
+      <input class="footer-main-standard-newsletter-input" type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}" name="contact[email]" id="Email_{{section.id}}" autocorrect="none" autocapitalize="none"/>
+      <button class="footer-main-standard-newsletter-submit" type="submit" name="commit">{{ 'general.newsletter_form.submit' | t }}</button>
+    </div>
+{% endform %}
+

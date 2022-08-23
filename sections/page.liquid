@@ -1,0 +1,136 @@
+{%- if section.settings.use_rounded_images -%}
+  {% assign rounded_class = "-img-round" %}
+{%- else -%}
+  {% assign rounded_class = null %}
+{%- endif -%}
+
+{%- if section.settings.section_width == 'x_narrow' -%}
+  {% assign col_class = "col-md-8 col-md-offset-2" %}
+{%- elsif section.settings.section_width == 'narrow' -%}
+  {% assign col_class = "col-md-10 col-md-offset-1" %}
+{%- else -%}
+  {% assign col_class = "col-md-12" %}
+{%- endif -%}
+
+
+{%- include 'section-bg-init',
+  section_id: section.id,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+
+<style>
+  {% if section.settings.use_section_bg_color %}
+    .section-wrapper-bg-{{section.id}}, .section-wrapper-bg-{{section.id}} .block-title {
+      background: {{settings.alternate_bg_color}};
+    }
+  {% endif %}
+</style>
+
+
+<div data-section-id="{{ section.id }}" data-section-type="image-bar-section" class="section-wrapper-bg-{{section.id}}">
+
+  <div class="container hero-container">
+
+    {%
+      include "section-header",
+      section_title: section.settings.title,
+      section_subtitle: section.settings.subtitle
+    %}
+    <div class="row">
+      <div class="{{col_class}}">
+        <div class="custom-page -{{section.settings.font_size}} {{rounded_class}}">
+          {{ pages[section.settings.page_title].content }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+{% schema %}
+  {
+    "name": "Page content",
+    "settings": [
+    {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Visit Us"
+    },
+    {
+      "type":  "text",
+      "id":    "subtitle",
+      "label": "Description"
+    },
+    {
+         "type":"checkbox",
+         "id":"use_section_bg_color",
+         "label":"Use alternate background"
+     },
+      {
+        "type": "paragraph",
+        "content": "This section allows you to show the content of any page you have created directly on your home page."
+      },
+      {
+        "type": "page",
+        "id": "page_title",
+        "label": "Choose page"
+      },
+      {
+       "type":"select",
+       "id":"section_width",
+       "label":"Width",
+       "default":"narrow",
+       "options":[
+          {
+             "label":"Wide",
+             "value":"normal"
+          },
+          {
+             "label":"Medium",
+             "value":"narrow"
+          },
+          {
+             "label":"Narrow",
+             "value":"x_narrow"
+          }
+         ]
+       },
+       {
+            "type":"checkbox",
+            "id":"use_rounded_images",
+            "label":"Enable rounded images",
+            "default": true
+        },
+       {
+        "type":"select",
+        "id":"font_size",
+        "label":"Font size",
+        "default":"lg",
+        "options":[
+           {
+              "label":"Normal",
+              "value":"normal"
+           },
+           {
+              "label":"Large",
+              "value":"lg"
+           },
+           {
+              "label":"Extra large",
+              "value":"xl"
+           }
+          ]
+         }
+    ],
+    "presets": [
+        {
+          "name": "Page",
+          "category": "Text"
+        }
+      ]
+  }
+{% endschema %}

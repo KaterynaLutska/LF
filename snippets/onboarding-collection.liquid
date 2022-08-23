@@ -1,0 +1,24 @@
+{% for i in (1..20) limit: product_limit %}
+  <div class="col-md-{{ featured_grid_layout }} col-sm-6 col-xs-6 collection-products-wrapper">
+    <div class="product-thumb">
+      <a class="product-thumb-href" href="{{routes.root_url}}"></a>
+      <div class="product-thumb-inner onboarding_collection_products">
+        <div class="product-thumb-img-wrap">
+          {% capture imgCount %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+          {% capture svg_name %}collection-{{ imgCount }}{% endcapture %}
+          {{ svg_name | placeholder_svg_tag: 'product-thumb-img' }}
+        </div>
+        <div class="product-thumb-caption">
+          <h5 class="product-thumb-caption-title">{{'homepage.onboarding.product_title' | t }}</h5>
+          {% if section.settings.show_grid_type %}
+         	 <p class="product-thumb-caption-desc">{{'homepage.onboarding.product_type' | t }}</p>
+          {% endif %} 	
+          <ul class="product-thumb-caption-price">
+            <li class="product-thumb-caption-price-list"><span class="compare-price money">{{'homepage.onboarding.product_compare_price' | t }}</span></li>
+            <li class="product-thumb-caption-price-current"><span class="money">{{'homepage.onboarding.product_price' | t }}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}

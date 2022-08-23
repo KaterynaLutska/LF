@@ -1,0 +1,93 @@
+{% comment %}
+<header class="page-header as-background page-header as-background hero--l-small mb30 vertical-centered" >
+  <div class="page-header-inner-bottom">
+    <h1 class="collection-page-header-title page-header-title-sm ">{{ 'customer.account.title' | t }}</h1>
+  </div>
+</header>
+  {% include 'breadcrumb' breadcrumb_class:"page-header-breadcrumb" %}
+{% endcomment %}
+{% assign page_title = 'customer.account.title' | t  %}
+
+{% include 'page-header'
+  bg: settings.page_account_bg_img,
+  title: page_title
+%}
+
+   <h3 class="account-title welcome_title text-center">{{ 'customer.account.welcome' | t }} {{ customer.name }}</h3>
+   <p class="logout_link_wrapper">{{ 'layout.customer.log_out' | t | customer_logout_link }}</p>
+
+<div class="main-content-inner account-page container pl15_pr15">
+  <div class="row" data-gutter="80">
+    <div class="col-md-8">
+      <h3 class="account-title">{{ 'customer.orders.title' | t }}</h3>
+      {% paginate customer.orders by 20 %}
+        {% if customer.orders.size != 0 %}
+          <table class="table orders-table">
+            <thead>
+              <tr>
+                <th>{{ 'customer.orders.order_number' | t }}</th>
+                <th>{{ 'customer.orders.date' | t }}</th>
+                <th>{{ 'customer.orders.payment_status' | t }}</th> 
+                <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+                <th>{{ 'customer.orders.total' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in customer.orders %}
+                <tr>
+                  <td>{{ order.name | link_to: order.customer_url }}</td>
+                  <td>{{ order.created_at | date: "%b %d, %Y" }}</td>
+                  <td>{{ order.financial_status_label }}</td>
+                  <td>{{ order.fulfillment_status_label }}</td>
+                  <td>{{ order.total_price | money }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+        	<p>{{ 'customer.orders.none' | t }}</p>
+        {% endif %}
+        {% if paginate.pages > 1 %}
+        	{% include 'pagination-custom' %}
+        {% endif %}
+      {% endpaginate %}
+    </div>
+    <div class="col-md-4">
+      <h3 class="account-title">{{ 'customer.account.details' | t }}</h3>
+      <p class="account-name">{{ customer.name }}</p>
+      <p class="account-e-mail">{{ customer.email }}</p>
+      {% if customer.default_address %}
+        <ul class="account-address">
+          <li>{{ customer.default_address.street }}</li>
+          {% if customer.default_address.city != "" or  customer.default_address.country != "" %}
+            <li>
+              {% if customer.default_address.city != "" %}
+                {{ customer.default_address.city }}
+                &nbsp;
+              {% endif %}
+              {% if customer.default_address.country != "" %}
+             	 {{ customer.default_address.country }}
+              {% endif %}
+            </li>
+          {% endif %}
+          {% if customer.default_address.province_code != "" %}
+            <li>
+              {{ customer.default_address.province_code | upcase }}
+            </li>
+          {% endif %}
+          {% if customer.default_address.zip != "" %}
+            <li>
+              {{ customer.default_address.zip | upcase }}<br>
+            </li>
+          {% endif %}
+          {% if customer.default_address.phone != "" %}
+            <li>
+              {{ customer.default_address.phone }}
+            </li>
+          {% endif %}
+        </ul>
+      {% endif %}
+      <a class="small_address_link" href="{{routes.account_addresses_url}}">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a>
+    </div>
+  </div>
+</div>

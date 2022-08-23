@@ -1,0 +1,13 @@
+{% comment %}
+
+  varibles
+    @product_id -> string
+
+{% endcomment %}
+
+
+{%- if settings.product_reviews -%}
+  <div class="mb10 min_height_22">
+    <span class="shopify-product-reviews-badge" data-id="{{ product_id }}"></span>
+  </div>
+{%- endif -%}

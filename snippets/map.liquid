@@ -1,0 +1,142 @@
+{% comment %}
+  vars
+    - layout
+    - bg_img
+    - section_id
+    - api_key
+    - map_address
+    - section_title
+    - section_subtitle
+    - caption_style
+    - heading
+    - text
+    - button_text
+{% endcomment %}
+
+
+
+{%- if caption_style == 'primary' -%}
+  {% assign btn_class = "btn-white btn-ghost btn-hover-primary" %}
+{%- else -%}
+  {% assign btn_class = "btn-primary" %}
+{%- endif -%}
+
+
+
+
+
+{% capture caption %}
+{%- if layout == 'block' -%}
+  {% assign container = 'container' %}
+{%- endif -%}
+<div class="map-section__content-wrapper {{container}}">
+  <div class="map-section__content -{{caption_style}}">
+    {%- if layout != 'center' and layout != 'block' and  section_title != blank-%}
+      <div class="map-section__header">
+        <h2 class="map-section__header-title">{{section_title | escape}}</h2>
+        {%- if section_subtitle != blank -%}
+          <p class="map-section__header-subtitle">{{section_subtitle | escape}}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+    {% if heading != blank %}
+      <h3 class="h4 map-section__content-heading">{{ heading | escape }}</h3>
+    {% endif %}
+    {% if section.settings.address != blank %}
+      <div class="rte-setting">{{ section.settings.address }}</div>
+      {% if map_address != blank and button_text != blank %}
+      <a href="https://maps.google.com?daddr={{ map_address | escape }}"
+         class="btn {{btn_class}} map_section__directions-btn"
+         target="_blank"
+      >
+        <span>{{ button_text | escape }}</span>
+      </a>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endcapture %}
+
+{% capture map_area %}
+<div class="map-section__background-wrapper">
+
+  {% if api_key != blank and map_address %}
+    <div class="map-section__container"
+         id="Map-{{ section.id }}"
+         data-map
+         data-address-setting="{{ map_address | escape }}"
+         data-api-key="{{ api_key }}">
+    </div>
+    <div class="map-section__overlay" data-map-overlay></div>
+  {% else %}
+    {%- include 'bg-img'
+      class_name: 'map-section__image js',
+      placeholder_id: '2',
+      placeholder_type: 'lifestyle',
+      img_src: bg_img,
+      img_size: '2000x'
+    -%}
+  {% endif %}
+</div>
+{% endcapture %}
+
+
+{%- if layout == 'center' -%}
+
+  {%- if center_block == true -%}
+  <div id="MapSection--{{ section.id }}"
+       class="map-section -layout--{{layout}}"
+       data-section-id="{{ section.id }}"
+       data-section-type="map">
+       {{ map_area }}
+       {{ caption }}
+  </div>
+  {%- else -%}
+  <div class="container hero-container">
+
+    {%
+      include "section-header",
+      section_title: section.settings.title,
+      section_subtitle: section.settings.subtitle
+    %}
+
+  <div id="MapSection--{{ section.id }}"
+       class="map-section -layout--{{layout}}"
+       data-section-id="{{ section.id }}"
+       data-section-type="map">
+       {{ map_area }}
+       {{ caption }}
+  </div>
+</div>
+  {%- endif -%}
+
+
+{%- elsif layout == 'block' -%}
+<div id="MapSection--{{ section.id }}"
+     class="map-section -layout--{{layout}}"
+     data-section-id="{{ section.id }}"
+     data-section-type="map">
+     {{ map_area }}
+     {{ caption }}
+</div>
+
+{%- else -%}
+  {%- if layout == 'right' -%}
+    {% assign row_inverse_class = 'row-col-inverse' %}
+  {%- else -%}
+    {% assign row_inverse_class = null %}
+  {%- endif -%}
+  <div id="MapSection--{{ section.id }}"
+       class="map-section -layout--{{layout}}"
+       data-section-id="{{ section.id }}"
+       data-section-type="map">
+    <div class="row row-eq-height row-no-gutter {{row_inverse_class}}">
+      <div class="col-md-7">
+        {{map_area}}
+      </div>
+      <div class="col-md-5">
+        {{caption}}
+      </div>
+    </div>
+    </div>
+{%- endif -%}

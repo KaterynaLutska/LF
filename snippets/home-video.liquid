@@ -1,0 +1,38 @@
+<div class="hero-video-wrapper" id="hero-video-{{ section.id }}">
+  {% comment %}
+  {% if section.settings.video_link != blank %}
+    <video class="hero-video" preload="auto" autoplay="true" loop="loop" muted="muted">
+      <source src="{{ section.settings.video_link }}" type="video/mp4" />
+    </video>
+  {% endif %}
+  {% endcomment %}
+
+  {% if section.settings.video_link != blank %}
+    {% if section.settings.video_link.type == 'youtube' %}
+      <iframe class="fullvid" width="1280" height="720" src="https://www.youtube.com/embed/{{section.settings.video_link.id}}?hd=1&iv_load_policy=3&rel=0&showinfo=0&autoplay=1&loop=1&playlist={{section.settings.video_link.id}}&controls=0&mute=1" allowfullscreen></iframe>
+    {% else %}
+  <iframe class="fullvid" src="https://player.vimeo.com/video/{{section.settings.video_link.id}}?autoplay=1&loop=1" width="1280" height="720" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+    {% endif %}
+  {% endif %}
+<!-- Demo content -->
+
+  <div class="hero-video-caption hero-video-caption-{{section.id}}">
+    {% if section.settings.video_title != blank %}
+      <h1 class="hero-video-caption-title hero-video-caption-title-{{section.id}}">{{ section.settings.video_title | escape }}</h1>
+    {% endif %}
+    {% if section.settings.video_text != blank %}
+    <div class="hero-video-desc-{{section.id}}">
+   	 {{section.settings.video_text}}
+    </div>
+    {% endif %}
+  </div>
+  <div class="scroll_icon_wrap">
+    <a href="#scroll-{{ section.id }}" class="scroll_link bloop smoothScroll" tabindex="-1">
+      <span class="scroll_icon">
+        <i class="lin lin-arrow-down scroll-arrow-down"></i>
+      </span>
+    </a>
+  </div>
+  <div class="scroll__link" id="scroll-{{ section.id }}"></div>
+</div>

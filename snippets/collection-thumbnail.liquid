@@ -1,0 +1,100 @@
+{%- if col == "2_col" -%}
+  {% assign col_class = 6 %}
+{%- elsif col == "3_col" -%}
+  {% assign col_class = 4 %}
+{%- elsif col == "4_col" -%}
+  {% assign col_class = 3 %}
+{%- elsif col == "6_col" -%}
+  {% assign col_class = 2 %}
+{%- endif -%}
+
+
+{%- if collection.products_count != 1 -%}
+	{% assign product_counter = "products" %}
+{%- else -%}
+	{% assign product_counter = "product" %}
+{%- endif -%}
+
+{%- if orientation == 'round' -%}
+	{% assign rounded_class = "collection-thumb-round" %}
+{%- else -%}
+	{% assign rounded_class = null %}
+{%- endif -%}
+
+{%- if zoomed -%}
+	{% assign zoom_class = "collection-thumb-zoom" %}
+{%- else -%}
+	{% assign zoom_class = null %}
+{%- endif -%}
+
+{% assign title_transfrom_class = 'text-' | append: title_transfrom %}
+
+
+{%- if collection.title != blank -%}
+  {% assign collection_title = collection.title | escape %}
+  {% assign collection_count = collection.products_count | escape %}
+{%- else -%}
+  {% assign collection_title = "Collection " | append: index %}
+  {% assign collection_count = 0 %}
+{%- endif -%}
+
+
+
+{% capture collection_img %}
+  {%- if collection.title == blank -%}
+    {{ 'collection-' | append: svg_index | placeholder_svg_tag }}
+  {%- else -%}
+    {%- if image_type == 'featured' -%}
+      <div class="collection-thumb-img-wrap">
+        <div class="collection-thumb-img-overlay"></div>
+        {%- include 'bg-img'
+          img_src: collection.image,
+          class_name: 'collection-thumb-img',
+          spinner: true
+        -%}
+      </div>
+    {%- else -%}
+      <div class="product-thumb-img-wrap">
+        {%- include 'product-image',
+          img: collection.products.first.featured_media.preview_image,
+          class_name: 'product-thumb-img',
+          spinner: false
+        -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{% endcapture %}
+
+
+
+
+{% unless collection_image_size %}
+	{%- assign collection_image_size = '450x450' -%}
+{% endunless %}
+{% if collection.empty? %}
+  {% comment %}add default state for collection block in theme editor{% endcomment %}
+  {% assign collection_image_url = '' %}
+ {% else %}
+  {% if collection.image %}
+    {% capture collection_image_url %}{{ collection | img_url: collection_image_size }} 1x, {{ collection | img_url: collection_image_size, scale: 2 }} 2x, {{ collection | img_url: collection_image_size, scale: 3 }} 3x{% endcapture %}
+    {% capture collection_image_placeholder %}{{ collection | img_url: "300x" }}{% endcapture %}
+    {% elsif collection.products.first %}
+    	{% capture collection_image_url %}{{ collection.products.first | img_url: collection_image_size}} 1x, {{ collection.products.first | img_url: collection_image_size, scale: 2}} 2x, {{ collection.products.first | img_url: collection_image_size, scale: 3}} 3x{% endcapture %}
+        {% capture collection_image_placeholder %}{{ collection.products.first | img_url: "300x"}}{% endcapture %}
+  {% endif %}
+{% endif %}
+
+<div class="col-md-{{col_class}} col-lg-{{col_class}} col-sm-6 col-xs-6">
+		<div class="collection-thumb collection-thumb-{{orientation}} {{rounded_class}} {{zoom_class}} {{thumb_class}}">
+			<a class="collection-thumb-link" href="{{ collection.url }}"></a>
+      {{collection_img}}
+			<div class="collection-thumb-caption">
+				<h5 class="collection-thumb-title {{title_transfrom_class}}">{{ collection_title }}</h5>
+				{%- if count_products -%}
+					<p class="collection-thumb-count">{{ collection_count }} {{ product_counter }}</p>
+				{%- endif -%}
+			</div>
+		</div>
+
+</div>
+

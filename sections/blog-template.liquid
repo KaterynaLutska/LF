@@ -1,0 +1,143 @@
+{% assign col_width = 6 %}
+{%- if section.settings.layout == 'grid_3_columns' -%}
+    {% assign col_width = 4 %}
+{%- endif -%}
+
+{% assign card_full = true %}
+{%- if section.settings.blog_card_view -%}
+  {% assign card_full = false %}
+{%- endif -%}
+
+{% paginate blog.articles by 12 %}
+
+{% include 'page-header'
+  bg: section.settings.image,
+  title: page_title
+%}
+
+
+
+
+  <div class="page-wrapper">
+
+
+  <div class="container blog-template" data-section-id="{{ section.id }}" data-section-type="blog-page-section">
+
+    <div class="row row-flex blog-posts-wrapper -{{section.settings.appearance}}">
+    <div class="grid_blog_layout col-sm-12 {% if section.settings.layout == 'list' %}blog--list-view{% endif %}">
+        {% for article in blog.articles %}
+          {% if section.settings.layout == 'grid_3_columns' or section.settings.layout == 'grid_2_columns' %}
+            {% include "blog-thumbnail",
+        			article: article,
+        			card_view: section.settings.blog_card_view,
+        			grid_width: col_width,
+        			grid_width_sm: 12,
+              grid_gap: true,
+              show_date: section.settings.blog_meta_date,
+              show_author: section.settings.blog_meta_author,
+              show_comments: section.settings.blog_meta_comments %}
+          {% else %}
+            <div class="col-md-8 col-md-offset-2">
+              {% include "blog-thumbnail-list",
+                article: article,
+                blog: blog,
+                show_date: section.settings.blog_meta_date,
+                show_author: section.settings.blog_meta_author,
+                show_comments: section.settings.blog_meta_comments %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% if paginate.pages > 1 %}
+     	 {% include 'pagination-custom' %}
+      {% endif %}
+    </div>
+  </div>
+    {% include 'sidebar-blog' %}
+  </div>
+
+  </div>
+{% endpaginate %}
+
+{% schema %}
+{
+   "name":"Blog",
+   "settings":[
+	  {
+         "type": "header",
+         "content": "Header"
+      },
+      {
+         "type":"image_picker",
+         "id":"image",
+         "label":"Background image"
+      },
+	  {
+         "type": "header",
+         "content": "Content"
+      },
+      {
+         "type":"select",
+         "id":"layout",
+         "label":"Layout",
+         "default":"grid_2_columns",
+         "options":[
+            {
+               "value":"list",
+               "label":"List"
+            },
+            {
+               "value":"grid_2_columns",
+               "label":"2 column grid"
+            },
+            {
+              "value": "grid_3_columns",
+              "label": "3 column grid"
+            }
+         ]
+      },
+      {
+         "type":"checkbox",
+         "id":"blog_card_view",
+         "label":"Enable card view",
+         "default":false,
+         "info": "Not available with list layout"
+      },
+      {
+          "type": "select",
+          "id": "appearance",
+          "options": [
+            { "value": "white_bg", "label": "Shadow box"},
+            { "value": "border", "label": "Border"},
+            { "value": "alt_bg", "label": "Alternate background"},
+            { "value": "primary_bg", "label": "Primary background"},
+            { "value": "dark_bg", "label": "Dark background"}
+          ],
+          "default": "white_bg",
+          "label": "Card style"
+       },
+      {
+         "type": "header",
+         "content": "Meta information"
+      },
+      {
+         "type":"checkbox",
+         "id":"blog_meta_author",
+         "label":"Show author",
+         "default":true
+      },
+      {
+         "type":"checkbox",
+         "id":"blog_meta_date",
+         "label":"Show date",
+         "default":true
+      },
+      {
+         "type":"checkbox",
+         "id":"blog_meta_comments",
+         "label":"Show comments",
+         "default":false,
+         "info": "Must be enabled in blog settings"
+      }
+   ]
+}
+{% endschema %}

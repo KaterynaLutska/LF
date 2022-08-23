@@ -1,0 +1,199 @@
+{% capture faq_section %}
+
+<div class="panel-group faq-accordion -{{section.settings.accordion_style}}" id="accordion" role="tablist" aria-multiselectable="true">
+
+  {%- for block in section.blocks -%}
+    <div class="panel">
+      <div class="panel-heading" role="tab" id="faq-item-title-{{forloop.index}}">
+        <h4 class="panel-title">
+          <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#faq-item-body-{{forloop.index}}" aria-expanded="true" aria-controls="faq-item-body-{{forloop.index}}">
+            {{block.settings.title}}
+            <span></span>
+          </a>
+        </h4>
+      </div>
+      <div id="faq-item-body-{{forloop.index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq-item-title-{{forloop.index}}">
+        <div class="panel-body">
+          {{block.settings.text}}
+        </div>
+      </div>
+    </div>
+  {%- endfor -%}
+
+</div>
+
+{% endcapture %}
+
+
+{% comment %}
+
+{% assign col_class = 'col-md-8 col-md-offset-2' %}
+
+{%- if section.settings.section_width == 'x_narrow' -%}
+  {% assign col_class = "col-md-8 col-md-offset-2" %}
+{%- elsif section.settings.section_width == 'narrow' -%}
+  {% assign col_class = "col-md-10 col-md-offset-1" %}
+{%- else -%}
+  {% assign col_class = "col-md-12" %}
+{%- endif -%}
+
+{%- if section.settings.use_section_bg_color -%}
+  {% assign alt_bg_class = 'bg-alt' %}
+{%- else -%}
+  {% assign alt_bg_class = null %}
+{%- endif -%}
+
+{%- if section.settings.use_rounded_images -%}
+  {% assign rounded_class = "-img-round" %}
+{%- else -%}
+  {% assign rounded_class = null %}
+{%- endif -%}
+
+{% include 'page-header'
+  bg: section.settings.image,
+  title: page.title
+%}
+
+{%- if page.content != blank -%}
+  {% assign bottom_margin_class = 'mb30' %}
+{%- else -%}
+  {% assign bottom_margin_class = null %}
+{%- endif -%}
+
+<div class="page-wrapper {{ alt_bg_class }}">
+
+  <div class="container">
+    <div class="row">
+      <div class="{{col_class}}">
+        <div class="custom-page -{{section.settings.font_size}} {{rounded_class}} {{bottom_margin_class}}">
+          {{ page.content }}
+        </div>
+
+        <div class="panel-group faq-accordion -{{section.settings.font_size}}" id="accordion" role="tablist" aria-multiselectable="true">
+
+          {%- for block in section.blocks -%}
+            <div class="panel">
+              <div class="panel-heading" role="tab" id="faq-item-title-{{forloop.index}}">
+                <h4 class="panel-title">
+                  <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#faq-item-body-{{forloop.index}}" aria-expanded="true" aria-controls="faq-item-body-{{forloop.index}}">
+                    {{block.settings.title}}
+                    <span></span>
+                  </a>
+                </h4>
+              </div>
+              <div id="faq-item-body-{{forloop.index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="faq-item-title-{{forloop.index}}">
+                <div class="panel-body">
+                  {{block.settings.text}}
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endcomment %}
+
+{%- include 'page-template'
+  page: page,
+  header_image: section.settings.image,
+  after_content: faq_section,
+  after_content_section: true,
+  font_size: section.settings.font_size,
+  section_width: section.settings.section_width,
+  round_images: section.settings.use_rounded_images,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+
+{% schema %}
+{
+   "name":"FAQ Page",
+   "settings":[
+	{
+         "type": "header",
+         "content": "Header"
+    },
+    {
+       "type":"image_picker",
+       "id":"image",
+       "label":"Background image"
+    },
+	{
+         "type": "header",
+         "content": "Content"
+    },
+	{
+        "type":"checkbox",
+        "id":"use_section_bg_color",
+        "label":"Use alternate background"
+    },
+    {
+     "type":"select",
+     "id":"section_width",
+     "label":"Section width",
+     "default":"narrow",
+     "options":[
+        {
+           "label":"Wide",
+           "value":"normal"
+        },
+        {
+           "label":"Medium",
+           "value":"narrow"
+        },
+        {
+           "label":"Narrow",
+           "value":"x_narrow"
+        }
+       ]
+     },
+      {
+       "type":"select",
+       "id":"accordion_style",
+       "label":"Accordion style",
+       "default":"primary",
+       "options":[
+          {
+             "label":"Primary",
+             "value":"primary"
+          },
+          {
+             "label":"Dark",
+             "value":"dark"
+          },
+          {
+             "label":"Alternate",
+             "value":"alt"
+          },
+          {
+             "label":"White",
+             "value":"white"
+          }
+         ]
+       }
+   ],
+   "blocks": [
+     {
+       "type": "question",
+       "name": "Question",
+       "settings": [
+         {
+           "type": "text",
+           "id": "title",
+           "label": "Title",
+           "default": "Question"
+         },
+         {
+           "type":"richtext",
+           "id":"text",
+           "label":"Answer",
+           "default": "<p>Answer to question</p>"
+         }
+       ]
+     }
+   ]
+}
+{% endschema %}

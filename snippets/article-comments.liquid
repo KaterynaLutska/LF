@@ -1,0 +1,35 @@
+{% if blog.comments_enabled? %}
+
+      <div class="blog-comments">
+        {%- include 'article-comments-form' -%}
+        {% if article.comments_count > 0 %}
+          {% paginate article.comments by 4 %}
+            <ul class="blog-comments-list">
+              {% for comment in article.comments %}
+                <li>
+                  <article class="blog-comment">
+                    <img
+                      class="blog-comment-avatar"
+                      src="{{ 'gravatar-user-default.png' | asset_url }}"
+                      alt="{{ comment.author }}"/>
+                    <div class="blog-comment-inner">
+                      <div class="blog-comment-meta">
+                        <h5 class="blog-comment-name">{{ comment.author }}</h5>
+                        <p class="blog-comment-date">{{ comment.created_at | date: '%b %d, %Y' }}</p>
+                      </div>
+                      <div class="blog-comment-body">
+                        {{ comment.content }}
+                      </div>
+                    </div>
+                  </article>
+                </li>
+              {% endfor %}
+            </ul>
+            {% if paginate.pages > 1 %}
+              {% include 'pagination-custom' %}
+            {% endif %}
+          {% endpaginate %}
+        {% endif %}
+
+  </div>
+{% endif %}

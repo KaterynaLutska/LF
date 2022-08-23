@@ -1,0 +1,76 @@
+{% comment %}
+  Blog thumbanil snippet
+{% endcomment %}
+
+{% if grid_gap %}
+  {% assign gap_class = "blog-thumb-gap" %}
+{% else %}
+  {% assign gap_class = null %}
+{% endif %}
+
+{% if type == 'image' or card_view == false %}
+  {% assign full_class = "blog-thumb-full" %}
+{% else %}
+  {% assign full_class = null %}
+{% endif %}
+
+{%- if grid_width -%}
+  <div class="col-md-{{ grid_width }} col-sm-{{ grid_width_sm }}">
+{%- endif -%}
+
+
+  <div class="blog-thumb {{ full_class }} {{ gap_class }} {{class_name}}">
+
+    <a class="blog-thumb-link" href="{{ article.url }}"></a>
+
+
+
+    <div class="blog-thumb-img-wrapper">
+      {%- include 'bg-img'
+        img_src: article.image,
+        class_name: 'blog-thumb-img'
+      -%}
+      <div class="blog-thumb-img-mask"></div>
+    </div>
+
+
+    <div class="blog-thumb-caption">
+
+      {%- include 'article-meta'
+        article: article,
+        author: show_author,
+        date: show_date,
+        comments: show_comments
+      -%}
+
+      <h3 class="blog-thumb-title">
+        {%- if article -%}
+          {%- if full_class -%}
+            {{ article.title | truncate: 50 }}
+          {%- else -%}
+            {{ article.title  }}
+          {%- endif -%}
+        {%- else -%}
+          {{ title }}
+        {%- endif -%}
+
+      </h3>
+      <p class="blog-thumb-desc">
+        {%- if article -%}
+          {% if article.excerpt.size > 0 %}
+            {{ article.excerpt | strip_html | truncate: 150 }}
+          {% else %}
+            {{ article.content | strip_html | truncate: 150 }}
+          {% endif %}
+        {%- else -%}
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {%- endif -%}
+      </p>
+
+    </div><!-- caption -->
+
+  </div><!-- thumbnail -->
+
+{%- if grid_width -%}
+  </div><!-- column -->
+{%- endif -%}

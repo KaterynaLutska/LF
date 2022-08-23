@@ -1,0 +1,7 @@
+<a tabindex="-1" 
+   data-url="{{ product.url | within: collection | append: '?view=quickview' }}" 
+   class="btn btn-primary btn-sm product-thumb-full-quick-view popup-product quick-view-btn" 
+   href="{{ product.url | within: collection }}"
+   data-product-id="{{ product.id }}" 
+   data-slider-type="slider_gallery" 
+   data-effect="mfp-move-from-top">{{ 'products.product.quick_view' | t }}</a>

@@ -1,0 +1,30 @@
+{% form 'new_comment', article %}
+  <div id="add-comment" class="blog-comments-form">
+    <h2 class="blog-comments-form-title">{{ 'blogs.comments.title' | t }}</h2>
+    <div class="col-md-8">
+      {% include 'form-errors-custom' %}
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <form class="blog-comment-form">
+          <div class="row">
+            <div class="col-md-6">
+              <label class="blog-comment-label">{{ 'blogs.comments.name' | t }}</label>
+              <input class="blog-comment-input{% if form.errors contains "author" %} has-error{% endif %}" type="text" name="comment[author]" id="comment-author"/>
+            </div>
+            <div class="col-md-6">
+              <label class="blog-comment-label">{{ 'blogs.comments.email' | t }}</label>
+              <input class="blog-comment-input {% if form.errors contains "email" %} has-error{% endif %}" type="email" name="comment[email]" id="comment-email"/>
+            </div>
+          </div>
+          <label class="blog-comment-label">{{ 'blogs.comments.comment' | t }}</label>
+          <textarea class="blog-comment-textarea {% if form.errors contains "body" %} has-error{% endif %}" rows="4" name="comment[body]" id="comment-body"></textarea>
+          {% if blog.moderated? %}
+            <p class="blog-comment-notify">{{ 'blogs.comments.moderated' | t }}</p>
+          {% endif %}
+          <button class="btn btn-primary" type="submit">{{ 'blogs.comments.title' | t }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endform %}

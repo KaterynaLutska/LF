@@ -1,0 +1,195 @@
+{% capture collection_list %}
+
+  {% assign index = 0 %}
+  {% for block in section.blocks %}
+    {% assign index = index | plus: 1 %}
+  {% endfor %}
+
+  {% if index != 0 %}
+    {% for block in section.blocks %}
+    {% capture img_count %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+      {% assign featured = block.settings.collection %}
+        {% include 'collection-thumbnail'
+         collection: collections[featured],
+         index: forloop.index,
+         col: section.settings.home_feature_collection_grid_layout,
+         rounded: section.settings.use_rounded_images,
+         orientation: section.settings.orientation,
+         count_products: section.settings.show_product_counter,
+         zoomed: false,
+         title_transfrom: section.settings.caption_title_transfrom,
+         image_type: section.settings.image_type,
+         svg_index: img_count,
+         thumb_class: 'mb30'
+        %}
+      {% endfor %}
+  {% endif %}
+
+{% endcapture %}
+
+{%- include 'page-template'
+  page: page,
+  header_image: section.settings.image,
+  after_content: collection_list,
+  after_content_section: false,
+  font_size: section.settings.font_size,
+  section_width: section.settings.section_width,
+  round_images: section.settings.use_rounded_images,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+
+{% schema %}
+{
+   "name":"List Collections Page",
+   "settings":[
+   {
+     "type":      "header",
+     "content":   "Header"
+   },
+   {
+       "type":"image_picker",
+       "id":"image",
+       "label":"Background image"
+    },
+   {
+     "type":      "header",
+     "content":   "Content"
+   },
+   {
+        "type":"checkbox",
+        "id":"use_section_bg_color",
+        "label":"Use alternate background"
+    },
+    {
+     "type":"select",
+     "id":"section_width",
+     "label":"Section width",
+     "default":"narrow",
+     "options":[
+        {
+           "label":"Wide",
+           "value":"normal"
+        },
+        {
+           "label":"Medium",
+           "value":"narrow"
+        },
+        {
+           "label":"Narrow",
+           "value":"x_narrow"
+        }
+       ]
+     },
+
+      {
+         "type": "header",
+         "content": "Collections"
+      },
+      {
+         "type":"select",
+         "id":"home_feature_collection_grid_layout",
+         "label":"Grid layout",
+         "default":"6_col",
+         "options":[
+            {
+              "label": "2 columns",
+              "value": "2_col"
+            },
+            {
+               "label":"3 columns",
+               "value":"3_col"
+            },
+            {
+               "label":"4 columns",
+               "value":"4_col"
+            },
+            {
+               "label":"6 columns",
+               "value":"6_col"
+            }
+         ]
+      },
+      {
+         "type":"select",
+         "id":"image_type",
+         "label":"Image type",
+         "default":"featured",
+         "options":[
+            {
+               "label":"Collection featured image",
+               "value":"featured"
+            },
+            {
+               "label":"First product image",
+               "value":"product"
+            }
+         ]
+      },
+      {
+         "type":"select",
+         "id":"orientation",
+         "label":"Style",
+         "default":"sqr",
+         "info": "Only relevant if you choose Collection featured image above",
+         "options":[
+             {
+                "label":"Circle",
+                "value":"round"
+             },
+            {
+               "label":"Square",
+               "value":"sqr"
+            },
+            {
+               "label":"Landscape",
+               "value":"lscape"
+            },
+            {
+               "label":"Portrait",
+               "value":"port"
+            }
+         ]
+      },
+      {
+        "type":"select",
+        "id":"caption_title_transfrom",
+        "label":"Text style",
+        "options":[
+          {
+            "value":"normal",
+            "label":"Normal"
+          },
+          {
+            "value":"uppercase",
+            "label":"Uppercase"
+          },
+          {
+            "value":"lowercase",
+            "label":"Lowercase"
+          }
+        ],
+        "default":"normal"
+      },
+      {
+           "type":"checkbox",
+           "id":"show_product_counter",
+           "label":"Show product count",
+           "default": true
+      }
+   ],
+   "blocks":[
+      {
+         "type":"collection",
+         "name":"Collection",
+         "settings":[
+            {
+               "type":"collection",
+               "id":"collection",
+               "label":"Collection"
+            }
+         ]
+      }
+   ]
+}
+{% endschema %}

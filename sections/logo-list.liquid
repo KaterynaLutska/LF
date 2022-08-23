@@ -1,0 +1,219 @@
+{% assign col_count_class = '-col-count--' | append: section.settings.items_per_view %}
+
+{%- include 'section-bg-init',
+  section_id: section.id,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+<style>
+  {% if section.settings.use_section_bg_color %}
+  .section-wrapper-bg-{{section.id}}, .section-wrapper-bg-{{section.id}} .block-title {
+    background: {{settings.alternate_bg_color}};
+  }
+
+  {% endif %}
+    {% if section.blocks.size <= section.settings.items_per_slide %}
+  @media (min-width:768px) {
+    .section-wrapper-bg-{{section.id}} .logo-swiper-pagination{
+      height: 0;
+    }
+  }
+  {% endif %}
+
+
+</style>
+
+
+
+{% assign appearance_class = section.settings.appearance | prepend: '-' %}
+{% assign hover_class = '-hover-' | append: section.settings.hover_interaction %}
+
+{%- if section.settings.items_per_view < section.blocks.size -%}
+  {% assign hero_class = '-slider-desktop-active' %}
+{%- else -%}
+  {% assign hero_class = null %}
+{%- endif -%}
+
+<div class="logo-bar section-wrapper-bg-{{section.id}}" data-section-id="{{ section.id }}" data-section-type="logo-section" data-blocks-per-view="{{section.settings.items_per_view}}" data-blocks-limit="10" data-blocks-count="{{section.blocks.size}}" data-autoplay="{{section.settings.slider_autoplay}}" data-mobile-items="2">
+  <div class="container hero-container -inline-slider {{hero_class}}">
+  {%
+    include "section-header",
+    section_title: section.settings.title,
+    section_subtitle: section.settings.subtitle
+  %}
+
+
+  {% if section.blocks.size > 0 %}
+    <div class="swiper-container swiper-logo" id="inline-swiper-{{section.id}}">
+      <div id="logo-container-{{section.id}}" class="swiper-wrapper">
+      {% for block in section.blocks %}
+        <div class="swiper-slide logo-bar__item {{appearance_class}} {{hover_class}} {{col_count_class}}" {{ block.shopify_attributes }}>
+          {% if block.settings.link != blank %}
+            {%- if section.settings.new_tab_links -%}
+              {% assign link_target = 'target="_blank"' %}
+            {%- endif -%}
+            <a href="{{ block.settings.link }}" class="logo-bar__link" {{link_target}}>
+          {% endif %}
+          {% if block.settings.image != blank %}
+              <div class="logo-bar__item_inner {% if section.settings.use_border_for_logo %} bordered-logo {% endif %}">
+                <div class="logo-bar__item_inner_inner">
+                  {% if block.settings.image.alt != blank %}
+                  {% assign logo_alt = block.settings.image.alt %}
+                  {% else %}
+                  {% assign logo_alt = "Logo image" %}
+                  {% endif %}
+                  {{ block.settings.image | img_url: '160x160', scale: 2 | img_tag: logo_alt, 'logo-bar__image' }}
+                </div>
+              </div>
+          {% else %}
+          <div class="logo-bar__item_inner {% if section.settings.use_border_for_logo %} bordered-logo {% endif %}">
+            <div class="logo-bar__item_inner_inner">
+              {{ 'logo' | placeholder_svg_tag: 'logo-bar__image' }}
+            </div>
+          </div>
+          {% endif %}
+          {% if block.settings.link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="logo-swiper-pagination" id="swiper-pagination-{{ section.id }}"></div>
+  {% if section.blocks.size == 0 %}
+    {% include 'no-blocks' %}
+  {% endif %}
+</div>
+</div>
+
+{% schema %}
+  {
+    "name": "Logo list",
+    "class": "index-section",
+    "max_blocks": 20,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Logo list"
+      },
+      {
+        "type":  "text",
+        "id":    "subtitle",
+        "label": "Description"
+      },
+	  {
+         "type":"checkbox",
+         "id":"use_section_bg_color",
+         "label":"Use alternate background"
+     },
+     {
+          "type":"checkbox",
+          "id":"new_tab_links",
+          "label":"Open links in new tab",
+          "default": true
+      },
+	 {
+      "type":"header",
+      "content":"Display options"
+    },
+     {
+         "type": "select",
+         "id": "appearance",
+         "options": [
+            { "value": "none", "label": "None"},
+            { "value": "border", "label": "Border"},
+            { "value": "white_bg", "label": "Shadow box"},
+            { "value": "alt_bg", "label": "Alternate background"}
+         ],
+         "default": "white_bg",
+         "label": "Logo style"
+      },
+      {
+          "type": "select",
+          "id": "hover_interaction",
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "grayscale",
+              "label": "Grayscale"
+            },
+            {
+              "value": "opacity",
+              "label": "Opacity"
+            },
+            {
+              "value": "opacity_grayscale",
+              "label": "Opacity and grayscale"
+            }
+          ],
+          "default": "grayscale",
+          "label": "Hover interaction"
+       },
+     {
+       "type":      "range",
+       "id":        "items_per_view",
+       "min":        3,
+       "max":        6,
+       "step":       1,
+       "label":      "Visible logo count",
+       "default":   5
+     },
+     {
+       "type":      "range",
+       "id":        "slider_autoplay",
+       "min":        0,
+       "max":        7,
+       "step":       1,
+       "label":      "Rotate logos every",
+       "default":   0,
+       "unit": "sec",
+       "info": "Logos will not auto-rotate at 0"
+     }
+    ],
+    "blocks": [
+      {
+        "type": "logo_image",
+        "name": "Logo",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "info": "Optional"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Logo list",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

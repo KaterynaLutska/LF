@@ -1,0 +1,234 @@
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+{% if section.settings.show_newsletter_bar %}
+
+
+
+{% capture bg_img %}
+  {%- include 'bg-img'
+     img_src: section.settings.image,
+     class_name: 'newsletter_hero__bg',
+     placeholder_id: 1,
+     placeholder_type: 'lifestyle'
+  -%}
+
+  {%- if section.settings.dir != 'none' -%}
+  	{% assign overlay_inner_shadow_class = '-inner-shadow' %}
+  {%- else -%}
+  {% assign overlay_inner_shadow_class = null %}
+    {%- if section.settings.enable_parallax_effect -%}
+      {%- assign enable_parallax_effect = "parallaxed" -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  <div class="newsletter_hero__overlay {{inner_shadow_class}}" style="opacity: {{overlay_opacity}}"></div>
+{% endcapture %}
+
+{% capture email_form %}
+<div class="newsletter_hero__inner">
+    {%- if section.settings.text_title != blank or section.settings.text != blank  -%}
+      <div class="newsletter_hero__header">
+        {% if section.settings.text_title != blank %}
+          <h2 class="h1 newsletter_hero__title">{{ section.settings.text_title | escape }}</h2>
+        {% endif %}
+        {% if section.settings.text != blank %}
+          <div class="rte-setting newsletter_hero__subtitle">{{ section.settings.text }}</div>
+        {% endif %}
+      </div>
+    {%- endif -%}
+
+
+
+     {% form 'customer',class:"footer-main-standard-newsletter subscribe-section-form" %}
+    {{ form.errors | default_errors }}
+    <label class="fields_label centered_newsletter_label" for="Email_{{section.id}}">{{ 'general.newsletter_form.newsletter_email' | t }}</label>
+    <div class="newsletter--wrapper">
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input class="footer-main-standard-newsletter-input" type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.subscribe_email' | t }}" name="contact[email]" id="Email_{{section.id}}" autocorrect="none" autocapitalize="none"/>
+      <button class="footer-main-standard-newsletter-submit" type="submit" name="commit">{{ 'general.newsletter_form.subscribe' | t }}</button>
+    </div>
+    {% endform %}
+</div>
+{% endcapture %}
+
+
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+
+<div data-section-id="{{ section.id }}" data-section-type="newsletter-section">
+
+  <div class="newsletter_hero -type--{{section.settings.background_type}} -size--{{section.settings.hero_size}} -dir--{{section.settings.dir}} -img-width-{{section.settings.img_width}} {{enable_parallax_effect}}">
+    {%- if section.settings.dir != 'none' -%}
+
+    {%- if section.settings.dir == 'right' -%}
+      {% assign row_inverse_class = 'row-col-inverse' %}
+    {%- else -%}
+      {% assign row_inverse_class = null %}
+    {%- endif -%}
+
+    {%- if section.settings.img_width == 'large' -%}
+      {% assign img_col = 7 %}
+      {% assign caption_col = 5 %}
+    {%- elsif section.settings.img_width == 'small' -%}
+      {% assign img_col = 5 %}
+      {% assign caption_col = 7 %}
+    {%- else -%}
+      {% assign img_col = 6 %}
+      {% assign caption_col = 6 %}
+    {%- endif -%}
+
+      <div class="row row-no-gutter row-eq-height {{row_inverse_class}}">
+        <div class="col-md-{{img_col}}">
+          {{bg_img}}
+        </div>
+        <div class="col-md-{{caption_col}}">
+          {{email_form}}
+        </div>
+      </div>
+    {%- else -%}
+      {%- if section.settings.background_type == 'img' -%}
+        {{bg_img}}
+      {%- endif -%}
+      {{email_form}}
+    {%- endif -%}
+  </div>
+</div>
+{% endif %}
+{% schema %}
+{
+   "name":"Newsletter",
+   "settings":[
+	  {
+         "type":"checkbox",
+         "id":"show_newsletter_bar",
+         "label":"Enable"
+      },
+
+      {
+         "type":"text",
+         "id":"text_title",
+         "label":"Heading",
+         "default":"Subscribe to our newsletter"
+      },
+	   {
+         "type":"richtext",
+         "id":"text",
+         "label":"Description",
+         "default":"<p>A short sentence describing what someone will receive by subscribing.</p>"
+      },
+
+      {
+         "type":"select",
+         "id":"dir",
+         "label":"Layout",
+         "default":"none",
+         "options":[
+            {
+               "label":"Centered",
+               "value":"none"
+            },
+            {
+               "label":"Image right",
+               "value":"right"
+            },
+            {
+               "label":"Image left",
+               "value":"left"
+            }
+         ]
+      },
+
+      {
+         "type":"select",
+         "id":"img_width",
+         "label":"Image width",
+         "default":"default",
+         "info": "Used only for left or right layouts",
+         "options":[
+            {
+               "label":"Default",
+               "value":"default"
+            },
+            {
+               "label":"Small",
+               "value":"small"
+            },
+            {
+               "label":"Large",
+               "value":"large"
+            }
+         ]
+      },
+
+      {
+         "type":"select",
+         "id":"hero_size",
+         "label":"Height",
+         "default":"md",
+         "options":[
+            {
+               "label":"Short",
+               "value":"sm"
+            },
+            {
+              "label": "Medium",
+              "value": "md"
+            },
+            {
+               "label":"Tall",
+               "value":"lg"
+            }
+         ]
+      },
+
+      {
+         "type":"select",
+         "id":"background_type",
+         "label":"Background",
+         "default":"white",
+         "options":[
+            {
+               "label":"White",
+               "value":"white"
+            },
+            {
+               "label":"Alternate",
+               "value":"alt"
+            },
+            {
+               "label":"Primary",
+               "value":"primary"
+            },
+            {
+               "label":"Dark",
+               "value":"dark"
+            },
+            {
+              "label": "Image (centered layout only)",
+              "value": "img"
+            }
+         ]
+      },
+      {
+         "type":"image_picker",
+         "id":"image",
+         "label":"Image"
+      },
+	  {
+         "type":"checkbox",
+         "id":"enable_parallax_effect",
+         "label":"Enable parallax effect",
+         "info": "Only relevant for full-width image backgrounds"
+      },	
+			{
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Overlay opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 20,
+        "info": "Relevant only for background image"
+    }
+   ]
+}
+{% endschema %}

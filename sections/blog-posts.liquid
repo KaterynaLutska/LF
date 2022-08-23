@@ -1,0 +1,259 @@
+{%- include 'section-bg-init',
+  section_id: section.id,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+{% if section.settings.post_count == 1 %}
+	{% assign grid_item_width = '12' %}
+	{% assign grid_item_width_small = '12' %}
+	{% assign article_image_width = '1110' %}
+{% elsif section.settings.post_count == 2 %}
+	{% assign grid_item_width = '6' %}
+	{% assign grid_item_width_small = '6' %}
+	{% assign article_image_width = '555' %}
+{% elsif section.settings.post_count == 3 %}
+	{% assign grid_item_width = '4' %}
+	{% assign grid_item_width_small = '4' %}
+	{% assign article_image_width = '360' %}
+{% else %}
+	{% assign grid_item_width = '3' %}
+    {% assign grid_item_width_small = '6' %}
+	{% assign article_image_width = '360' %}
+{% endif %}
+{% if section.settings.use_section_bg_color %}
+
+{%- if section.settings.select_thumbnail_type == 'image' -%}
+	{% assign full_thumbnail = true %}
+{%- else -%}
+	{% assign full_thumbnail = false %}
+{%- endif -%}
+
+<style>
+  .section-wrapper-bg-{{section.id}}, .section-wrapper-bg-{{section.id}} .block-title {
+  background: {{settings.alternate_bg_color}};
+}
+</style>
+{% endif %}
+
+{%- assign blog = blogs[section.settings.blog] -%}
+{%- if blog.empty? -%}
+  {% assign posts_count = section.settings.post_count %}
+{%- else -%}
+  {% assign posts_count = blog.articles.size %}
+{%- endif -%}
+
+
+{%- if section.settings.posts_per_view < posts_count -%}
+  {% assign hero_class = '-slider-desktop-active' %}
+{%- else -%}
+  {% assign hero_class = null %}
+{%- endif -%}
+
+
+<div class="section-wrapper-bg-{{section.id}}">
+<div class="hero-container -inline-slider {{hero_class}}">
+
+{% include "section-header",
+	section_title: section.settings.title,
+	section_subtitle: section.settings.subtitle
+%}
+
+
+
+{% assign class_name = '-col-count--' | append: section.settings.posts_per_view %}
+
+<div class="container blog-posts-wrapper -{{section.settings.appearance}}" data-section-id="{{ section.id }}" data-section-type="blog-posts-section" data-blocks-per-view="{{section.settings.posts_per_view}}" data-blocks-limit="{{section.settings.post_count}}" data-blocks-count="{{posts_count}}" data-autoplay="{{section.settings.slider_autoplay}}">
+  <div class="swiper-container" id="inline-swiper-{{section.id}}">
+    <div id="posts-container-{{section.id}}" class="swiper-wrapper">
+    {% if blog.empty? %}
+      {% for i in (1..10) limit : section.settings.post_count %}
+        {% assign title = "Blog post " | append: i %}
+        <div class="swiper-slide" {{ block.shopify_attributes }}>
+          {% include "blog-thumbnail",
+            title: title
+            type: section.settings.select_thumbnail_type,
+            grid_width: false,
+            grid_gap: false,
+            show_date: section.settings.blog_meta_date,
+            show_author: section.settings.blog_meta_author,
+            show_comments: section.settings.blog_meta_comments,
+            class_name: class_name  %}
+        </div>
+      {% endfor %}
+    {% else %}
+      {% for article in blog.articles limit: section.settings.post_count %}
+        <div class="swiper-slide" {{ block.shopify_attributes }}>
+          {% include "blog-thumbnail",
+      			article: article,
+      			type: section.settings.select_thumbnail_type,
+            grid_width: false,
+      			grid_gap: false,
+      			show_date: section.settings.blog_meta_date,
+      			show_author: section.settings.blog_meta_author,
+      			show_comments: section.settings.blog_meta_comments,
+            class_name: class_name %}
+        </div>
+      {% endfor %}
+    {% endif %}
+    </div>
+  </div>
+  <div class="logo-swiper-pagination" id="swiper-pagination-{{ section.id }}"></div>
+  {% comment %}
+  {% if blog.empty? or blog.articles_count < 1 %}
+      {% for i in (1..6) limit : section.settings.post_count %}
+        <div class="col-md-{{ grid_item_width }} col-sm-{{ grid_item_width_small }}">
+          <div class="blog-thumb">
+            <a class="blog-thumb-link" href="{{routes.root_url}}"></a>
+           <div class="blog_image_overlay">
+            {% capture imgCount %}{% cycle 1, 2 %}{% endcapture %}
+            {% capture svg_name %}lifestyle-{{ imgCount }}{% endcapture %}
+            {{ svg_name | placeholder_svg_tag: 'blog-thumb-img onboarding_svg' }}
+            </div>
+            <div class="blog-thumb-caption">
+              <p class="blog-thumb-date">{{ '2018-01-01' | date: '%b %d, %Y' }}</p>
+              <h3 class="blog-thumb-title">{{ 'homepage.onboarding.blog_title' | t }}</h3>
+              <p class="blog-thumb-desc">{{ 'homepage.onboarding.blog_excerpt' | t }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+  {% endif %}
+  {% for article in blog.articles limit: section.settings.post_count %}
+
+		{% include "blog-thumbnail",
+			article: article,
+			type: section.settings.select_thumbnail_type,
+			grid_width: grid_item_width,
+			grid_width_sm: grid_item_width_small,
+			grid_gap: false,
+			show_date: section.settings.blog_meta_date,
+			show_author: section.settings.blog_meta_author,
+			show_comments: section.settings.blog_meta_comments %}
+  {% endfor %}
+</div>
+</div>
+{% endcomment %}
+</div>
+</div>
+</div>
+{% schema %}
+{
+   "name":"Blog posts",
+   "class":"index-section",
+   "settings":[
+      {
+         "type":"text",
+         "id":"title",
+         "label":"Heading",
+         "default":"Blog posts"
+      },
+			{
+	      "type": "text",
+	      "id": "subtitle",
+	      "label": "Description"
+	    },
+	  {
+         "type":"checkbox",
+         "id":"use_section_bg_color",
+         "label":"Use alternate background"
+     },
+      {
+         "id":"blog",
+         "type":"blog",
+         "label":"Blog"
+      },
+	  {
+        "type": "range",
+        "id": "posts_per_view",
+        "label": "Visible article count",
+        "min":       2,
+        "max":        5,
+        "step":       1,
+        "default": 3
+      },
+	  {
+        "type": "range",
+        "id": "post_count",
+        "label": "Total articles",
+        "min":       2,
+        "max":        10,
+        "step":       1,
+        "default": 3
+    },
+    {
+      "type":      "range",
+      "id":        "slider_autoplay",
+      "min":        0,
+      "max":        7,
+      "step":       1,
+      "label":      "Rotate posts every",
+      "default":   0,
+      "unit": "sec",
+      "info": "Posts will not auto-rotate at 0"
+    },
+			{
+          "type":"select",
+          "id":"select_thumbnail_type",
+          "label":"Style",
+          "options":[
+             {
+                "value":"image",
+                "label":"Image"
+             },
+             {
+                "value":"card",
+                "label":"Card"
+             }
+          ],
+          "default":"card"
+       },
+       {
+           "type": "select",
+           "id": "appearance",
+           "options": [
+              { "value": "white_bg", "label": "Shadow box"},
+              { "value": "border", "label": "Border"},
+              { "value": "alt_bg", "label": "Alternate background"},
+              { "value": "primary_bg", "label": "Primary background"},
+              { "value": "dark_bg", "label": "Dark background"}
+           ],
+           "default": "white_bg",
+           "label": "Card display",
+           "info": "Only relevant if 'Card' is selected above"
+        },
+			 {
+          "type": "header",
+          "content": "Meta Information"
+       },
+       {
+          "type":"checkbox",
+          "id":"blog_meta_author",
+          "label":"Show author",
+          "default":true
+       },
+       {
+          "type":"checkbox",
+          "id":"blog_meta_date",
+          "label":"Show post date",
+          "default":true
+       },
+       {
+          "type":"checkbox",
+          "id":"blog_meta_comments",
+          "label":"Show comments",
+          "default":false,
+  		  "info":"Must be enabled in Shopify settings"
+       }
+   ],
+   "presets":[
+      {
+         "name":"Blog posts",
+         "category":"Blog",
+         "settings":{
+            "blog":"",
+            "post_count":3
+         }
+      }
+   ]
+}
+{% endschema %}

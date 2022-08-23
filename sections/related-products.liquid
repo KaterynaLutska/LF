@@ -1,0 +1,194 @@
+{%- if settings.product_reviews -%}
+  {% assign has_related = '-has-related' %}
+{%- endif -%}
+
+{% if section.settings.show_related_products == true %}
+
+
+
+{% assign number_of_related_products_per_row = section.settings.grid | plus:0 %}
+{% assign product_limit = section.settings.products_limit | plus: 0 %}
+
+
+
+{% assign product_img_url_width = "450x"%}
+  {% if section.settings.grid == 4 %}
+    {% assign grid_item_width = '3' %}
+  {% elsif section.settings.grid == 3 %}
+   {% assign grid_item_width = '4' %}
+  {% else %}
+    {% assign grid_item_width = '6' %}
+    {% assign product_img_url_width = "550x"%}
+  {% endif %}
+
+
+<div class="hero-container hero-container-sm {{has_related}}">
+
+<div class="related_product_container container"  data-section-id="{{ section.id }}" data-section-type="related-products" data-productsPerRow="{{number_of_related_products_per_row}}">
+
+{% comment %}
+  Set either or both to true, if you want
+  to limit yourself to items with same vendor, and/or type.
+{% endcomment %}
+
+{% assign same_vendor = false %}
+{% assign same_type = false %}
+
+{% comment %}
+  Collections to ignore.
+  Never pick related items from those.
+{% endcomment %}
+
+{% assign exclusions = 'all' | split: ',' %}
+
+{% comment %}
+  Looking for a relevant collection.
+{% endcomment %}
+
+{% if product.metafields.c_f['Related Products'] %}
+  {% assign collection = collections[product.metafields.c_f['Related Products']] %}
+{% endif %}
+
+
+{% assign collection_products_count = collection.all_products_count | plus: 0 %}
+
+{%- if number_of_related_products_per_row < product_limit and number_of_related_products_per_row < collection_products_count -%}
+  {% assign show_nav = true %}
+{%- else -%}
+  {% assign show_nav = false %}
+{%- endif -%}
+
+{% assign found_a_collection = false %}
+{% if collection and collection.all_products_count > 1 %}
+  {% unless exclusions contains collection.handle %}
+    {% assign found_a_collection = true %}
+  {% endunless %}
+{% endif %}
+{% unless found_a_collection %}
+  {% for c in product.collections %}
+    {% unless exclusions contains c.handle or c.all_products_count < 2 %}
+      {% assign found_a_collection = true %}
+      {% assign collection = c %}
+      {% break %}
+    {% endunless %}
+  {% endfor %}
+{% endunless %}
+
+{% comment %}
+  If we have a relevant collection.
+{% endcomment %}
+
+{% if found_a_collection %}
+
+  {% assign counter = 0 %}
+  {% assign break_at = section.settings.products_limit | plus:0 %}
+  {% assign current_product = product %}
+
+  {% capture related_items %}
+   <div class="swiper-container swiper-products-{{section.id}}">
+      <div id="relatedProductsSwiper" class="swiper-wrapper">
+    {% for product in collection.products %}
+{%- if product.metafields.inventory.ShappifyHidden == 'true' -%}{%- continue -%}{%- endif -%}
+      {% unless product.handle == current_product.handle %}
+         {% unless same_vendor and current_product.vendor != product.vendor %}
+           {% unless same_type and current_product.type != product.type %}
+
+            <div class="col-md-{{ grid_item_width }} col-sm-6 col-xs-6 collection-products-wrapper swiper-slide">
+              {% include 'product-loop'%}
+              <div class="triangle-left">
+                <div class="inner-triangle"></div>
+              </div>
+            </div>
+
+             {% assign counter = counter | plus: 1 %}
+             {% if counter == break_at %}
+               {% break %}
+             {% endif %}
+           {% endunless %}
+        {% endunless %}
+      {% endunless %}
+    {% endfor %}
+     </div>
+     {%- if show_nav -%}
+     <div class="swiper-button-prev">
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path d="M0,22L22,0l2.1,2.1L4.2,22l19.9,19.9L22,44L0,22L0,22L0,22z"></svg>
+     </div>
+       <div class="swiper-button-next">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 27 44"><path d="M27,22L27,22L5,44l-2.1-2.1L22.8,22L2.9,2.1L5,0L27,22L27,22z"></svg>
+      </div>
+     {%- endif -%}
+
+  </div>
+  {% endcapture %}
+
+  {% assign related_items = related_items | trim %}
+
+  {% unless related_items == blank %}
+
+
+  {% include "section-header",
+  	section_title: section.settings.related_title,
+  	section_subtitle: section.settings.related_subtitle,
+    size: 'sm',
+    use_def_color: true %}
+
+  <div class="collection-row {% if settings.align_height %} use_align_height height_{{settings.collection_height}}px {% else %} use_image_height {% endif %}">
+    {{related_items}}
+  </div>
+  {% endunless %}
+
+{% endif %}
+
+</div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Related products",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_related_products",
+      "label": "Show related products",
+      "default": false
+    },
+    {
+      "id": "related_title",
+      "type": "text",
+      "label": "Heading",
+      "default": "Other fine products"
+    },
+    {
+      "id": "related_subtitle",
+      "type": "text",
+      "label": "Heading",
+      "default": "Let's find some more for you"
+    },
+  {
+        "type": "range",
+        "id": "grid",
+        "label": "Products per row",
+        "min":       2,
+        "max":        4,
+        "step":       1,
+        "default": 4
+    },
+  {
+        "type": "range",
+        "id": "products_limit",
+        "label": "Products limit",
+        "min":       2,
+        "max":        12,
+        "step":       1,
+        "default": 4
+    },
+  {
+      "type":"checkbox",
+      "id":"show_sale_label",
+      "label":"Show sale label",
+      "default":true
+    }
+  ]
+}
+{% endschema %}

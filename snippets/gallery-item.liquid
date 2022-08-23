@@ -1,0 +1,113 @@
+{% comment %}
+  vars
+    - img
+    - link
+    - title
+    - subtitle
+    - is_lightbox
+    - col
+    - inner_caption
+    - gutter
+    - image_height
+    - caption_size
+    - title_upcase
+    - item_image_height
+    - use_box_shadow
+    - placeholder_id
+    - bottom_margin
+    - full_col_tablet
+{% endcomment %}
+
+{%- if img != blank -%}
+  {% assign img_url = img | img_url: "2000x2000" %}
+{%- else -%}
+  {% assign img_url = "" %}
+{%- endif -%}
+
+{%- if is_lightbox -%}
+  {% assign use_link = img_url %}
+{%- elsif item_link == blank or item_link == null or item_link == '' -%}
+  {% assign use_link = "#" %}
+{%- else -%}
+  {% assign use_link = item_link %}
+{%- endif -%}
+
+
+{%- if use_box_shadow -%}
+  {% assign box_shadow_class = "__bs" %}
+{%- else -%}
+  {% assign box_shadow_class = null %}
+{%- endif -%}
+
+
+{%- if custom_sizes == 'masonry' -%}
+  {% assign use_image_height = item_image_height %}
+  {% assign col_class = item_col %}
+{%- else -%}
+  {% assign use_image_height = image_height %}
+  {% assign col_class = col %}
+{%- endif -%}
+
+{%- if title_font == 'header' -%}
+  {% assign header_font_class = '-ff-heading' %}
+{%- else -%}
+  {% assign header_font_class = null %}
+{%- endif -%}
+
+
+{% assign caption_position_class = caption_position | prepend: '-' %}
+
+{% assign overlay_float = overlay | times: 0.01 %}
+{% assign overlay_style = 'opacity:' | append: overlay_float %}
+
+{%- if overlay_float == 0 -%}
+  {% assign overlayed_class = null %}
+{%- else -%}
+  {% assign overlayed_class = '-overlayed' %}
+{%- endif -%}
+
+{% capture gallery_caption %}
+  {%- if title != blank or subtitle != blank -%}
+    <div class="gallery-item-caption {{caption_position_class}} __size-{{caption_size}} text-{{caption_align}} " style="color: {{caption_color}}">
+      {%- if title != blank -%}
+        <h4 class="gallery-item-title text-{{title_transfrom}} {{header_font_class}}">{{title}}</h4>
+      {%- endif -%}
+      {%- if subtitle != blank -%}
+        <p class="gallery-item-subtitle">{{subtitle}}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+{% endcapture %}
+
+<!-- {% assign bottom_margin = gutter | append: 'px' %} -->
+{% assign bottom_margin_style = bottom_margin | append: 'px' %}
+
+{% assign image_height_style = 'height: ' | append: use_image_height | append: 'px'  %}
+
+{%- if full_col_tablet -%}
+  {% assign tablet_col = 12 %}
+{%- else -%}
+  {% assign tablet_col = 6 %}
+{%- endif -%}
+
+<div
+  class="col-md-{{col_class}} col-sm-{{tablet_col}} col-xs-12"
+  style="margin-bottom: {{bottom_margin_style}}"
+>
+  <div class="gallery-item {{overlayed_class}} -animate--{{hover_animation}}">
+    <a class="gallery-item-link" href="{{use_link}}" title="{{title}}" data-subtitle="{{subtitle}}"></a>
+    <div class="gallery-item-img-wrap {{box_shadow_class}}">
+      <div class="gallery-item-overlay" style="{{ overlay_style }}; background: {{overlay_color}}"></div>
+      {%- include 'bg-img',
+        class_name: 'gallery-item-img',
+        img_src: img,
+        style: image_height_style,
+        spinner: true,
+        placeholder_id: placeholder_id,
+        placeholder_type: 'collection'
+      -%}
+      <div class="gallery-item-overlay-back"></div>
+    </div>
+    {{ gallery_caption }}
+  </div>
+</div>

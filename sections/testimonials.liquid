@@ -1,0 +1,181 @@
+{% assign col_count_class = '-col-count--' | append: section.settings.items_per_view %}
+
+{%- include 'section-bg-init',
+  section_id: section.id,
+  alt_bg: section.settings.use_section_bg_color
+-%}
+
+<style>
+
+  {% if section.settings.use_section_bg_color %}
+    .section-wrapper-bg-{{section.id}}, .section-wrapper-bg-{{section.id}} .block-title {
+      background: {{settings.alternate_bg_color}};
+    }
+  {% endif %}
+
+
+</style>
+
+{%- if section.settings.items_per_view < section.blocks.size -%}
+  {% assign hero_class = '-slider-desktop-active' %}
+{%- else -%}
+  {% assign hero_class = null %}
+{%- endif -%}
+
+<div class="section-wrapper-bg-{{section.id}}">
+<div class="quotes-bar container hero-container -inline-slider {{hero_class}}" data-section-id="{{ section.id }}" data-section-type="quotes-section" data-blocks-per-view="{{section.settings.items_per_view}}" data-blocks-limit="10" data-blocks-count="{{section.blocks.size}}" data-autoplay="{{section.settings.slider_autoplay}}">
+  {%
+    include "section-header",
+    section_title: section.settings.title,
+    section_subtitle: section.settings.subtitle
+  %}
+
+  {% if section.blocks.size > 0 %}
+    <div id="inline-swiper-{{section.id}}" class="swiper-container swiper-quotes">
+      <div id="quotes-container-{{section.id}}" class="swiper-wrapper">
+      {% for block in section.blocks %}
+        <div class="swiper-slide quotes-bar__item " {{ block.shopify_attributes }}>
+		 <blockquote class="quotes-slider__text -{{section.settings.appearance}} text-center {{col_count_class}}">
+              {% if block.settings.quote != blank %}
+                <div class="rte-setting">  <span class="quote-icon">{% include 'icon-quote' %}</span> {{ block.settings.quote }}</div>
+              {% endif %}
+           <div class="quote-triangle-left">
+                  <div class="quote-inner-triangle"></div>
+                </div>
+            </blockquote>
+           {% if block.settings.author != blank %}
+            <div class="quote-author">
+              {%- if section.settings.use_author_images -%}
+                <div class="quote-author-img-wrapper">
+                  {%- if block.settings.image != blank -%}
+                    {%- include 'bg-img',
+                      class_name: 'quote-author-img',
+                      img_src: block.settings.image,
+                      img_size: '100x100',
+                      spinner: false
+                    -%}
+                  {%- else -%}
+                    <i class="lin lin-user"></i>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+              <cite>{{ block.settings.author | escape }}</cite>
+            </div>
+           {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="logo-swiper-pagination" id="swiper-pagination-{{ section.id }}"></div>
+  {% if section.blocks.size == 0 %}
+    {% include 'no-blocks' %}
+  {% endif %}
+</div>
+</div>
+{% schema %}
+  {
+    "name": "Testimonials",
+    "class": "index-section",
+    "max_blocks": 10,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Testimonials"
+      },
+      {
+        "type":  "text",
+        "id":    "subtitle",
+        "label": "Description"
+      },
+	    {
+         "type":"checkbox",
+         "id":"use_section_bg_color",
+         "label":"Use alternate background"
+     },
+     {
+         "type": "range",
+         "id": "items_per_view",
+         "label": "Visible testimonial count",
+         "min":       2,
+         "max":        5,
+         "step":       1,
+         "default": 3
+     },
+     {
+       "type":      "range",
+       "id":        "slider_autoplay",
+       "min":        0,
+       "max":        7,
+       "step":       1,
+       "label":      "Rotate testimonials every",
+       "default":   0,
+       "unit": "sec",
+       "info": "Testimonials will not auto-rotate at 0"
+     },
+     {
+         "type": "select",
+         "id": "appearance",
+         "options": [
+            { "value": "white_bg", "label": "Shadow box"},
+            { "value": "border", "label": "Border"},
+            { "value": "alt_bg", "label": "Alternate background"},
+            { "value": "primary_bg", "label": "Primary background"},
+            { "value": "dark_bg", "label": "Dark background"}
+         ],
+         "default": "white_bg",
+         "label": "Style"
+      },
+      {
+         "type":"checkbox",
+         "id":"use_author_images",
+         "label":"Enable author images"
+     }
+    ],
+    "blocks": [
+      {
+        "type": "quote",
+        "name": "Testimonial",
+        "settings": [
+           {
+            "type": "richtext",
+            "id": "quote",
+            "label": "Text",
+            "default": "<p>Add customer reviews and testimonials to showcase your store’s happy customers.</p>"
+          },
+          {
+            "type": "text",
+            "id": "author",
+            "label": "Author",
+            "default": "Author's name"
+          },
+          {
+             "type":"image_picker",
+             "id":"image",
+             "label":"Image",
+             "info": "100 x 100px recommended"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Testimonials",
+        "category": "Text",
+        "blocks": [
+          {
+            "type": "quote"
+          },
+          {
+            "type": "quote"
+          },
+          {
+            "type": "quote"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

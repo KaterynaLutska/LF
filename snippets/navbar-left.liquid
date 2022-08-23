@@ -1,0 +1,47 @@
+{% include "mobile-header" %}
+
+{% if settings.show_multiple_currencies and shop.customer_accounts_enabled %}
+{% assign icons_length = "icons_length_5"%}
+{% elsif settings.show_multiple_currencies or shop.customer_accounts_enabled%}
+{% assign icons_length = "icons_length_4"%}
+{% else %}
+{% assign icons_length = "icons_length_3"%}
+{% endif %}
+
+<nav class="nav-main mobile-hidden-sm">
+  <div class="nav-main-inner">
+    <ul class="nav-main-list-actions left_nav_icons_accordion {{icons_length}}">
+      <li>
+        <button class="tcon tcon-menu--arrow tcon-menu--arrowleft pushy-menu-btn" type="button" area_label="toggle menu" id="pushy-menu-btn"><span class="tcon-menu__lines" area_hidden="true"></span><span class="tcon-visuallyhidden">Hit space bar to toggle menu</span>
+        </button>
+      </li>
+      <li>
+        <a class="lin lin-magnifier popup-text search-modal-popup" href="#nav-search-dialog" data-effect="mfp-move-from-top">
+          <span class="visuallyhidden">Search</span>
+        </a>
+      </li>
+      {% if shop.customer_accounts_enabled %}
+        <li>
+          {% if customer %}
+          <a class="lin lin-user" href="{{routes.account_url}}">
+            <span class="visuallyhidden">My account</span>
+          </a>
+          {% else %}
+          <a class="lin lin-user" href="{{routes.account_login_url}}">
+            <span class="visuallyhidden">My account</span>
+          </a>
+          {% endif %}
+        </li>
+      {% endif %}
+      <li><a class="nav-main-cart popup-text cart-modal-popup" href="#nav-shopping-cart-dialog" data-effect="mfp-move-from-top"><span class="nav-main-cart-amount count-items {% if cart.item_count < 1 %} hidden{% endif %}">{{ cart.item_count }}</span><i class="lin lin-basket"></i><span class="money nav-main-cart-money total-items-price {% if cart.item_count < 1 %} hidden{% endif %}">{{ cart.total_price | money }}</span>
+      <span class="visuallyhidden">You have {{ cart.item_count }} items in your cart</span></a>
+      </li>     
+        {% if settings.show_multiple_currencies %}
+       <li>
+        {% include "currency-switcher" %}
+         </li>
+        {% endif %}      
+    </ul>
+    
+  </div>
+</nav>

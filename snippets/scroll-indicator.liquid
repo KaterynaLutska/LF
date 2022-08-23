@@ -1,0 +1,21 @@
+{% comment %}
+  @section_id -> string
+  @section_height -> string
+  @enabled -> boolean
+{% endcomment %}
+
+{%- if enabled and section_height == '100' -%}
+
+  <script type="text/javascript">
+    initScroll("{{section_id}}");
+  </script>
+
+
+  <div class="scroll_icon_wrap">
+    <a href="#" class="scroll_link bloop" tabindex="-1" data-section="{{section_id}}" id="scroll-indicator-{{section_id}}" style="display:none">
+      <span class="scroll_icon">
+        <i class="lin lin-arrow-down scroll-arrow-down"></i>
+      </span>
+    </a>
+  </div>
+{%- endif -%}

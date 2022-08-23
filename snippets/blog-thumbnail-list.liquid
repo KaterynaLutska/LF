@@ -1,0 +1,33 @@
+<div class="blog-post">
+
+
+  {% include 'article-image'
+    image: article.image,
+    url: article.url,
+    thumbnail: true
+  %}
+
+  <h2 class="article__title"><a href="{{ article.url }}">{{ article.title | escape }}</a></h2>
+
+  {%- include 'article-meta'
+    article: article,
+    author: show_author,
+    date: show_date,
+    comments: show_comments
+  -%}
+
+
+
+
+  <div class="rte -excerpt">
+    {% if article.excerpt.size > 0 %}
+      {{ article.excerpt | strip_html }}
+    {% else %}
+     {{ article.content | strip_html | truncate: 300 }}
+    {% endif %}
+  </div>
+  <a href="{{ article.url }}" class="blog-post-link">
+    {{ 'blogs.article.read_more' | t }} &nbsp;→
+  </a>
+
+</div>

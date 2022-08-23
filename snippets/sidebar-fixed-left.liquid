@@ -1,0 +1,250 @@
+{% for i in (1..2) %}
+{% assign sidebar_index = i %}
+  {% if section.settings.collection_layout != "sidebar_fixed_left" and i == 2 %}
+      {% break %}
+  {% endif %}
+
+  <div
+    {% if section.settings.use_alternate_background %}
+      style="background-color:{{settings.alternate_bg_color}}"
+    {% endif %}
+
+    {% if section.settings.collection_layout == "sidebar_fixed_left" and i == 2 %}
+      class="
+        col-md-3
+        same-height-blocks
+      "
+    {% else %}
+      class="side-bar-pushy pushy pushy-left
+      {% if section.settings.collection_layout == "sidebar_fixed_left" and i == 1 %}
+        desktop-hidden
+      {% endif %}"
+      id="pushy-filters"
+    {% endif %}
+  >
+    {% if section.settings.collection_layout != "sidebar_fixed_left" %}<a class="mobile-menu-close-icon" href="javascript:void(0);"><i class="lin lin-close"></i></a>{% endif %}
+
+      <div data-url="{% if collection %}/collections/{{collection.handle}}{% else %}/collections/all{% endif %}" class="category-filters-area {% if section.settings.collection_layout == "sidebar_fixed_left" and i == 2 %} mobile-hidden {% endif %}  {% if section.settings.collection_layout == "sidebar_fixed_left" and i == 1 %} pushy_left_sidebar_content {% endif %}" {% if section.settings.collection_layout == "sidebar_fixed_left" and i == 2 %} id="category-sticky-filters" {% endif %}>
+        {% assign current_url = collection.url %}
+
+        {% unless section.settings.collection_sidebar_filters == 'none' %}
+          {% if section.settings.collection_sidebar_filters == 'groups' %}
+            {% if collection.all_tags.size > 0 %}
+            {% assign group_array = section.settings.group_array | escape | split: ',' %}
+            {% for group in group_array %}
+              {% if cat_array contains group %}
+                {% capture array %}
+                  {% unless array == blank or array == "" %}{{ array }},{% endunless %}{{group | strip}}
+                {% endcapture%}
+              {% endif %}
+            {% endfor%}
+            {% assign cat_array = array %}
+            {% comment %}
+            	If the theme setting for group array is empty then use the default cat_array order
+            {% endcomment %}
+            {% if group_array == blank %}
+           	 {% assign group_array = cat_array %}
+            {% endif %}
+            {% comment %}
+          	  Loop through tag categories
+            {% endcomment %}
+            {% for cat_item in group_array %}
+              {% assign tags_present = false %}
+              {% if cat_array contains cat_item %}
+                 {% assign tags_present = true %}
+              {% endif %}
+              {% unless tags_present == false %}
+                {% assign linklist_title = cat_item | handleize %}
+                {% if linklists[linklist_title].links != '' %}
+                  <div class="category-filters-area-section">
+                    <h5 class="category-filters-section-title">{{ cat_item }}</h5>
+                    <ul class="category-filters-area-list advanced-filters">
+                      {% comment %}
+                     	 Loop through collection tags
+                      {% endcomment %}
+                      {% for link in linklists[linklist_title].links %}
+                        {% for tag in collection.all_tags %}
+{%- if tag contains '_HIDDEN_PRODUCT' -%}{%- continue -%}{%- endif -%}
+                          {% assign title = cat_item | append: "_" | append: link.title %}
+                          {% if tag == title %}
+                            {% assign cat = tag | split: '_' | first %}
+                              {% if cat != tag and cat_item == cat %}
+                                {% comment %}
+                             	   Strip out tag category prefix and add/remove link for tag filtering
+                                {% endcomment %}
+                              {% if current_tags contains tag %}
+                                <li class="advanced-filter active-filter active" data-group="{{ cat_item }}" data-handle="{{ tag | handle }}">{{ tag | remove_first: cat_item | remove_first: '_' | link_to_remove_tag: tag }}</li>
+                                {% else %}
+                                	<li class="advanced-filter" data-group="{{ cat_item }}" data-handle="{{ tag | handle }}">{{ tag | remove_first: cat_item | remove_first: '_' | link_to_add_tag: tag }}</li>
+                                {% endif %}
+                            {% endif %}
+                          {% endif %}
+                        {% endfor %}
+                      {% endfor %}
+                    </ul><!--  if linklists[linklist_title].links != ''  -->
+                  </div><!-- <div class="category-filters-area-section"> -->
+                {% endif %}
+                {% unless cat_item == '' or linklists[linklist_title].links.size > 0  %}
+                  <div class="category-filters-area-section">
+                    <h5 class="category-filters-section-title">{{ cat_item }}</h5>
+                    <ul class="category-filters-area-list advanced-filters">
+                      {% comment %}
+                     	 Loop through collection tags
+                      {% endcomment %}
+                      {% for tag in collection.all_tags %}
+{%- if tag contains '_HIDDEN_PRODUCT' -%}{%- continue -%}{%- endif -%}
+                        {% assign cat = tag | split: '_' | first %}
+                        {% if cat != tag and cat_item == cat %}
+                          {% comment %}
+                          	Strip out tag category prefix and add/remove link for tag filtering
+                          {% endcomment %}
+                          {% if current_tags contains tag %}
+                            <li class="advanced-filter active-filter active" data-group="{{ cat_item }}" data-handle="{{ tag | handle }}">{{ tag | remove_first: cat_item | remove_first: '_' | link_to_remove_tag: tag }}</li>
+                            {% else %}
+                            	<li class="advanced-filter" data-group="{{ cat_item }}" data-handle="{{ tag | handle }}">{{ tag | remove_first: cat_item | remove_first: '_' | link_to_add_tag: tag }}</li>
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                   </div><!-- <div class="category-filters-area-section"> -->
+                  {% endunless %}<!-- unless cat_item == '' or linklists[linklist_title].links.size > 0 -->
+                 {% endunless %}<!-- unless tags_present == false -->
+                {% endfor %}<!-- for cat_item in group_array -->
+                {% endif %}<!-- if collection.all_tags.size > 0 -->
+                {% else %}<!-- if section.settings.collection_sidebar_filters is not set to 'groups' -->
+                  <div class="category-filters-area-section">
+                    <h5 class="category-filters-section-title">{{ 'collections.sidebar.widget_tags_title' | t }}</h5>
+                    <ul class="category-filters-area-list">
+                      <li{% unless current_tags %} class="active-filter"{% endunless %}>
+                        {% if collection.handle %}
+                          <a href="{{routes.collections_url}}/{{ collection.handle }}">{{ 'collections.sidebar.everything' | t }} {{ collection.title | escape }}</a>
+                          {% elsif collection.current_type %}
+                          	<a href="{{ collection.current_type | url_for_type }}">{{ 'collections.sidebar.everything' | t }} {{ collection.title | escape }}</a>
+                          {% elsif collection.current_vendor %}
+                         	 <a href="{{ collection.current_vendor | url_for_vendor }}">{{ 'collections.sidebar.everything' | t }} {{ collection.title | escape }}</a>
+                        {% endif %}
+                      </li>
+                      {% for tag in collection.tags %}
+                        {% if current_tags contains tag %}
+                          <li class="active">
+                            {{ tag | link_to_remove_tag: tag }}
+                          </li>
+                          {% else %}
+                            <li>
+                              {{ tag | link_to_tag: tag }}
+                            </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  </div><!-- <div class="category-filters-area-section"> -->
+                {% endif %}
+               {% endunless %}
+
+          <div class="mobile-hidden">
+
+
+         {% assign firstLevelMenu = linklists[section.settings.collection_linklist]%}
+         {% if firstLevelMenu.links != blank  %}
+        <div class="category-filters-area-section">
+          <h5 class="category-filters-section-title">{{firstLevelMenu.title}}</h5>
+          <div class="category-filters-area-list panel-group panel-group-nav collection_advanced_menu" id="accordion_collection_{{sidebar_index}}" role="tablist" area_multiselectable="true">
+            {% for link in firstLevelMenu.links %}
+
+            {%- assign child_id = forloop.index -%}
+            {% if link.links.size > 0 %}
+            <div class="panel-heading" role="tab">
+              <a href="#{{link.title | escape | handle }}_{{child_id}}_collection_{{sidebar_index}}" data-link-url="{{link.url}}" role="button" data-toggle="collapse" data-parent="#accordion_collection_{{sidebar_index}}" data-toggle="collapse" class="second_level_drop_link collapsed" aria-haspopup="true" area_expended="true"  area_controls="collapse-category" aria-expanded="false">
+                <span class="visuallyhidden">Hit space bar to expand submenu</span>{{link.title | escape }} <i class="lin lin-arrow-right"></i></a>
+            </div>
+            <div class="panel-collapse collapse" role="tabpanel" area_labelledby="collapse-category" id="{{link.title | escape | handle}}_{{child_id}}_collection_{{sidebar_index}}">
+              <ul class="panel-group-nav-list second-level-nav-list">
+                {% for child_link in link.links %}
+                {% if child_link.links.size > 0 %}
+                <li><a href="#{{child_link.handle | escape  | handle}}_{{child_id}}_collection_{{sidebar_index}}" data-link-url="{{child_link.url}}" class="dropdown-menu-links third_level_drop_link collapsed" data-toggle="collapse" aria-haspopup="true" data-parent="#{{link.handle | escape | handle}}_{{child_id}}_collection_{{sidebar_index}}">
+                  <span class="visuallyhidden">Hit space bar to expand submenu</span>{{child_link.title | escape }} <i class="lin lin-arrow-right"></i></a></li>
+                <div class="panel-collapse collapse" role="tabpanel" area_labelledby="collapse-category" id="{{child_link.handle | escape | handle}}_{{child_id}}_collection_{{sidebar_index}}"  aria-expanded="false">
+                  <ul class="panel-group-nav-list third-level-nav-list">
+                    {% for grand_child_link in child_link.links %}
+                    <li><a href="{{grand_child_link.url}}" data-parent="#{{child_link.handle | escape | handle}}_collection_{{sidebar_index}}">{{grand_child_link.title | escape }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% else %}
+                <li>
+                  <a href="{{child_link.url}}" class="dropdown-menu-links">{{child_link.title | escape }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+            {% else %}
+            <div class="panel-heading"><a href="{{ link.url }}">{{ link.title | escape }}</a></div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+
+
+                {% if section.settings.show_sidebar_collections %}
+                  <div class="category-filters-area-section">
+                    <h5 class="category-filters-section-title">{{ 'collections.sidebar.widget_collection_title' | t }}</h5>
+                    <ul class="category-filters-area-list">
+                      {% for collection in collections %}
+                        {% unless collection.handle == 'frontpage' %}
+                        <li {% if current_url contains collection.handle %}class="active"{% endif %}>
+                          {% capture collection_title %}{{ collection.title | escape }}{% endcapture %}
+                          <a href="{{ collection.url }}" title="{{ collection_title }}">{{ collection_title }}</a>
+                        </li>
+                      {% endunless %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+
+            {% if section.settings.show_sidebar_vendors %}
+              <div class="category-filters-area-section">
+                <h5 class="category-filters-section-title">{{ 'collections.sidebar.widget_vendors_title' | t }}</h5>
+                <ul class="category-filters-area-list">
+                  {% for product_vendor in collection.all_vendors %}
+{%- if product_vendor.metafields.inventory.ShappifyHidden == 'true' -%}{%- continue -%}{%- endif -%}
+                    <li>{{ product_vendor | link_to_vendor }}</li>
+                    {% else %}
+                    	<li>{{ 'collections.sidebar.no_vendors' | t }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            {% if section.settings.show_collection_sidebar_sale %}
+              <div class="category-filters-area-section products-widget ">
+                <h5 class="category-filters-section-title">{{section.settings.collection_sidebar_sale_title}}</h5>
+                <ul class="category-filters-area-list onsale-list-container">
+                  {% for product in collections[section.settings.sidebar_collection_sale_collection].products limit:section.settings.sidebar_collection_product_count %}
+{%- if product.metafields.inventory.ShappifyHidden == 'true' -%}{%- continue -%}{%- endif -%}
+                  <li class="onsale-list">
+                    <div class="post_detail">
+                      <div class="article-thumb"><a href="{{ product.url | within: collection }}"><img src="{{product.featured_media.preview_image.src | product_img_url: 'small' }}" alt="{{ product.featured_media.preview_image.alt | escape }}" /></a></div>
+                      <div class="article-description">
+                        <a href="{{ product.url | within: collection }}">{{ product.title | escape }}</a>
+                        <span class="price">
+                          {{ product.price | money }}
+                        </span>
+                        {% if product.compare_at_price > product.price %}
+                        <span class="compare-price">{{ product.compare_at_price | money }}</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </li>
+
+
+              {% endfor %}
+            </ul>
+          </div>
+      {% endif %}
+        </div> 
+    </div><!-- <div class="category-filters-area" id="category-sticky-filters"> -->
+  </div><!-- <div class="col-md-2"> -->
+{% endfor %}

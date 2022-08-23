@@ -1,0 +1,33 @@
+{% include 'cart-template' %}
+
+{% schema %}
+{  
+   "name":"Cart page",
+   "settings":[  
+      {
+         "type": "header",
+         "content": "Header"
+      },
+	  {  
+         "type":"image_picker",
+         "id":"image",
+         "label":"Background image"
+      },
+      {
+        "type": "range",
+        "id": "background_opacity",
+        "label": "Image opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 50
+      },
+      {  
+         "type":"color",
+         "id":"collection_text_color",
+         "label":"Text color"
+      }
+   ]
+}
+{% endschema %}

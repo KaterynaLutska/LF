@@ -1,0 +1,41 @@
+{% comment %}
+  vars
+   - title
+   - text
+   - bg_type
+   - btn_style
+   - btn_text
+   - btn_link
+   - size
+   - dir
+{% endcomment %}
+
+{%- if bg_type == 'primary' and btn_style == 'none' -%}
+  {% assign btn_class = 'btn-white' %}
+{%- elsif bg_type == 'primary' and btn_style == 'ghost' -%}
+  {% assign btn_class = "btn-white btn-ghost" %}
+{%- elsif bg_type == 'dark' and btn_style == 'ghost' -%}
+  {% assign btn_class = "btn-white btn-ghost" %}
+{%- elsif bg_type == 'img' and btn_style == 'ghost' and section.settings.dir == 'none' -%}
+  {% assign btn_class = "btn-white btn-ghost" %}
+{%- elsif btn_style == 'ghost' -%}
+  {% assign btn_class = "btn-ghost btn-dark" %}
+{%- else -%}
+  {% assign btn_class = "btn-primary" %}
+{%- endif -%}
+
+<div class="hero-text__caption -size--{{size}} -dir--{{dir}} -bg--{{bg_type}}">
+  <div class="hero-text__caption-inner">
+    {%- if title != blank -%}
+      <h2 class="h2 hero-text__title">{{ title | escape }}</h2>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <div class="hero-text__subheading">
+        {{ text }}
+      </div>
+    {%- endif -%}
+    {%- if btn_text != blank -%}
+      <a href="{{btn_link}}" class="btn {{btn_class}} hero-text__btn">{{btn_text}}</a>
+    {%- endif -%}
+  </div>
+</div>

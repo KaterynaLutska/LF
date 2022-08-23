@@ -1,0 +1,48 @@
+{% comment %}
+  section_id
+  alt_bg
+{% endcomment %}
+
+{%- if alt_bg -%}
+  {% assign bg_class = "shopify-section-alt" %}
+{%- else -%}
+  {% assign bg_class = "shopify-section-default" %}
+{%- endif -%}
+
+<div id="shopify-section-handle-{{section_id}}" class="__section-bg-type-handle" data-bg-type="{{bg_class}}"></div>
+
+<script>
+  document.getElementById("shopify-section-{{section_id}}").classList.add("{{bg_class}}");
+</script>
+
+{% comment %}
+<script>
+  // (function() {
+  //   var section = document.getElementById("shopify-section-{{section_id}}");
+  //   var target = document.getElementById("shopify-section-handle-{{section_id}}");
+  //   var obs = new MutationObserver(function(mList, obs){
+  //     for(var m of mList) {
+  //       console.log(m.attributeName);
+  //     }
+  //   })
+  //   obs.observe(target, {attributes: true});
+  // })()
+  // // document.getElementById("shopify-section-{{section_id}}").classList.add("shopify-section-{{bg_class}}");
+  // initBgType({{sectionId}});
+
+  (function() {
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === "data-bg-type") {
+            var attributeValue = mutation.target.getAttribute(mutation.attributeName);
+            console.log("data-bg-type attribute changed to:", attributeValue);
+          }
+        });
+      });
+      var target = document.getElementById("shopify-section-handle-{{section_id}}")
+      observer.observe(target, {
+        attributes: true
+      });
+  })();
+</script>
+{% endcomment %}

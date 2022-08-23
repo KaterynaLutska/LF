@@ -1,0 +1,74 @@
+<div class="search-page" data-section-id="{{ section.id }}" data-section-type="search-section">
+
+  {% include 'page-header'
+    bg: section.settings.image,
+    title: section.settings.title
+  %}
+
+   {% if search.results_count > 0 and search.performed%}
+    <h2 class="h2 container text-center mt50">{{ 'general.search.results_with_count' | t: terms: search.terms, count: search.results_count }}</h1>
+  {% endif %}
+  <div class="category-products-wrap-filters container">
+    <nav class="search-form-wrapper  {% unless search.performed %}not_performed_wrapper {%endunless%} {% if search.results_count > 0 and search.performed%} mt10 {%endif %}">
+      <form action="{{routes.search_url}}" method="get" role="search" class="">
+        {% if settings.search_result_type != 'everything' %}
+      	<input type="hidden" name="type" value="product" />
+      {% endif %}
+        <input type="search" name="q" value="{{ search.terms | escape }}" class="footer-main-standard-newsletter-input" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.submit' | t }}">
+        <button type="submit" class="footer-main-standard-newsletter-submit">{{'general.search.submit' |t}}</button>
+      </form>
+    </nav>
+    <div class="row {%if settings.search_result_type != "products_only" %} list-view-items {% else %} use_align_height {% endif %}">
+      {% if search.results_count == 0 %}
+       {% if search.performed %}
+            {% assign search_terms = search.terms | prepend: '<b>' | append: '</b>' %}
+      	    <p class="search__not-found">{{ 'general.search.no_results_performed_html' |t: terms: search_terms }}</p>
+      {% endif %}
+      {% else %}
+        {% paginate search.results by 12 %}
+          {% for item in search.results %}
+{%- if item.metafields.inventory.ShappifyHidden == 'true' -%}{%- continue -%}{%- endif -%}
+            {% include "search-result" %}
+          {% endfor %}
+          {% if paginate.pages > 1 %}
+          	{% include 'pagination-custom' %}
+          {% endif %}
+        {% endpaginate %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+   "name":"Search",
+   "settings":[
+      {
+         "type":"image_picker",
+         "id":"image",
+         "label":"Background image"
+      },
+      {
+        "type": "range",
+        "id": "background_opacity",
+        "label": "Image opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 50
+    },
+      {
+         "type":"color",
+         "id":"collection_text_color",
+         "label":"Text color"
+      },
+      {
+         "type":"text",
+         "id":"title",
+         "label":"Heading",
+         "default":"Search"
+      }
+   ]
+}
+{% endschema %}

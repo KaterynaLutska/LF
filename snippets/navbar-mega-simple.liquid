@@ -1,0 +1,219 @@
+{% include "mobile-header" %}
+<nav class="nav-container nav-standard-middle nav-container-float desktop-hidden mobile-hidden-sm nav-to-sticky">
+  <div class="nav-container-inner">
+    {% if section.settings.logo %}
+      <a class="nav-container-logo" href="{{routes.root_url}}">
+        {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+         <img src="{{ section.settings.logo | img_url: image_size, scale:2 }}" alt="{% if section.settings.logo.alt != blank %}{{section.settings.logo.alt}}{% else %}{{ shop.name }}{% endif %}" style="max-width:{{section.settings.logo_max_width | append: "px"}}; min-height:{{section.settings.logo_max_width | divided_by: section.settings.logo.aspect_ratio | floor}}px" />
+      </a>
+      {% else %}
+        <div class="logo-text">
+          <a class="text-logo" href="{{routes.root_url}}">{{ shop.name }}</a>
+        </div>
+    {% endif %}
+    <div class="nav-container-controls" id="nav-controls">
+      <div class="nav-container-control-left">
+        <a class="lin lin-menu nav-container-action pushy-menu-btn" href="#" id="pushy-menu-btn" tabindex="-1">
+          <span class="visuallyhidden">Menu</span>
+        </a>
+      </div>
+      <div class="nav-container-control-right">
+        <ul class="nav-container-actions">
+          {% if settings.show_multiple_currencies %}
+            <li>
+              {% include "currency-switcher" %}
+            </li>
+          {% endif %}
+          <li>
+            <a class="lin lin-magnifier popup-text search-modal-popup nav-container-action" href="#nav-search-dialog" data-effect="mfp-move-from-top">
+              <span class="visuallyhidden">Search</span>
+            </a>
+          </li>
+          {% if shop.customer_accounts_enabled %}
+            <li>
+              {% if customer %}
+              <a class="lin lin-user nav-container-action" href="{{routes.account_url}}">
+                <span class="visuallyhidden">My account</span>
+              </a>
+              {%else %}
+              <a class="lin lin-user nav-container-action" href="{{routes.account_login_url}}">
+                <span class="visuallyhidden">My account</span>
+              </a>
+              {%endif %}
+            </li>
+          {% endif %}
+          <li>
+            <a class="lin lin-basket popup-text cart-modal-popup nav-container-action" href="#nav-shopping-cart-dialog" data-effect="mfp-move-from-top">
+              <span class="mega-nav-count nav-main-cart-amount count-items {% if cart.item_count < 1 %} hidden{% endif %}" aria-hidden="true">
+                {%- include 'bold-options-hybrid-cart-item-count' with cart -%}
+              </span>
+              <span class="visuallyhidden">You have {{ cart.item_count }} items in your cart</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<nav class="nav-standard clearfix nav-standard-float mobile-hidden nav-to-sticky {{rel_nav}}" id="navbarStickyDesktop">
+  <div class="nav-standard-top-area {% if section.settings.message %} mt45 {% endif %}">
+    <form action="{{routes.search_url}}" method="get" role="search" class="nav-standard-top-area-search">
+      <div class="nav-standard-top-area-search-inner">
+        {% if settings.search_result_type != 'everything' %}
+        <input type="hidden" name="type" value="product" />
+        {% endif %}
+        <input type="search" name="q" value="{{ search.terms | escape }}" class="nav-standard-top-area-search-input" placeholder="{{ 'layout.navigation.search' | t }}">
+        <button type="submit" class="lin lin-magnifier nav-standard-top-area-search-sumbit">
+          <span class="visuallyhidden">Search</span>
+        </button>
+      </div>
+    </form>
+    {% if section.settings.logo %}
+      <a class="nav-standard-logo" href="{{routes.root_url}}">
+        {% capture image_size %}{{ section.settings.logo_max_width }}x{% endcapture %}
+         <img src="{{ section.settings.logo | img_url: image_size, scale:2 }}" alt="{% if section.settings.logo.alt != blank %}{{section.settings.logo.alt}}{% else %}{{ shop.name }}{% endif %}" style="max-width:{{section.settings.logo_max_width | append: "px"}}; min-height:{{section.settings.logo_max_width | divided_by: section.settings.logo.aspect_ratio | floor}}px" />
+      </a>
+      {% else %}
+        <div class="logo-text">
+          <a class="text-logo" href="{{routes.root_url}}">{{ shop.name }}</a>
+        </div>
+    {% endif %}
+    <ul class="nav-standard-top-area-actions">
+      {% if settings.show_multiple_currencies %}
+        <li>
+          {% include "currency-switcher" %}
+        </li>
+      {% endif %}
+      {% if shop.customer_accounts_enabled %}
+        <li>
+          {% if customer %}
+              <a class="lin lin-user nav-container-action" href="{{routes.account_url}}">
+                <span class="visuallyhidden">My account</span>
+              </a>
+              {% else %}
+              <a class="lin lin-user nav-container-action" href="{{routes.account_login_url}}">
+                <span class="visuallyhidden">My account</span>
+              </a>
+              {% endif %}
+        </li>
+      {% endif %}
+      <li>
+        <a class="lin lin-basket popup-text nav-container-action cart-modal-popup" href="javascript:void(0);" data-effect="mfp-move-from-top">
+          <span class="mega-nav-count nav-main-cart-amount count-items {% if cart.item_count < 1 %} hidden{% endif %}" aria-hidden="true">
+            {%- include 'bold-options-hybrid-cart-item-count' with cart -%}
+          </span>
+          <span class="visuallyhidden">You have {{ cart.item_count }} items in your cart</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="nav-standard-nav-area clearfix">
+      <form action="{{routes.search_url}}" method="get" role="search" class="nav-standard-top-area-search">
+      <div class="nav-standard-top-area-search-inner">
+        <input type="search" name="q" value="{{ search.terms | escape }}" class="nav-standard-top-area-search-input" placeholder="{{ 'layout.navigation.search' | t }}">
+        <button type="submit" class="lin lin-magnifier nav-standard-top-area-search-sumbit">
+          <span class="visuallyhidden">Search</span>
+        </button>
+      </div>
+    </form>
+    <ul class="nav navbar-nav navbar-standard mega-menu-simple">
+      {% assign firstLevelMenu = linklists[section.settings.main_linklist]%}
+
+      {% for link in firstLevelMenu.links %}
+
+        {% assign child_list_handle_size = link.links.size %}
+
+
+
+
+        <li class="dropdown" {% if link.links.size > 0 %} aria-haspopup="true" {% endif %}aria-expanded="false" ><a href="{{ link.url }}">{{ link.title | escape }} {% if link.links.size > 0 %}<i class="triangle-icon"></i>{% endif %}</a>
+
+          {% if child_list_handle_size > 0 %}
+
+            {% if child_list_handle_size == 1 %}
+              {% assign menu_width = 12 %}
+              {% elsif child_list_handle_size == 2 %}
+             	 {% assign menu_width = 6 %}
+              {% elsif child_list_handle_size == 3 %}
+            	  {% assign menu_width = 4 %}
+              {% elsif child_list_handle_size == 4 %}
+            	  {% assign menu_width = 3 %}
+              {% elsif child_list_handle_size > 4 %}
+            	  {% assign menu_width = 3 %}
+            {% endif %}
+
+
+          {% assign size_of_grand_child = "" %}
+          {% assign size_of_grand_child_sum = 0 %}
+
+          {% for childlink_toget_count in link.links %}
+          {% assign size_of_grand_child = size_of_grand_child | append : childlink_toget_count.links.size %}
+          {% assign size_of_grand_child_sum = size_of_grand_child_sum | plus: childlink_toget_count.links.size %}
+          {% endfor %}
+
+          {% if size_of_grand_child_sum == 0 %}
+          {% assign grandChildLinksQty = "no-child-links"%}
+          {% else %}
+           {% assign grandChildLinksQty = nil %}
+          {% endif %}
+
+          <ul class="{{grandChildLinksQty}} dropdown-menu">
+              <li class="simple_menu_content">
+                <div class="nav-simple-mega-section">
+                  {% for child_link in link.links %}
+                    {% if child_link.links.size > 0 %}
+                      <div class="mega-simple-menu-column mega-simple-menu-column-with-list" aria-haspopup="true" aria-expanded="false">
+                        <h5 class="nav-mega-section-title hide_menu_underline"><a href="{{ child_link.url }}">{{ child_link.title | escape }} <i class="triangle-icon"></i></a></h5>
+                        <ul class="nav-simple-mega-section-list">
+                          {% for grand_child_link in child_link.links %}
+                            <li><a href="{{ grand_child_link.url }}">{{ grand_child_link.title | escape }}</a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                      {% else %}
+                       <div class="mega-simple-menu-column">
+                        <h5 class="nav-mega-section-title hide_menu_underline"><a href="{{ child_link.url }}">{{ child_link.title | escape }}</a></h5>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+
+                </div>
+              </li>
+            </ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+     <ul class="nav-standard-top-area-actions">
+      {% if settings.show_multiple_currencies %}
+        <li>
+          {% include "currency-switcher" %}
+        </li>
+      {% endif %}
+      {% if shop.customer_accounts_enabled %}
+        <li>
+          {% if customer %}
+          <a class="lin lin-user nav-container-action" href="{{routes.account_url}}">
+            <span class="visuallyhidden">My account</span>
+          </a>
+          {% else %}
+          <a class="lin lin-user nav-container-action" href="{{routes.account_login_url}}">
+            <span class="visuallyhidden">My account</span>
+          </a>
+          {% endif %}
+        </li>
+      {% endif %}
+      <li>
+        <a class="lin lin-basket popup-text nav-container-action cart-modal-popup" href="javascript:void(0);" data-effect="mfp-move-from-top">
+          <span class="mega-nav-count nav-main-cart-amount count-items {% if cart.item_count < 1 %} hidden{% endif %}" aria-hidden="true">
+            {%- include 'bold-options-hybrid-cart-item-count' with cart -%}
+          </span>
+          <span class="visuallyhidden">You have {{ cart.item_count }} items in your cart</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>

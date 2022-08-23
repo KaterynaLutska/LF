@@ -1,0 +1,6 @@
+.desktop-flex-wrapper{
+ height: auto !important;
+}
+.__pf [data-container=true]>div:last-child {
+    margin-top: 15%;
+}

@@ -1,0 +1,32 @@
+{% comment %}
+  vars
+    - article
+    - date
+    - author
+    - comments
+{% endcomment %}
+
+{%- if article -%}
+  {%- if date or author or comments -%}
+    <ul class="article-meta">
+      {%- if author -%}
+        <li>{{ 'blogs.article.by_author' | t: author: article.author }}</li>
+      {%- endif -%}
+      {%- if date -%}
+        <li>{{ article.published_at | date: "%b %d, %Y" }}</li>
+      {%- endif -%}
+      {%- if blog.comments_enabled? and article.comments_count > 0 and comments -%}
+        <li>{{ 'blogs.comments.comments_with_count' | t: count: article.comments_count }}</li>
+      {%- endif -%}
+    </ul>
+  {%- endif -%}
+{%- else -%}
+<ul class="article-meta">
+  {%- if author -%}
+    <li>John Doe</li>
+  {%- endif -%}
+  {%- if date -%}
+    <li>{{ "now" | date: "%b %d, %Y" }}</li>
+  {%- endif -%}
+</ul>
+{%- endif -%}

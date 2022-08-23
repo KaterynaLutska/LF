@@ -1,0 +1,52 @@
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="entry-popup {% if section.settings.navigation_type == 'left' %} pl60{% endif %}">
+    <div class="modal-dialog">
+      <div class="modal-content {% if settings.popup_image_position == 'left'%} flex-revers{% endif %}">
+        <div class="description-content">
+          <div class="modal-header no_border">
+            <button type="button" class="popup-close" data-dismiss="modal" aria-hidden="true"><i class="lin lin-close"></i></button>
+            <h2 class="modal-title text-center" id="myModalLabel">{{ settings.entry_popup_heading | escape }}</h2>
+          </div>
+          <div class="modal-body no_padding">
+            {{ settings.entry_popup_top_text }}
+            {% if settings.entry_popup_newsletter %}
+              <div>
+                {% include 'newsletter-form' %}
+              </div>
+            {% endif %}
+            {% if settings.entry_popup_social %}
+              <ul class="footer-main-standard-social-list">
+                {% include 'social-profiles' %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+        <div class="image-content">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    if ($.cookie('pop') == null) {
+      function show_modal(){
+        $('#myModal').modal();
+      }
+      window.setTimeout(show_modal, {{ settings.popup_delay }}); // delay before it calls the modal function
+                        {% if settings.popup_return != "use_test_popup" %}
+                        $.cookie('pop', '{{ settings.popup_return }}');
+                        {% endif %}
+                        }
+                        {% if settings.popup_return == "use_test_popup" %}
+                        else{                    
+                        function show_modal(){
+        $('#myModal').modal();
+      }
+      window.setTimeout(show_modal, {{ settings.popup_delay }}); // delay before it calls the modal function
+                        }
+                        {% endif %}
+                        });
+</script>

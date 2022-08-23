@@ -1,0 +1,216 @@
+<div data-section-id="{{ section.id }}" data-section-type="footer-section">
+{% if section.blocks.size == 1 and section.blocks[0].type == "link_list"%}
+  <footer class="footer-main" id="footer-main" data-section-id="{{ section.id }}" data-section-type="footer-section">
+    {% if section.settings.show_newsletter_bar %}
+      {% include "newsletter-top-bar-form"%}
+    {% endif %}
+    <div class="footer-main-content">
+      <ul class="footer-main-social">
+        {% include 'social-profiles' %}
+      </ul>
+      <ul class="footer-main-nav">
+        {% for block in section.blocks %}
+          {% for link in linklists[block.settings.footer_linklist].links %}
+            <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  </footer>
+{% else %}
+  {% case section.blocks.size %}
+    {% when 1 %}
+    	{% assign grid_item_width = '12' %}
+    {% when 2 %}
+    	{% assign grid_item_width = '6' %}
+    {% when 3 %}
+    	{% assign grid_item_width = '4' %}
+    {% else %}
+    	{% assign grid_item_width = '3' %}
+  {% endcase %}
+{% if section.settings.show_newsletter_bar %}
+	{% include "newsletter-top-bar-form"%}
+{% endif %}
+<footer class="footer-main-standard">
+  <div class="container">
+    <div class="row" data-gutter="60">
+      {% for block in section.blocks %}
+        <div {{ block.shopify_attributes }} class="col-sm-{{grid_item_width}} footer-col">
+          {% if block.settings.column_heading %}
+            <h3 class="footer-main-standard-title text-{{section.settings.title_transfrom}}">{{ block.settings.column_heading | escape }}</h3>
+            {{ block.settings.code }}
+          {% endif %}
+          {% if block.settings.footer_linklist %}
+            <h3 class="footer-main-standard-title text-{{section.settings.title_transfrom}}">{{ linklists[block.settings.footer_linklist].title }}</h3>
+            <ul class="footer-main-standard-links">
+              {% for link in linklists[block.settings.footer_linklist].links %}
+              	<li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif%}
+        {% if block.settings.newsletter_heading %}
+          <h3 class="footer-main-standard-title text-{{section.settings.title_transfrom}}">{{ block.settings.newsletter_heading | escape }}</h3>
+          {{ block.settings.newsletter_text }}
+        {% endif %}
+        {% if block.settings.footer_newsletter_enable %}
+          {% include 'newsletter-form' %}
+        {% endif%}
+        {% if block.settings.footer_display_social %}
+          <ul class="footer-main-standard-social-list">
+            {% include 'social-profiles' %}
+          </ul>
+        {% endif %}
+      </div>
+     {% endfor %}
+    </div>
+  </div>
+ </footer>
+{% endif %}
+<div class="footer-main-standard-after">
+  <div class="container">
+    <div class="row footer-bottom-flex-row">
+      <div class="col-md-6">
+          {% include "cross-border-switchers" %}
+          <p class="footer-main-standard-copy">
+            {% if section.settings.show_copyright_info %}
+            &copy; {{ 'now' | date: "%Y" }} {{ shop.name | link_to: routes.root_url }}
+            {% endif %}
+            | {{ powered_by_link }}
+          </p>
+
+      </div>
+      <div class="col-md-6">
+        {% if section.settings.show_payment_methods and shop.enabled_payment_types != empty %}
+          <ul class="footer-main-standard-payment">
+
+            {% for type in shop.enabled_payment_types %}
+            	<li class="payment-icon">{{ type | payment_type_svg_tag }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% schema %}
+{
+   "name":"Footer",
+   "max_blocks":4,
+   "settings":[
+      {
+        "type": "select",
+        "id": "title_transfrom",
+        "default": "uppercase",
+        "label": "Headings style",
+        "options": [
+          {
+            "label": "Normal",
+            "value": "normal"
+          },
+          {
+            "label": "Uppercase",
+            "value": "uppercase"
+          },
+          {
+            "label": "Lowercase",
+            "value": "lowercase"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Language selector"
+      },
+	  {
+        "type": "checkbox",
+        "id": "show_locale_selector",
+        "label": "Show language selector",
+ 		"info": "To add a language, go to your [language settings](\/admin\/settings\/languages)"
+      },
+	  {
+        "type": "header",
+        "content": "Currency selector"
+      },
+	  {
+        "type": "checkbox",
+        "id": "show_currency_selector",
+        "label": "Show currency selector",
+ 		"info": "To add a currency, go to your [payment settings](\/admin\/settings\/shopify-payments)"
+      },
+      {
+         "type":"header",
+         "content":"Bottom bar"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_copyright_info",
+         "label":"Show copyright information"
+      },
+      {
+         "type":"checkbox",
+         "id":"show_payment_methods",
+         "label":"Enable payment methods"
+      }
+   ],
+   "blocks":[
+      {
+         "type":"html",
+         "name":"Text block",
+         "settings":[
+            {
+               "type":"text",
+               "id":"column_heading",
+               "label":"Heading"
+            },
+            {
+               "type":"richtext",
+               "id":"code",
+               "label":"Text"
+            }
+         ]
+      },
+      {
+         "type":"link_list",
+         "name":"Menu",
+         "settings":[
+            {
+               "type":"link_list",
+               "id":"footer_linklist",
+               "label":"Menu",
+  			   "info": "This menu won't show dropdown items"
+            }
+         ]
+      },
+      {
+         "type":"newsletter",
+         "name":"Newsletter and social",
+         "settings":[
+            {
+               "type":"text",
+               "id":"newsletter_heading",
+               "label":"Heading",
+               "default":"Keep in Touch"
+            },
+            {
+               "type":"richtext",
+               "id":"newsletter_text",
+               "label":"Description"
+            },
+			{
+               "type":"checkbox",
+               "id":"footer_newsletter_enable",
+               "label":"Show newsletter signup",
+               "default":false
+            },
+            {
+               "type":"checkbox",
+               "id":"footer_display_social",
+               "label":"Show social icons",
+               "default":false
+            }
+         ]
+      }
+   ]
+}
+{% endschema %}

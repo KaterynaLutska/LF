@@ -1,0 +1,155 @@
+
+
+<div class="collections-list-page" data-section-id="{{ section.id }}" data-section-type="collections-list-section">
+
+
+
+
+    {% include 'page-header'
+      bg: section.settings.image,
+      title: section.settings.title
+    %}
+
+  <div class="page-wrapper pb0">
+
+  <div class="container">
+    <div class="row {% if settings.use_landscape_ratio == 'landscape' %} use_landscape_ratio {% endif %}"id="filter-row">
+      {% for collection in collections %}
+        {% unless collection.handle == 'frontpage' %}
+       	 {% include 'collection-thumbnail'
+          collection: collection,
+          col: section.settings.layout_columns,
+          rounded: section.settings.use_rounded_images,
+          orientation: section.settings.orientation,
+          count_products: section.settings.show_product_counter,
+          rounded: section.settings.use_rounded_images,
+          zoomed: false,
+          title_transfrom: section.settings.caption_title_transfrom,
+          image_type: section.settings.image_type
+         %}
+        {% endunless %}
+        {% else %}
+        	<div class="collections-content-inner page-title">{{ 'homepage.onboarding.collection_title' |t }}</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</div>
+
+{% schema %}
+{
+   "name":"Collections List",
+   "settings":[
+      {
+         "type": "header",
+         "content": "Header"
+      },
+	  {
+         "type":"image_picker",
+         "id":"image",
+         "label":"Background image"
+      },
+	  {
+          "type":"text",
+          "id":"title",
+          "label":"Heading",
+          "default":"Collections"
+	  },
+      {
+         "type": "header",
+         "content": "Content"
+      },
+      {
+         "type":"select",
+         "id":"layout_columns",
+         "label":"Grid layout",
+         "default":"4_col",
+         "options":[
+            {
+              "label": "2 columns",
+              "value": "2_col"
+            },
+            {
+               "label":"3 columns",
+               "value":"3_col"
+            },
+            {
+               "label":"4 columns",
+               "value":"4_col"
+            },
+            {
+               "label":"6 columns",
+               "value":"6_col"
+            }
+         ]
+      },
+      {
+         "type":"select",
+         "id":"image_type",
+         "label":"Image",
+         "default":"featured",
+         "options":[
+            {
+               "label":"Collection featured image",
+               "value":"featured"
+            },
+            {
+               "label":"First product image",
+               "value":"product"
+            }
+         ]
+      },
+      {
+         "type":"select",
+         "id":"orientation",
+         "label":"Style",
+         "default":"sqr",
+         "info": "Only relevant if you choose Collection featured image above",
+         "options":[
+             {
+                "label":"Circle",
+                "value":"round"
+             },
+            {
+               "label":"Square",
+               "value":"sqr"
+            },
+            {
+               "label":"Landscape",
+               "value":"lscape"
+            },
+            {
+               "label":"Portrait",
+               "value":"port"
+            }
+         ]
+      },
+	  {
+        "type":"select",
+        "id":"caption_title_transfrom",
+        "label":"Text style",
+        "options":[
+          {
+            "value":"normal",
+            "label":"Normal"
+          },
+          {
+            "value":"uppercase",
+            "label":"Uppercase"
+          },
+          {
+            "value":"lowercase",
+            "label":"Lowercase"
+          }
+        ],
+        "default":"normal"
+      },
+      {
+           "type":"checkbox",
+           "id":"show_product_counter",
+           "label":"Show product count",
+           "default": true
+      }
+   ]
+}
+{% endschema %}

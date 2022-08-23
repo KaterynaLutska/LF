@@ -1,0 +1,276 @@
+{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+{%- if section.settings.background_type == 'video_blurred' -%}
+  {% assign blurred_class = '-blurred' %}
+{%- else -%}
+  {% assign blurred_class = null %}
+{%- endif -%}
+
+
+{%- if section.settings.background_type == 'img' or section.settings.lightbox_video -%}
+  {% assign play_icon_class = null %}
+{%- else -%}
+  {% assign play_icon_class = 'desktop-hidden' %}
+{%- endif -%}
+
+{% capture play_icon %}
+  <a class="youtube-play-icon {{play_icon_class}}" href="#" id="video-play-{{section.id}}">
+    {%- include 'icon-play' -%}
+  </a>
+{% endcapture %}
+
+
+{% capture video_area %}
+  <div class="youtube-video-wrapper -aside">
+    <div class="youtube-video-overlay" style="opacity: {{overlay_opacity}}"></div>
+    {%- include 'bg-img',
+      class_name: 'youtube-video-bg',
+      img_src: section.settings.home_video_bg,
+      placeholder_id: 1,
+      placeholder_type: 'lifestyle'
+    -%}
+    {%- if section.settings.background_type != 'img' -%}
+     {%- if section.settings.video_link.type == "youtube" -%}
+       <div id="video-{{section.id}}" class="youtube-video {{blurred_class}}"></div>
+     {% else %}
+       <div id="video-{{section.id}}" class="vimeo-video {{blurred_class}}">    	
+          <div id="vimeo_iframe_wrapper-{{section.id}}">
+            <iframe id="iframe-{{section.id}}" src="https://player.vimeo.com/video/{{section.settings.video_link.id}}?muted=1&amp;autoplay=1&amp;autopause=0&amp;loop=1" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen="" ></iframe>
+         </div>
+      </div>
+     {%- endif -%}
+    {%- endif -%}
+    {{play_icon}}
+  </div>
+{% endcapture %}
+
+{% capture caption %}
+  {%- include 'rich-text-caption'
+    title: section.settings.title,
+    text: section.settings.text,
+    bg_type: section.settings.caption_background_type,
+    btn_style: section.settings.btn_style,
+    btn_text: section.settings.btn_text,
+	btn_link: section.settings.btn_link,
+    size: section.settings.size,
+    dir: section.settings.dir
+  -%}
+{% endcapture %}
+
+{%- if section.settings.dir == 'right' -%}
+  {% assign row_inverse_class = 'row-col-inverse' %}
+{%- else -%}
+  {% assign row_inverse_class = null %}
+{%- endif -%}
+
+{%- if section.settings.video_width == 'large' -%}
+  {% assign video_col = 7 %}
+  {% assign caption_col = 5 %}
+{%- elsif section.settings.video_width == 'small' -%}
+  {% assign video_col = 5 %}
+  {% assign caption_col = 7 %}
+{%- else -%}
+  {% assign video_col = 6 %}
+  {% assign caption_col = 6 %}
+{%- endif -%}
+
+<div data-section-id="{{ section.id }}" data-section-type="video-section" data-video-type="{{section.settings.video_link.type}}"  data-video-link="{{section.settings.video_link}}" data-video-id="{{section.settings.video_link.id}}">
+  <div class="row row-eq-height row-no-gutter {{row_inverse_class}} hero-text -aside">
+    <div class="col-md-{{video_col}}">
+      {{video_area}}
+    </div>
+    <div class="col-md-{{caption_col}}">
+      {{caption}}
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+{
+   "name":"Video with text",
+   "class":"index-section",
+   "settings":[
+	  {
+        "type": "select",
+        "id": "background_type",
+        "label": "Play options",
+        "info": "[Learn more](https:\/\/support.milehighthemes.com\/article\/119-utilizing-video-options-on-your-home-page-galleria)",
+        "default": "video",
+        "options": [
+          {
+            "label": "Autoplay",
+            "value": "video"
+          },
+          {
+            "label": "Autoplay (blurred)",
+            "value": "video_blurred"
+          },
+          {
+            "label": "Play on click",
+            "value": "img"
+          }
+        ]
+      },
+      {
+         "type":"video_url",
+         "id":"video_link",
+         "label":"Video link",
+         "accept":[
+            "youtube","vimeo"
+         ],
+         "default":"https://www.youtube.com/watch?v=_9VUPq3SxOc"
+      },
+      {
+         "type":"image_picker",
+         "label":"Cover image",
+         "id":"home_video_bg",
+         "info":"800 x 800px jpg recommended. Shows on mobile, as video is loading on desktop, and if \"Play on click\" option is selected above."
+      },
+	  {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Overlay opacity",
+        "min":       0,
+        "max":        90,
+        "step":       10,
+        "unit":       "%",
+        "default": 20
+    },
+	{
+        "type": "checkbox",
+        "label": "Show play button on autoplay",
+        "id": "lightbox_video",
+        "default": true,
+        "info":"Opens video in a popup"
+      },
+      {
+         "type":"select",
+         "id":"dir",
+         "label":"Video direction",
+         "default":"right",
+         "options":[
+            {
+               "label":"Right",
+               "value":"right"
+            },
+            {
+               "label":"Left",
+               "value":"left"
+            }
+         ]
+      },
+      {
+         "type":"select",
+         "id":"video_width",
+         "label":"Video width",
+         "default":"default",
+         "options":[
+            {
+               "label":"Default",
+               "value":"default"
+            },
+            {
+               "label":"Small",
+               "value":"small"
+            },
+            {
+               "label":"Large",
+               "value":"large"
+            }
+         ]
+      },
+	  {
+         "type":"select",
+         "id":"size",
+         "label":"Height",
+         "default":"sm",
+         "options":[
+            {
+               "label":"Short",
+               "value":"sm"
+            },
+            {
+               "label":"Medium",
+               "value":"md"
+            },
+            {
+               "label":"Tall",
+               "value":"lg"
+            }
+         ]
+      },
+      {
+         "type":"header",
+         "content":"Caption"
+      },
+	  {
+         "type":"select",
+         "id":"caption_background_type",
+         "label":"Background",
+         "default":"default",
+         "options":[
+            {
+               "label":"White",
+               "value":"default"
+            },
+            {
+               "label":"Alternate",
+               "value":"alt"
+            },
+            {
+               "label":"Primary",
+               "value":"primary"
+            },
+            {
+              "label": "Dark",
+              "value": "dark"
+            }
+         ]
+      },
+	  {
+        "type":"text",
+        "id":"title",
+        "label":"Header",
+        "default":"Call to action headline"
+      },
+	  {
+         "type":"richtext",
+         "id":"text",
+         "label":"Description",
+         "default":"<p>Use text to give your customers insight into your brand. Select text that relates to your story.</p>"
+      },
+	  {
+         "type":"text",
+         "id":"btn_text",
+         "label":"Button text"
+      },
+	  {
+         "type":"url",
+         "id":"btn_link",
+         "label":"Link"
+      },
+	  {
+        "type":"select",
+        "id":"btn_style",
+        "label":"Style",
+        "options":[
+          {
+            "value":"none",
+            "label":"Default"
+          },
+          {
+            "value":"ghost",
+            "label":"Ghost"
+          }
+        ],
+        "default":"none"
+      }
+   ],
+   "presets":[
+      {
+         "name":"Video with text",
+         "category":"Video"
+      }
+   ]
+}
+{% endschema %}

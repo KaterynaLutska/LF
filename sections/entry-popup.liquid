@@ -1,0 +1,139 @@
+<div data-section-id="{{ section.id }}" data-section-type="popup-section" data-enabled="{{section.settings.show_entry_popup}}" data-delay="{{ section.settings.popup_delay }}" data-cookie="{{section.settings.popup_return}}" class="modal fade entry-popup-modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="entry-popup   {% if section.settings.popup_logo == blank %} only_description_content {% endif %}">
+    <div class="modal-dialog">
+      <div class="modal-content {% if section.settings.popup_image_position == 'left'%} flex-revers{% endif %}">
+        <div class="description-content">
+          <div class="modal-header no_border">
+            <button type="button" class="popup-close" data-dismiss="modal" aria-hidden="true"><i class="lin lin-close"></i></button>
+            <h2 class="modal-title text-center" id="myModalLabel">{{ section.settings.entry_popup_heading | escape }}</h2>
+          </div>
+          <div class="modal-body no_padding">
+            {{ section.settings.entry_popup_top_text }}
+            {% if section.settings.entry_popup_newsletter %}
+              <div>
+                {% include 'newsletter-form' %}
+              </div>
+            {% endif %}
+            {% if section.settings.entry_popup_social %}
+              <ul class="footer-main-standard-social-list">
+                {% include 'social-profiles' %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+        {% if section.settings.popup_logo != blank %}
+        <div class="image-content lazyload blur-up visible_lazy"
+             data-bgset="{% include 'bgset', image: section.settings.popup_logo %}"
+             data-sizes="auto"
+             data-parent-fit="cover"
+             style="background-image: url('{{ section.settings.popup_logo | img_url: '100x100' }});"
+             >
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% schema %}
+  {
+    "name": "Entry popup",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_entry_popup",
+        "label": "Enable",
+        "default": false
+      },
+	  {
+      "type":      "range",
+      "id":        "popup_delay",
+      "min":       0,
+      "max":        10,
+      "step":       1,
+      "unit":       "sec",
+      "label":     "Delay until popup appears",
+      "default":   5
+      },
+      {
+        "type": "select",
+        "id": "popup_return",
+        "label": "Time before the popup re-appears for the user",
+        "options": [
+          {
+            "value": "use_test_popup",
+            "label": "No delay (for testing)"
+          },
+          {
+            "value": "7",
+            "label": "1 week"
+          },
+          {
+            "value": "14",
+            "label": "2 weeks"
+          },
+          {
+            "value": "30",
+            "label": "1 month"
+          },
+          {
+            "value": "60",
+            "label": "2 months"
+          },
+          {
+            "value": "90",
+            "label": "3 months"
+          },
+          {
+            "value": "2000",
+            "label": "Never"
+          }
+        ],
+        "default": "use_test_popup"
+      },
+      {
+        "type": "text",
+        "id": "entry_popup_heading",
+        "label": "Heading",
+		"default": "Entry popup"
+      },
+      {
+        "type": "richtext",
+        "id": "entry_popup_top_text",
+        "label": "Description"
+      },
+      {
+        "type": "image_picker",
+        "id": "popup_logo",
+        "label": "Image"
+      },
+      {
+        "type": "select",
+        "id": "popup_image_position",
+        "label": "Image position",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default": "right"
+      },
+      {
+        "type": "checkbox",
+        "id": "entry_popup_newsletter",
+        "label": "Enable newsletter form",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "entry_popup_social",
+        "label": "Enable social icons",
+        "default": true
+      }
+    ]
+  }
+{% endschema %}

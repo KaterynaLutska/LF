@@ -1,0 +1,45 @@
+<div class="mfp-with-anim mfp-hide mfp-dialog mfp-dialog-nav clearfix" id="nav-search-dialog">
+  <div class="nav-dialog-inner">
+    <form class="nav-search-dialog-form" action="{{routes.search_url}}" method="get" role="search">
+      {% if settings.search_result_type != 'everything' %}
+      	<input type="hidden" name="type" value="product" /> 
+      {% endif %}
+      <input type="search" name="q" value="{{ search.terms | escape }}" class="nav-search-dialog-input" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.submit' | t }}" />
+      <button type="submit" class="lin lin-magnifier nav-search-dialog-submit"></button>
+    </form>
+  </div>
+</div>
+{% if settings.cart_background_style == "light" %}
+<style>
+ #nav-search-dialog{
+    background: #fff;
+    color: {{ settings.body_text_color }}; 
+  }
+  #nav-search-dialog .mfp-close{     
+    color: {{ settings.body_text_color }} !important;
+  }
+  #nav-search-dialog .nav-search-dialog-input{
+    border-bottom: 1px solid {{ settings.body_text_color }};
+    color: {{ settings.body_text_color }};
+  }
+  #nav-search-dialog .nav-search-dialog-submit{
+    color: {{ settings.body_text_color }};
+  }
+   .nav-search-dialog-input::-webkit-input-placeholder {
+    opacity: 0.9;
+    color: {{ settings.body_text_color }};
+  }
+  .nav-search-dialog-input:-ms-input-placeholder {
+    color: {{ settings.body_text_color }};
+    opacity: 0.9;
+  }
+  .nav-search-dialog-input::-moz-placeholder {
+    color: {{ settings.body_text_color }};
+    opacity: 0.9;
+  }
+  .nav-search-dialog-input:-moz-placeholder {
+    color: {{ settings.body_text_color }};
+    opacity: 0.9;
+  }
+</style>
+{% endif %}

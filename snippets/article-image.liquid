@@ -1,0 +1,23 @@
+{% if image %}
+{%- if thumbnail -%}
+  {% assign img_class = "article-bg-thumbnail" %}
+{%- else -%}
+  {% assign img_class = "article-bg-image" %}
+{%- endif -%}
+
+<noscript>
+  <img alt="{{  article.title | escape }}" srcset="{{ article | img_url:'1200x' }} 1x, {{ article | img_url:'1200x', scale: 2 }} 2x, {{ article | img_url:'1200x', scale: 3 }} 3x" >
+</noscript>
+
+<div class="article-bg-wrap">
+
+   {%- include 'bg-img'
+     img_src: image,
+     class_name: img_class
+   -%}
+
+   {%- if thumbnail -%}
+      <a href="{{ url }}" class="article-bg-thumbnail-link"></a>
+   {%- endif -%}
+  </div>
+{% endif %}

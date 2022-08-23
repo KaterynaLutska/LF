@@ -1,0 +1,304 @@
+ {%- assign current_variant = product.selected_or_first_available_variant -%}
+
+{% assign hide_price = false %}
+{% assign show_cart_button = true %}
+{% if current_variant.price == 0 and settings.custom_price0_text != blank %}
+{% assign hide_price = true %}
+{% endif %} 
+{% if current_variant.price == 0 and settings.hide_price0_box_and_button %}
+{% assign show_cart_button = false %}
+{% endif %}
+
+<!--Threekit PDP Integration-->
+{% assign threekit = product.metafields.threekit %}
+{% assign isPdp = 'pdp' %}
+
+{% assign descriptionParts = product.description | split: "<!-- split -->" %}
+{% if descriptionParts.size > 1%}
+{% assign descriptionFirstPart = descriptionParts | first %}
+{% assign descriptionSecondPart = descriptionParts | last %}
+{% endif %} 
+{% include 'breadcrumb' breadcrumb_class:"page-header-breadcrumb mt50 mb0" %}
+<div class="container product-template__container page-width template-product" id="ProductSection-{{ section.id }}" data-hide_price="{% if settings.custom_price0_text != blank %}true{% endif %}" data-show_btn="{{settings.hide_price0_box_and_button}}" data-section-id="{{ section.id }}" data-section-type="product-page" data-enable-history-state="true">
+  {% comment %}
+  Get first variant, or deep linked one
+  {% endcomment %}
+  
+  {% comment %}
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {%- assign current_variant = product.selected_or_first_available_variant -%}
+  {% endcomment %}
+  
+  {%- assign product_thumb_size = '160x160' -%}
+  {%- assign product_image_zoom_size = '1024x1024' -%}
+  {%- assign enable_zoom = section.settings.enable_zoom -%}
+  {%- assign product_image_width = 'col-sm-7' -%}
+  {%- assign product_description_width = 'col-sm-12' -%}
+  {%- assign product_images_length = product.media | size -%}
+
+  {%- assign product_image_size = '720x720' -%}
+  {%- assign product_image_class = 'large-img' -%}
+
+  {%- assign featured_img_src = current_variant.featured_image.src | default: product.featured_image.src -%}
+  {%- assign featured_img_alt = current_variant.featured_image.alt | default: product.featured_image.alt -%}
+  <div class="desktop-hidden-sm">
+    <header class="product-item-caption-header mobile_caption_header">
+      {%- include 'reviews-badge', product_id: product.id -%}
+      {%- if from_product_page == true -%}
+      {% assign title_class = '-product-page' %}
+      {%- endif -%}
+      <p class="product-item-caption-title {{title_class}}">{{ product.title | escape }}</p>
+      <div class="wc_product_review_badge" data-handle="{{ product.handle }}"></div>
+      
+      <ul class="product-item-caption-price" {% if hide_price %} style="display:none" {% endif %}>
+        <li id="ComparePrice-{{ section.id }}" class="product-item-caption-price-list"><span class="money">
+          {% if current_variant.compare_at_price > current_variant.price %}
+          {{ current_variant.compare_at_price | money }}
+          {% endif %}
+          </span>
+        </li> 
+        <li id="ProductPrice-{{ section.id }}" class="product-item-caption-price-current"><span class="money">{{ current_variant.price | money }}</span></li>
+      </ul>
+         <div class="price0_text" {% unless hide_price %} style="display:none" {% endunless %}>{{settings.custom_price0_text}}</div>
+    </header>
+    
+  </div>
+  <div class="row row-col-norsp product-page-row swatch-product-id-{{product.id}}" id="parent" data-gutter="none">
+    <div class="product_images_length-{{product_images_length}} product-item-image-{{section.settings.description_background_color}} {{ product_image_width }} product-gallery-{{ section.id }}" id="product-gallery">
+      <div class="zoomer "> 
+        <img src="#" alt="Zoom image"/>
+      </div>
+        <!--Threekit PDP Apply-->
+        {% if threekit[isPdp] == 'true' %}
+            {% include 'pdp-threekit' %}
+        {% endif %}
+      <div class="product-item-wrap {{ product_image_class }} slider-{{ section.id }} equal-columns-{{section.id}} {% if section.settings.image_gallery_type == 'thumbnails_gallery_vertical' %} use_overflow{% endif %}" id="slider" data-product-single-media-group>
+        {% if section.settings.image_gallery_type == 'thumbnails_gallery_vertical' or section.settings.image_gallery_type == 'thumbnails_gallery_horizontal' %}
+        {% include 'thumbnails-gallery' %}
+        {% else %}
+        {% include 'slider-gallery' %}
+        {% endif %}
+        {% if section.settings.show_share_buttons %}
+        {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
+        {% endif %}
+      </div><!-- <div class="product-item-wrap" id="slider"> -->
+    </div><!-- <div class="col-md-7"> -->
+  
+    <div class="desktop-flex-wrapper">
+      <div class="{{ product_description_width }} product-description-{{ section.id }}" id="product-description">
+        <div class="product-item-caption-white product-item-caption-{{section.settings.description_background_color}} sidebar-{{ section.id }} equal-columns-{{section.id}}" id="sidebar">
+          <div class="mobile-hidden-sm">
+            <header class="product-item-caption-header desktop_caption_header">
+              {%- include 'reviews-badge', product_id: product.id -%}
+              {%- if from_product_page == true -%}
+              {% assign title_class = '-product-page' %}
+              {%- endif -%}
+              <h1 class="product-item-caption-title {{title_class}}">{{ product.title | escape }}</h1>
+              <div class="wc_product_review_badge" data-handle="{{ product.handle }}"></div>
+         
+              <ul class="product-item-caption-price" {% if hide_price %} style="display:none" {% endif %}>             
+                <li id="ComparePrice-{{ section.id }}" class="product-item-caption-price-list"><span class="money">
+                  {% if current_variant.compare_at_price > current_variant.price %}
+                  {{ current_variant.compare_at_price | money }}
+                  {% endif %}
+                  </span>
+                </li> 
+                <li id="ProductPrice-{{ section.id }}" class="product-item-caption-price-current"><span class="money">{{ current_variant.price | money }}</span></li>
+              </ul>
+                 <div class="price0_text" {% unless hide_price %} style="display:none" {% endunless %}>{{settings.custom_price0_text}}</div>
+            </header>
+            <script id="pb_prequalify" src="https://app.paybright.com/dist/sdk.js?public_key=63zRC1dZtcy9WLxH1LyhDOfyDvKsNIzFFu6fpTROFKD4Q1kBn2&financedamount=${{ product.price | divided_by: 100.00 | round: 2 }}"></script>
+            <script>
+        pb_prequalify_init({
+      });
+            </script>
+                        <style>
+          .paybright_custom {
+              font-size: 12px;
+                }
+                </style>
+            <div id="paybright-widget-container" class= "paybright_custom"></div>
+          </div>
+          
+          {% if descriptionSecondPart != blank%}
+          <div class="product-item-caption-desc description-first-part rte-page">
+            {{ descriptionFirstPart }}
+          </div>
+          {% endif %}
+          <!-- Galleria code -->
+          {% form 'product', product %}
+          {% if section.settings.show_variants_swatches %}
+
+          <style>
+            .product-select-block-{{ section.id }} {
+              display: none;
+            }
+          </style>
+
+          {% endif %}
+          <div class="product-item-caption-select product-select-block-{{ section.id }}">
+            {% unless product.options.size == 1 and product.variants[0].title contains 'Default' and product.variants.size == 1%}
+            {% for option in product.options_with_values %}
+            <div class="selector-wrapper main-product-select-{{product.id}}">
+              <label {% if option.name == 'default' %}class="hidden" {% endif %} for="product-select-{{ option.name }}">
+                {{ option.name }}
+              </label>
+              <select class="single-option-selector" id="SingleOptionSelector-{{ forloop.index0 }}">
+                {% for value in option.values %}
+                <option {% if option.selected_value == value %}selected{% endif %}>{{value}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            {% endfor %}
+            {% endunless %}
+            <select name="id" id="ProductSelect-{{ product.id }}" data-section="{{ section.id }}" class="product-form__variants hidden">
+              {% for variant in product.variants %}
+              {% if variant.available %}
+              <option {% if section.settings.show_product_quantity %}
+                      data-inventory_management="{{variant.inventory_management}}"
+                      data-inventory_policy="{{variant.inventory_policy}}"
+                      data-inventory_quantity="{{variant.inventory_quantity}}"
+                      {% endif %}
+                      {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title | escape }}</option>
+              {% else %}
+              <option disabled="disabled"
+                      {% if section.settings.show_product_quantity %}
+                      data-inventory_management="{{variant.inventory_management}}"
+                      data-inventory_policy="{{variant.inventory_policy}}"
+                      data-inventory_quantity="{{variant.inventory_quantity}}"
+                      value="{{ variant.id }}"
+                      {% endif %}  >{{ variant.title | escape }} - {{ 'products.product.sold_out' | t }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+          </div><!-- <div class="product-item-caption-select"> -->
+          {% if section.settings.show_variants_swatches %}
+          {% unless product.options.size == 1 and product.variants[0].title contains 'Default' and product.variants.size == 1%}
+          {% for option in product.options %}
+          {% include 'swatch' with option %}
+          {% endfor %}
+          {% endunless %}
+          {% endif %}
+          <div class="bold_options" data-product-id="{{ product.id }}"></div>
+          <div class="row" data-gutter="{% if section.settings.show_quantity_selector %}10{% else %}30{% endif %}">
+            {% if section.settings.show_quantity_selector %}
+              {% include 'quantity-selector' %}
+            {% endif %}
+             {% if section.settings.show_smart_checkout%}
+            <div class="product-form__item product-form__item--submit product_payments_btns" {% unless show_cart_button %} style="display:none" {% endunless %}>
+              <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn featured_product_submit product-form__cart-submit{% if product.options.size == 1 and product.variants[0].title == 'Default Title' and product.variants.size == 1 %} product-form__cart-submit--small{% endif %} btn-primary btn-block btn-lg btn-shop">
+                <span id="AddToCartText-{{ section.id }}">{{ 'products.product.add_to_cart' | t }}</span>
+              </button>
+              {{ form | payment_button }}
+            </div>
+            {% else %}
+           <div class="product-form__item product-form__item--submit">
+              <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn featured_product_submit product-form__cart-submit{% if product.options.size == 1 and product.variants[0].title == 'Default Title' and product.variants.size == 1 %} product-form__cart-submit--small{% endif %} btn-primary btn-shop btn-lg" {% unless show_cart_button %} style="display:none" {% endunless %}>
+                <span id="AddToCartText-{{ section.id }}">{{ 'products.product.add_to_cart' | t }}</span>
+              </button>
+            </div>
+            {% endif %}
+          </div><!-- <div class="row" data-gutter="10"> -->
+          {% endform %}
+          <!-- Galleria code -->
+          <!-- <div class="product-item-caption-desc {% if settings.product_reviews or section.settings.show_share_buttons %}border-bottom{% endif %}"> -->
+          <div class="product-item-caption-desc">
+            {% comment %}
+            {% if descriptionSecondPart != blank%}
+            <div class="product-rte-description main-product-description-{{ section.id }}" >
+              {{ descriptionSecondPart }}
+            </div>
+            {% else %}
+            <div class="product-rte-description main-product-description-{{ section.id }}" >
+              {{ product.description }}
+            </div>
+            {% endif %}
+            {% endcomment %}
+
+            {% if descriptionSecondPart != blank%}
+            <div class="rte-page rte-page-fade main-product-description-{{ section.id }}" >
+              {{ descriptionSecondPart }}
+            </div>
+            {% else %}
+            <div class="rte-page rte-page-fade main-product-description-{{ section.id }}" >
+              {{ product.description }}
+            </div>
+            {% endif %} 
+
+            {% if product.description contains '<!-- TABS -->' %}
+            <div class="product-description-tabs-{{section.id}} product-description-tabs">
+
+            </div>
+            {% endif %}
+
+            {% if section.settings.show_product_sku or
+                  section.settings.show_product_vendor or
+            section.settings.show_product_quantity or
+            section.settings.show_product_tags %}
+            <ul class="product-extra-info">
+              {% if section.settings.show_product_quantity %}
+              <li id="inventory-product-row" class="inventory-product-row-{{section.id }}" style="display:none;">
+                <span id="variant-inventory" class="variant-inventory-{{section.id }}"></span>
+              </li>
+              {% endif %}
+              {% if section.settings.show_product_vendor %}
+              <li>
+                Vendor: {{ product.vendor | link_to_vendor }}
+              </li>
+              {% endif %}
+              {% if section.settings.show_product_sku %}
+              <li id="sku-table-row" class="sku-table-row-{{section.id }}" style="display:none;">
+                SKU:
+                <span id="variant-sku" class="variant-sku-{{section.id }}"></span>
+              </li>
+              {% endif %}
+              {% assign tagsLength = 0 %}
+              {% for tag in product.tags %}
+              {% unless tag contains "_" %}
+              {% assign tagsLength = 1 %}
+              {% break %}
+              {% endunless %}
+              {% endfor %}
+
+              {% if section.settings.show_product_tags and tagsLength > 0 %}
+              <li class="tags">
+                Tags:
+                {% for tag in product.tags %}
+                {% unless tag contains "_" %}
+                <a class = "tag" href="{{routes.all_products_collection_url}}/{{ tag | handleize }}">{{ tag }}</a>
+                {% endunless %}
+                {% endfor %}
+              </li>
+              {% endif %}
+            </ul>
+            {% endif %}
+          </div>
+
+          {% if settings.product_reviews %}
+          <script>
+            console.log({{ product.metafields.spr | json }});
+          </script>
+
+          <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+          {% endif %}
+
+        </div><!-- <div class="product-item-caption-white" id="sidebar"> -->
+      </div><!-- <div class="col-md-5"> -->
+    </div><!-- <div> -->
+  </div><!-- <div class="row row-col-norsp" id="parent" data-gutter="none"> -->
+</div><!-- <div class="product-template__container page-width"> -->
+{% unless product.empty? %}
+
+<script type="application/json" id="ProductJson-{{ section.id }}">
+      {{ product | json }}
+</script>
+<script type="application/json" id="ModelJson-{{ section.id }}">
+    {{ product.media | where: 'media_type', 'model' | json }}
+  </script>
+<script type="application/json" id="ProductTemplate-{{ product.id }}">
+  {
+   "template": "product-page"
+  }
+</script>
+
+{% endunless %}

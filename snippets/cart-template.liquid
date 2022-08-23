@@ -1,0 +1,93 @@
+
+{% assign page_title = 'cart.general.title' | t  %}
+
+{% include 'page-header'
+  bg: section.settings.image,
+  title: page_title
+%}
+
+<div class="page-width" data-section-id="{{ section.id }}" data-section-type="cart-template">
+  <div class="main-content-inner cart-content">
+    <div class="container">
+      <div class="row">
+
+
+      {% if cart.item_count > 0 %}
+        <form action="{{routes.cart_url}}" method="post" novalidate class="main-cart-form">
+          <div class="col-md-10 col-md-offset-1">
+            {%- include 'cart-table' -%}
+          </div>
+            <div class="col-md-10 col-md-offset-1">
+              <div class="cart-total-wrapper">
+
+
+                <div class="row">
+
+                <div class="col-sm-6">
+                  {%- if settings.cart_notes_enable -%}
+                    {% assign notes_class = '-with-notes' %}
+                  {%- endif -%}
+                  
+                  {%- if cart.cart_level_discount_applications != blank -%}
+                  <p class="order-discount-cart-wrapper">
+                    {%- for discount_application in cart.cart_level_discount_applications -%}
+                    <span class="order-discount--cart total_val">
+                      {%- include 'icon-saletag' -%} {{- discount_application.title | strip -}}:
+                    </span>
+                     <span class="order-discount--cart-total">(-<span class="money">{{ discount_application.total_allocated_amount | money }}</span>)</span>
+                    {%- endfor -%}
+                  </p>
+                  {%- endif -%}
+
+                  
+                  <p class="cart-total {{notes_class}}">
+                    <span class="sign">{{ 'cart.general.subtotal' | t }}</span>  <span class="money"><span class="Bold-theme-hook-DO-NOT-DELETE bold_cart_total" style="display:none !important;"></span>{{ cart.total_price | money }}</span></p>
+                  {% if settings.cart_notes_enable %}
+                    <a role="button" data-toggle="collapse" href="#cartNotesCollapse" aria-expanded="false" aria-controls="cartNotesCollapse" class="cart-notes-title">Add order notes</a>
+                    <div class="collapse" id="cartNotesCollapse">
+                      <textarea name="note" id="CartSpecialInstructions" class="cart-notes" rows="6" placeholder="{{ 'cart.general.note' | t }}">{% if cart.note != null %}{{cart.note}}{% endif %}</textarea>
+                    </div>
+                  {% endif %}
+                  
+                  
+                  
+                  <div class="col-sm-6">
+                  <div class="cart-checkout-bts">
+                    <div class="clearfix">
+                      <button type="submit" name="checkout" class="cart-checkout-btn checkout-btn btn btn-primary btn-lg">{{ 'cart.general.checkout' | t }}</button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+              
+
+            {% if additional_checkout_buttons %}
+              <div class="additional-checkout-buttons-wrap"  id="addCheckoutBtn">
+                <div class="additional-checkout-buttons-sign">
+                  <span>Or pay with</span>
+                </div>
+                <div class="clearfix">
+                  {{ content_for_additional_checkout_buttons }}
+                </div>
+              </div>
+            {% endif %}
+            </div>
+          </form>
+        {% else %}
+          <div class="empty-page-content text-center">
+            <div class="cart__empty-icon">
+              {% include 'svg' with 'cart' %}
+            </div>
+            <p class="cart__empty-title">{{ 'cart.general.empty' | t }}</p>
+            <a href="javascript:void(0)" class="continue_shopping_btn btn_close btn btn-primary btn-lg">{{ 'cart.general.continue_browsing' | t }}</a>
+          </div>
+      {% endif %}
+      </div>
+
+
+
+    </div>
+  </div><!-- <div class="main-content-inner" -->
+</div><!-- <div class="page-width" data-section-id="{{ section.id }}" data-section-type="cart-template"> -->
